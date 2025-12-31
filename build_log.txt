@@ -1,0 +1,215 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by net.rubygrapefruit.platform.internal.NativeLibraryLoader in an unnamed module (file:/Users/noelr/.gradle/wrapper/dists/gradle-9.2.1-bin/2t0n5ozlw9xmuyvbp7dnzaxug/gradle-9.2.1/lib/native-platform-0.22-milestone-29.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+
+> Configure project :composeApp
+w: Please use `androidTarget` function instead of `android` to configure android target inside `kotlin { }` block.
+See the details here: https://kotl.in/android-target-dsl
+Kotlin does not yet support 25 JDK target, falling back to Kotlin JVM_22 JVM target
+
+> Task :composeApp:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :composeApp:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :composeApp:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :composeApp:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :composeApp:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :composeApp:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :composeApp:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :composeApp:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :composeApp:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :composeApp:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :composeApp:generateComposeResClass UP-TO-DATE
+> Task :composeApp:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+
+> Task :composeApp:compileKotlinDesktop FAILED
+Kotlin does not yet support 25 JDK target, falling back to Kotlin JVM_22 JVM target
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:25:13 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:39:13 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:49:29 Unresolved reference 'readUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:52:26 Unresolved reference 'bytesToIntLE'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:62:26 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:65:26 Unresolved reference 'handleWriteRequest'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:80:36 Unresolved reference 'bytesToIntLE'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:91:28 Unresolved reference 'readUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:98:31 Unresolved reference 'bytesToIntLE'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:103:31 Unresolved reference 'handleConnectionResponse'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:103:56 Unresolved reference 'file'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:106:31 Unresolved reference 'handleStart'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:106:43 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:109:31 Unresolved reference 'handleNspContent'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:109:48 Unresolved reference 'file'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:109:54 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:112:31 Unresolved reference 'handleNspContent'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:112:48 Unresolved reference 'file'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:112:54 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:126:5 Unresolved reference 'private'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:126:13 Syntax error: Expecting '->'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:126:17 Unresolved reference 'handleConnectionResponse'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:126:42 Unresolved reference 'file'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:126:46 Syntax error: Unexpected type specification.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:126:60 Syntax error: Expecting an expression.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:126:60 Syntax error: Expecting '->'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:126:62 Cannot access 'constructor(): Boolean': it is private in 'kotlin/Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:129:14 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:129:34 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:129:41 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:132:14 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:132:36 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:132:43 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:134:26 Unresolved reference 'file'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:135:14 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:135:23 Unresolved reference 'intToBytesLE'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:135:46 Unresolved reference 'size'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:135:54 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:135:61 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:136:14 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:136:35 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:136:42 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:138:10 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:138:17 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:141:5 Unresolved reference 'private'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:141:13 Syntax error: Expecting '->'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:141:17 Unresolved reference 'handleStart'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:141:29 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:141:32 Syntax error: Unexpected type specification.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:141:39 Syntax error: Expecting an expression.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:141:39 Syntax error: Expecting '->'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:141:41 Cannot access 'constructor(): Boolean': it is private in 'kotlin/Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:143:14 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:143:34 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:143:41 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:146:14 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:146:36 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:146:43 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:148:14 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:148:23 Unresolved reference 'intToBytesLE'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:148:36 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:148:56 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:148:63 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:150:10 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:150:39 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:150:46 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:151:37 Unresolved reference 'name'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:153:18 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:153:27 Unresolved reference 'intToBytesLE'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:153:53 Unresolved reference 'size'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:153:61 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:153:68 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:154:18 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:154:42 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:154:49 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:161:31 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:161:52 Unresolved reference 'offset'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:162:18 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:162:27 Unresolved reference 'longToBytesLE'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:162:55 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:162:62 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:164:18 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:164:27 Unresolved reference 'longToBytesLE'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:164:45 Unresolved reference 'size'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:164:53 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:164:60 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:166:10 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:166:17 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:173:5 Unresolved reference 'private'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:173:21 Anonymous functions with names are prohibited.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:186:18 Unresolved reference 'bytesToIntLE'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:189:30 Unresolved reference 'readUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:190:18 Unresolved reference 'bytesToIntLE'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:207:16 Unresolved reference 'sendNcaData'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:13 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:13 Function invocation 'suspend(...)' expected.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:13 'suspend' function can only be called in the form of a modifier of a lambda: suspend { ... }.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:21 Syntax error: Expecting '->'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:25 Unresolved reference 'sendNcaData'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:37 Unresolved reference 'file'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:41 Syntax error: Unexpected type specification.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:56 Unresolved reference 'offset'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:62 Syntax error: Unexpected type specification.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:70 Unresolved reference 'size'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:74 Syntax error: Unexpected type specification.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:81 Syntax error: Expecting an expression.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:81 Syntax error: Expecting '->'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:211:83 Cannot access 'constructor(): Boolean': it is private in 'kotlin/Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:212:25 Unresolved reference 'size'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:213:29 Unresolved reference 'offset'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:218:26 Unresolved reference 'file'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:219:18 Unresolved reference 'writeUsb'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:219:35 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:219:42 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:225:9 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:225:16 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:228:5 Unresolved reference 'private'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:228:21 Anonymous functions with names are prohibited.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:247:13 Anonymous functions with names are prohibited.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:252:13 Anonymous functions with names are prohibited.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:259:13 Anonymous functions with names are prohibited.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:268:13 Anonymous functions with names are prohibited.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:277:13 Anonymous functions with names are prohibited.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:13 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:13 Function invocation 'suspend(...)' expected.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:13 'suspend' function can only be called in the form of a modifier of a lambda: suspend { ... }.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:21 Syntax error: Expecting '->'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:42 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:45 Syntax error: Unexpected type specification.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:53 Unresolved reference 'rxBuffer'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:61 Syntax error: Unexpected type specification.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:74 Unresolved reference 'isTicket'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:74 No value passed for parameter 'isTicket'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:82 Syntax error: Unexpected type specification.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:92 Syntax error: Expecting an expression.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:92 Syntax error: Expecting '->'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:285:94 Cannot access 'constructor(): Boolean': it is private in 'kotlin/Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:286:26 Unresolved reference 'isTicket'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:287:18 Unresolved reference 'rxBuffer'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:288:31 Unresolved reference 'rxBuffer'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:291:44 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:291:51 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:296:14 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:296:39 Unresolved reference 'isTicket'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:296:41 Unresolved reference 'it'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:299:35 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:301:14 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:301:21 Return type mismatch: expected 'kotlin.Unit', actual 'kotlin.Boolean'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:304:19 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:304:19 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:305:26 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:305:47 Unresolved reference 'offset'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:307:9 'return' is prohibited here.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:307:16 Unresolved reference 'sendNcaData'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:307:28 Unresolved reference 'pfs'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:307:54 Unresolved reference 'size'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:310:5 Unresolved reference 'private'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:310:21 Anonymous functions with names are prohibited.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:317:31 Suspension functions can only be called within coroutine body.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:324:6 Syntax error: Expecting '->'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/domain/protocols/Goldleaf.kt:325:2 Syntax error: Expecting '}'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/ui/viewmodels/SettingsViewModel.kt:28:46 Unresolved reference '_goldLeafVersion'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/commonMain/kotlin/com/mrnrod45/nstk/ui/viewmodels/SettingsViewModel.kt:61:9 Unresolved reference '_goldLeafVersion'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/desktopMain/kotlin/com/mrnrod45/nstk/domain/net/NetworkServer.kt:25:17 Unresolved reference 'sendHandshake'.
+e: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/composeApp/src/desktopMain/kotlin/com/mrnrod45/nstk/domain/net/NetworkServer.kt:131:9 Modifier 'private' is not applicable to 'local function'.
+
+[Incubating] Problems report is available at: file:///Volumes/Dev%20Build/Kotlin/ns-usbloader-kmp/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':composeApp:compileKotlinDesktop'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to generate a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.2.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1s
+4 actionable tasks: 1 executed, 3 up-to-date

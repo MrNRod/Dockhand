@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nintendo Switch (Installer Mode: Awoo/Tinfoil/Goldleaf) -->
+    <usb-device vendor-id="1406" product-id="12288" /> <!-- 0x057E : 0x3000 -->
+    
+    <!-- Nintendo Switch (RCM Mode) -->
+    <usb-device vendor-id="2389" product-id="29473" /> <!-- 0x0955:0x7321 - APX -->
+</resources>

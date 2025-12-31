@@ -1,0 +1,92 @@
+stages:
+  - package
+  - release
+
+variables:
+  # Disable the Gradle daemon for CI to save memory
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  # Define the java toolchain (if needed by environment, commonly handled by gradle toolchain)
+  JAVA_HOME: ""
+
+# Shared cache configuration to speed up builds
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+# --- Linux Packaging (Deb, Rpm) ---
+package-linux:
+  stage: package
+  image: gradle:jdk21 # Use an image with a recent JDK to run Gradle (Gradle then manages the Java 25 toolchain)
+  tags:
+    - saas-linux-small-amd64 # Example shared runner tag (adjust based on your GitLab instance)
+  script:
+    - apt-get update && apt-get install -y rpm binutils fakeroot # Install packaging tools required for jpackage (deb/rpm)
+    - ./gradlew :desktopApp:packageDeb :desktopApp:packageRpm
+  artifacts:
+    paths:
+      - desktopApp/build/compose/binaries/main/deb/
+      - desktopApp/build/compose/binaries/main/rpm/
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+
+# --- Windows Packaging (Msi) ---
+package-windows:
+  stage: package
+  tags:
+    - saas-windows-medium-amd64 # Requires Windows shared runners
+  script:
+    - ./gradlew.bat :desktopApp:packageMsi
+  artifacts:
+    paths:
+      - desktopApp/build/compose/binaries/main/msi/
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+
+# --- macOS Packaging (Dmg, Pkg) ---
+package-macos:
+  stage: package
+  tags:
+    - mrnrod45-macos-small-m4 # Requires macOS shared runners (Apple Silicon)
+  script:
+    - ./gradlew :desktopApp:packageDmg :desktopApp:packagePkg
+  artifacts:
+    paths:
+      - desktopApp/build/compose/binaries/main/dmg/
+      - desktopApp/build/compose/binaries/main/pkg/
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+
+# --- Android Packaging (APK) ---
+package-android:
+  stage: package
+  image: mobiledevops/android-sdk-image:latest
+  tags:
+    - saas-linux-small-amd64
+  script:
+    - ./gradlew :androidApp:assembleDebug
+  artifacts:
+    paths:
+      - androidApp/build/outputs/apk/debug/
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+
+# --- Release ---
+release-job:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  tags:
+    - saas-linux-small-amd64
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo "Creating release for $CI_COMMIT_TAG"
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    name: 'Release $CI_COMMIT_TAG'
+    description: 'Released automatically via GitLab CI.'

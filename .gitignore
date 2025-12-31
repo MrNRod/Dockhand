@@ -1,0 +1,41 @@
+# Gradle
+.gradle/
+build/
+**/build/
+**/bin/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Android
+local.properties
+.cxx/
+*.apk
+*.aab
+*.ap_
+captures/
+.externalNativeBuild/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Logs
+*.log
+
+# Kotlin/Context
+.generated/
+*.hprof
+
+# VS Code
+.vscode/
+
+# Temporary files
+dist/
+tmp/
