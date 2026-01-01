@@ -29,9 +29,6 @@ compose.desktop {
     application {
         mainClass = "com.mrnrod45.nstk.MainKt"
         jvmArgs += listOf("--enable-native-access=ALL-UNNAMED")
-        if (System.getProperty("os.name").lowercase().contains("linux")) {
-            jvmArgs += "-Dsun.java2d.uiScale=2.0"
-        }
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)

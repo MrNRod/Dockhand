@@ -67,8 +67,17 @@ fun main() {
     // MUST be set before any AWT/Compose init happens
     System.setProperty("apple.awt.application.appearance", "system")
     System.setProperty("apple.laf.useScreenMenuBar", "true")
-    // Linux: Fix WM_CLASS to match .desktop file (nstk) or app name
-    System.setProperty("sun.awt.wmclass", "NS-ToolKit")
+
+    // Linux: Fix WM_CLASS to match .desktop file (packageName = "nstk")
+    // This allows the Dock to associate the running app with the pinned icon.
+    System.setProperty("sun.awt.wmclass", "nstk")
+    
+    // Linux: Fix UI Scaling on high-DPI screens (e.g. 4k)
+    // We set this programmatically here because build-time conditional logic fails if building on macOS.
+    val os = System.getProperty("os.name").lowercase()
+    if (os.contains("linux")) {
+        System.setProperty("sun.java2d.uiScale", "2.0")
+    }
 
     application {
         val usbController = androidx.compose.runtime.remember { createUsbController() }
