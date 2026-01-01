@@ -18,11 +18,11 @@ cache:
 # --- Linux Packaging (Deb, Rpm) ---
 package-linux:
   stage: package
-  image: gradle:jdk21 # Use an image with a recent JDK to run Gradle (Gradle then manages the Java 25 toolchain)
+  image: gradle:jdk25
   tags:
-    - saas-linux-small-amd64 # Example shared runner tag (adjust based on your GitLab instance)
+    - saas-linux-small-amd64
   script:
-    - apt-get update && apt-get install -y rpm binutils fakeroot # Install packaging tools required for jpackage (deb/rpm)
+    - apt-get update && apt-get install -y rpm binutils fakeroot
     - ./gradlew :desktopApp:packageDeb :desktopApp:packageRpm
   artifacts:
     paths:
@@ -36,7 +36,13 @@ package-linux:
 package-windows:
   stage: package
   tags:
-    - saas-windows-medium-amd64 # Requires Windows shared runners
+    - saas-windows-medium-amd64
+  before_script:
+    - Invoke-WebRequest -Uri "https://download.java.net/java/GA/jdk25.0.1/2fbf10d8c78e40bd87641c434705079d/8/GPL/openjdk-25.0.1_windows-x64_bin.zip" -OutFile "jdk25.zip"
+    - Expand-Archive -Path "jdk25.zip" -DestinationPath "C:\jdk25"
+    - $env:JAVA_HOME = "C:\jdk25\jdk-25.0.1"
+    - $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+    - java -version
   script:
     - ./gradlew.bat :desktopApp:packageMsi
   artifacts:
@@ -50,7 +56,7 @@ package-windows:
 package-macos:
   stage: package
   tags:
-    - mrnrod45-macos-small-m4 # Requires macOS shared runners (Apple Silicon)
+    - mrnrod45-macos-small-m4
   script:
     - ./gradlew :desktopApp:packageDmg :desktopApp:packagePkg
   artifacts:
@@ -79,14 +85,23 @@ package-android:
 # --- Release ---
 release-job:
   stage: release
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  image:
+    name: registry.gitlab.com/gitlab-org/release-cli:latest
+    entrypoint: [""]
   tags:
     - saas-linux-small-amd64
   rules:
     - if: $CI_COMMIT_TAG
   script:
     - echo "Creating release for $CI_COMMIT_TAG"
-  release:
-    tag_name: '$CI_COMMIT_TAG'
-    name: 'Release $CI_COMMIT_TAG'
-    description: 'Released automatically via GitLab CI.'
+    - export VERSION=${CI_COMMIT_TAG#v}
+    - export BASE_URL="${CI_PROJECT_URL}/-/jobs/artifacts/${CI_COMMIT_TAG}/raw"
+    - |
+      release-cli create --name "Release $CI_COMMIT_TAG" --tag-name "$CI_COMMIT_TAG" \
+        --description "Released automatically via GitLab CI." \
+        --assets-link "{\"name\":\"Android APK\",\"url\":\"${BASE_URL}/androidApp/build/outputs/apk/debug/nstk-android-${VERSION}.apk?job=package-android\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"macOS DMG\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/dmg/nstk-${VERSION}.dmg?job=package-macos\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"macOS PKG\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/pkg/nstk-${VERSION}.pkg?job=package-macos\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Windows MSI\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/msi/nstk-${VERSION}.msi?job=package-windows\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Linux DEB\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/deb/nstk-${VERSION}-1_amd64.deb?job=package-linux\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Linux RPM\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/rpm/nstk-${VERSION}-1.x86_64.rpm?job=package-linux\",\"link_type\":\"package\"}"
