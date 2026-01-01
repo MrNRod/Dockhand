@@ -25,24 +25,39 @@ fun rememberDesktopDarkTheme(): Boolean {
     
     androidx.compose.runtime.LaunchedEffect(Unit) {
         while (true) {
-            isDark = isMacOSDarkTheme()
+            isDark = isSystemDarkTheme()
             kotlinx.coroutines.delay(1000) // Poll every second
         }
     }
     return isDark
 }
 
-fun isMacOSDarkTheme(): Boolean {
+fun isSystemDarkTheme(): Boolean {
     val os = System.getProperty("os.name").lowercase()
-    if (!os.contains("mac")) return false // Default to light on non-mac for now or use other checks
-    
-    return try {
-        val process = Runtime.getRuntime().exec(arrayOf("defaults", "read", "-g", "AppleInterfaceStyle"))
-        val reader = java.io.BufferedReader(java.io.InputStreamReader(process.inputStream))
-        val output = reader.readLine()
-        output != null && output.trim().equals("Dark", ignoreCase = true)
-    } catch (e: Exception) {
-        false
+    return when {
+        os.contains("mac") -> {
+            try {
+                val process = Runtime.getRuntime().exec(arrayOf("defaults", "read", "-g", "AppleInterfaceStyle"))
+                val reader = java.io.BufferedReader(java.io.InputStreamReader(process.inputStream))
+                val output = reader.readLine()
+                output != null && output.trim().equals("Dark", ignoreCase = true)
+            } catch (e: Exception) {
+                false
+            }
+        }
+        os.contains("linux") -> {
+            try {
+                // Check GNOME/GTK setting
+                val process = Runtime.getRuntime().exec(arrayOf("gsettings", "get", "org.gnome.desktop.interface", "color-scheme"))
+                val reader = java.io.BufferedReader(java.io.InputStreamReader(process.inputStream))
+                val output = reader.readLine()
+                // Output is usually "'prefer-dark'" or "'default'"
+                output != null && output.lowercase().contains("dark")
+            } catch (e: Exception) {
+                false
+            }
+        }
+        else -> false // Windows usually handled by Compose built-in, but our manual poll overrides it. TODO: Windows check?
     }
 }
 
@@ -51,6 +66,8 @@ fun main() {
     // MUST be set before any AWT/Compose init happens
     System.setProperty("apple.awt.application.appearance", "system")
     System.setProperty("apple.laf.useScreenMenuBar", "true")
+    // Linux: Fix WM_CLASS to match .desktop file (nstk) or app name
+    System.setProperty("sun.awt.wmclass", "NS-ToolKit")
 
     application {
         val usbController = androidx.compose.runtime.remember { createUsbController() }

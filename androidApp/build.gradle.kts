@@ -19,6 +19,7 @@ android {
         targetSdk = 34
         versionCode = providers.gradleProperty("app.version.code").get().toInt()
         versionName = providers.gradleProperty("app.version").get()
+        versionName = providers.gradleProperty("app.version").get()
     }
 
     buildTypes {
@@ -31,6 +32,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_25
     }
 
+    applicationVariants.all(object : org.gradle.api.Action<com.android.build.gradle.api.ApplicationVariant> {
+        override fun execute(variant: com.android.build.gradle.api.ApplicationVariant) {
+            variant.outputs.forEach { output ->
+                (output as? com.android.build.gradle.internal.api.BaseVariantOutputImpl)?.outputFileName = "nstk-android-${variant.versionName}.apk"
+            }
+        }
+    })
 }
 
 dependencies {
