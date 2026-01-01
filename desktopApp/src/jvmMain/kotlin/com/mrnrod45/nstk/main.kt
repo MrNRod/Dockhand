@@ -5,6 +5,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 
+import androidx.compose.ui.res.painterResource
 import com.mrnrod45.nstk.platform.file.DesktopFilePicker
 import com.mrnrod45.nstk.platform.usb.DesktopUsbController
 import com.mrnrod45.nstk.platform.usb.NoOpUsbController
@@ -77,6 +78,7 @@ fun main() {
         Window(
             onCloseRequest = ::exitApplication,
             title = "NS-ToolKit",
+            icon = painterResource("icon.png"),
             // macOS: Remove standard title bar and extend content to full window
             transparent = false, // We handle background in App, and Compose requires undecorated=true for transparent=true.
             // But for macOS fullWindowContent, we usually want decorated=true (so standard resize/shadows work) 

@@ -42,10 +42,18 @@ compose.desktop {
             macOS {
                 iconFile.set(project.file("src/jvmMain/resources/icon.icns"))
                 entitlementsFile.set(project.file("entitlements.plist"))
+                
+                dmg {
+                    iconFile.set(project.file("src/jvmMain/resources/icon.icns"))
+                }
+                pkg {
+                    // PKG usually takes top-level iconFile, but explicit setting ensures it
+                    iconFile.set(project.file("src/jvmMain/resources/icon.icns"))
+                }
             }
             windows {
                 menuGroup = "Noel Rodriguez"
-                console = true
+                console = false
                 upgradeUuid = "D3D51849-6AB6-499A-A39A-66AA53D705E7"
                 iconFile.set(project.file("src/jvmMain/resources/icon.ico"))
             }
