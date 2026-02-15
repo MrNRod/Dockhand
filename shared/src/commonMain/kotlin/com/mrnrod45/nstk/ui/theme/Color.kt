@@ -63,3 +63,16 @@ val LightColorScheme = lightColorScheme(
     background = GoogleLightSurface,
     surface = GoogleLightSurface,
 )
+
+// macOS Native UI Colors
+val MacLightBackground = Color(0xFFECECEC) // Standard Window Background
+val MacLightSurface = Color(0xFFFFFFFF) // Content Background (Lists, Tables)
+val MacLightSurfaceVariant = Color(0xFFE5E5E5) // Sidebar / Header Background
+val MacLightOutlineVariant = Color(0xFFD1D1D1) // Borders
+val MacLightPrimary = SystemBlueLight // System Blue
+
+val MacDarkBackground = Color(0xFF323232) // Standard Window Background
+val MacDarkSurface = Color(0xFF1E1E1E) // Content Background (Lists, Tables)
+val MacDarkSurfaceVariant = Color(0xFF2D2D2D) // Sidebar / Header Background
+val MacDarkOutlineVariant = Color(0xFF484848) // Borders
+val MacDarkPrimary = SystemBlueDark // System Blue Dark

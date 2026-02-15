@@ -58,6 +58,44 @@ private val LightColorScheme = lightColorScheme(
     surfaceTint = androidx.compose.ui.graphics.Color.Transparent // Disable Elevation Tint
 )
 
+
+private val MacLightColorScheme = lightColorScheme(
+    primary = MacLightPrimary,
+    onPrimary = androidx.compose.ui.graphics.Color.White,
+    primaryContainer = MacLightPrimary.copy(alpha = 0.1f),
+    onPrimaryContainer = MacLightPrimary,
+    // Secondary -> often used for gray elements or accents
+    secondary = SystemGrayLight,
+    onSecondary = androidx.compose.ui.graphics.Color.Black,
+    background = MacLightBackground,
+    onBackground = androidx.compose.ui.graphics.Color.Black,
+    surface = MacLightSurface,
+    onSurface = androidx.compose.ui.graphics.Color.Black,
+    surfaceVariant = MacLightSurfaceVariant,
+    onSurfaceVariant = androidx.compose.ui.graphics.Color.Black, // Header text is usually black
+    surfaceContainerHigh = MacLightSurfaceVariant, // For adapting
+    outline = SystemGrayLight,
+    outlineVariant = MacLightOutlineVariant,
+)
+
+private val MacDarkColorScheme = darkColorScheme(
+    primary = MacDarkPrimary,
+    onPrimary = androidx.compose.ui.graphics.Color.White,
+    primaryContainer = MacDarkPrimary.copy(alpha = 0.3f),
+    onPrimaryContainer = MacDarkPrimary,
+    secondary = SystemGrayDark,
+    onSecondary = androidx.compose.ui.graphics.Color.White,
+    background = MacDarkBackground,
+    onBackground = androidx.compose.ui.graphics.Color.White,
+    surface = MacDarkSurface,
+    onSurface = androidx.compose.ui.graphics.Color.White,
+    surfaceVariant = MacDarkSurfaceVariant,
+    onSurfaceVariant = androidx.compose.ui.graphics.Color.White,
+    surfaceContainerHigh = MacDarkSurfaceVariant,
+    outline = SystemGrayDark,
+    outlineVariant = MacDarkOutlineVariant,
+)
+
 @Composable
 actual fun AppTheme(
     themeConfig: AppThemeConfig,
@@ -71,11 +109,14 @@ actual fun AppTheme(
         ThemeMode.DARK -> true
     }
 
-    val baseColorScheme = if (effectiveDarkTheme) {
-        DarkColorScheme
+    val isMac = System.getProperty("os.name").lowercase().contains("mac")
+
+    val baseColorScheme = if (isMac) {
+        if (effectiveDarkTheme) MacDarkColorScheme else MacLightColorScheme
     } else {
-        LightColorScheme
+        if (effectiveDarkTheme) DarkColorScheme else LightColorScheme
     }
+
 
     // Optional: Apply Amoled Black on Desktop too if desired, though less common.
     // The user asked for "options with dynamic theme... for android app". 
@@ -91,9 +132,32 @@ actual fun AppTheme(
         baseColorScheme
     }
 
+    val finalTypography = if (isMac) {
+        // San Francisco is the system sans-serif font on macOS
+        androidx.compose.material3.Typography(
+            displayLarge = Typography.displayLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            displayMedium = Typography.displayMedium.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            displaySmall = Typography.displaySmall.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            headlineLarge = Typography.headlineLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            headlineMedium = Typography.headlineMedium.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            headlineSmall = Typography.headlineSmall.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            titleLarge = Typography.titleLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            titleMedium = Typography.titleMedium.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            titleSmall = Typography.titleSmall.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            bodyLarge = Typography.bodyLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            bodyMedium = Typography.bodyMedium.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            bodySmall = Typography.bodySmall.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            labelLarge = Typography.labelLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            labelMedium = Typography.labelMedium.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif),
+            labelSmall = Typography.labelSmall.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif)
+        )
+    } else {
+        Typography
+    }
+
     MaterialTheme(
         colorScheme = finalColorScheme,
-        typography = Typography,
+        typography = finalTypography,
         content = content
     )
 }

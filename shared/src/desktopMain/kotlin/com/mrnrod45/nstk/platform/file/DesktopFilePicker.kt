@@ -26,7 +26,7 @@ class DesktopFilePicker : FilePicker {
         }
     }
 
-    override suspend fun pickDirectory(): String? = withContext(Dispatchers.IO) {
+    override suspend fun pickDirectory(): String? = withContext(Dispatchers.Main) {
         try {
             // macOS hack for native folder picker
             if (System.getProperty("os.name").contains("Mac")) {
@@ -49,6 +49,43 @@ class DesktopFilePicker : FilePicker {
         } catch (e: Exception) {
             e.printStackTrace()
             null
+        }
+    }
+
+    override suspend fun pickFolderAndListFiles(allowedExtensions: List<String>): List<UnifiedFile> = withContext(Dispatchers.Main) {
+        val path = pickDirectory() ?: return@withContext emptyList()
+        withContext(Dispatchers.IO) {
+            val root = File(path)
+            val result = mutableListOf<UnifiedFile>()
+            collectFiles(root, allowedExtensions, result)
+            result
+        }
+    }
+
+    private fun collectFiles(current: File, allowedExtensions: List<String>, result: MutableList<UnifiedFile>) {
+        if (!current.exists()) return
+
+        // Check if current directory is a "split file" (folder ending in extension)
+        val isSplitFolder = current.isDirectory && allowedExtensions.any { current.name.endsWith(it, ignoreCase = true) }
+        
+        if (isSplitFolder) {
+            // Treat as a single file
+            result.add(DesktopSplitUnifiedFile(current))
+            return // Do not recurse inside
+        }
+
+        if (current.isFile) {
+            val isAllowed = allowedExtensions.isEmpty() || allowedExtensions.any { current.name.endsWith(it, ignoreCase = true) }
+            if (isAllowed) {
+                result.add(DesktopUnifiedFile(current))
+            }
+            return
+        }
+
+        if (current.isDirectory) {
+            current.listFiles()?.forEach { child ->
+                collectFiles(child, allowedExtensions, result)
+            }
         }
     }
 }

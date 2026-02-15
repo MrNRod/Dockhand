@@ -185,14 +185,9 @@ class UploadViewModel(
     fun openFilePicker() {
         viewModelScope.launch {
             val allowXci = settingsViewModel.allowXci.value
-            val showOnlyNsp = settingsViewModel.showOnlyNsp.value // For Goldleaf if we want to be strict, but user asked about XCI/Check
+            val useRomFolder = settingsViewModel.useRomFolder.value
             
-            // Logic based on user request:
-            // "Allow XCI / NSZ / XCZ files selection for Awoo/TinWoo Installer and Sphaira."
-            // If checked: allow everything (NSP + those).
-            // If unchecked: allow only NSP? Or strictly block those?
-            // The text implies that unchecked means "Don't allow XCI/NSZ/XCZ".
-            // So we assume NSP is always allowed.
+            println("openFilePicker called. useRomFolder=$useRomFolder, allowXci=$allowXci")
             
             val allowedExtensions = mutableListOf<String>()
             allowedExtensions.add("nsp") // Always allowed
@@ -201,11 +196,20 @@ class UploadViewModel(
                 allowedExtensions.add("xci")
                 allowedExtensions.add("nsz")
                 allowedExtensions.add("xcz")
-                // Maybe others? The setting text specifies these. 
             }
             
-            val picked = filePicker.pickFiles(allowedExtensions)
-            addFiles(picked)
+            val picked = if (useRomFolder) {
+                println("Calling pickFolderAndListFiles")
+                filePicker.pickFolderAndListFiles(allowedExtensions)
+            } else {
+                println("Calling pickFiles")
+                filePicker.pickFiles(allowedExtensions)
+            }
+            
+            println("Picked ${picked.size} files")
+            if (picked.isNotEmpty()) {
+                addFiles(picked)
+            }
         }
     }
 }

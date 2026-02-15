@@ -1,6 +1,7 @@
 package com.mrnrod45.nstk.ui.components
 
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -57,7 +58,23 @@ actual fun PlatformDraggableArea(
     
     // Use MouseInfo for absolute screen coordinates to avoid jitter issues with relative deltas
     Box(
-        modifier = modifier.pointerInput(Unit) {
+        modifier = modifier
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onDoubleTap = {
+                        val window = java.awt.Window.getWindows().firstOrNull { it.isActive && it.isFocused }
+                        if (window is java.awt.Frame) {
+                            val state = window.extendedState
+                            if ((state and java.awt.Frame.MAXIMIZED_BOTH) == java.awt.Frame.MAXIMIZED_BOTH) {
+                                window.extendedState = java.awt.Frame.NORMAL
+                            } else {
+                                window.extendedState = java.awt.Frame.MAXIMIZED_BOTH
+                            }
+                        }
+                    }
+                )
+            }
+            .pointerInput(Unit) {
             var startMousePos: java.awt.Point? = null
             var startWindowPos: java.awt.Point? = null
             

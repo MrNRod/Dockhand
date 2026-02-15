@@ -58,7 +58,24 @@ fun isSystemDarkTheme(): Boolean {
                 false
             }
         }
-        else -> false // Windows usually handled by Compose built-in, but our manual poll overrides it. TODO: Windows check?
+        os.contains("windows") -> {
+            try {
+                val process = Runtime.getRuntime().exec(arrayOf("powershell", "-Command", "Get-ItemProperty -Path HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize -Name AppsUseLightTheme"))
+                val reader = java.io.BufferedReader(java.io.InputStreamReader(process.inputStream))
+                var line: String?
+                var isDark = false
+                while (reader.readLine().also { line = it } != null) {
+                    if (line?.contains("AppsUseLightTheme") == true && line?.contains("0") == true) {
+                        isDark = true
+                        break
+                    }
+                }
+                isDark
+            } catch (e: Exception) {
+                false
+            }
+        }
+        else -> false
     }
 }
 
@@ -99,6 +116,11 @@ fun main() {
                 window.rootPane.putClientProperty("apple.awt.fullWindowContent", true)
                 window.rootPane.putClientProperty("apple.awt.transparentTitleBar", true)
                 window.rootPane.putClientProperty("apple.awt.windowTitleVisible", false)
+                
+                // Set minimum size to default size (limiting shrinking)
+                val minSize = java.awt.Dimension(900, 650) // Slightly larger native feel
+                window.minimumSize = minSize
+                window.setSize(900, 650) // explicit initial size
             }
 
             // For Desktop, we can just remember the instance for the window lifecycle
