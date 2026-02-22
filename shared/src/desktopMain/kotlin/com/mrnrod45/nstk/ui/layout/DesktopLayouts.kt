@@ -2,10 +2,12 @@ package com.mrnrod45.nstk.ui.layout
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,10 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mrnrod45.nstk.ui.components.PlatformDraggableArea
 import com.mrnrod45.nstk.ui.navigation.Screen
+import com.mrnrod45.nstk.ui.theme.MacLightTertiaryLabel
+import com.mrnrod45.nstk.ui.theme.MacDarkTertiaryLabel
+import com.mrnrod45.nstk.ui.theme.SystemBlueLight
 import org.jetbrains.compose.resources.painterResource
 
 // -----------------------------------------------------------------------------
-// macOS Layout: Sidebar + Content
+// macOS Layout: Sidebar + Content  (Finder / Mail / Notes style)
 // -----------------------------------------------------------------------------
 @Composable
 fun MacLayout(
@@ -30,28 +35,30 @@ fun MacLayout(
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // Main background
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // --- Sidebar ---
+        // Background is transparent on macOS so the native NSVisualEffectView
+        // vibrancy/blur applied in main.kt shows through underneath Compose.
         Column(
             modifier = Modifier
-                .width(180.dp)
+                .width(220.dp)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)) // Translucent Surface
-                .padding(end = 1.dp) // Divider line space
+                .background(
+                    if (System.getProperty("os.name").lowercase().contains("mac"))
+                        androidx.compose.ui.graphics.Color.Transparent
+                    else
+                        MaterialTheme.colorScheme.surfaceVariant
+                )
         ) {
-            // Traffic Light Area (Draggable)
+            // Unified toolbar / traffic-light zone — draggable
             PlatformDraggableArea(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(28.dp) // Standard macOS title bar height approx
-            ) {
-                // Empty, just draggable area
-            }
+                    .height(88.dp) // macOS 26: taller zone gives traffic lights more prominence
+            ) { /* Traffic light buttons are rendered by the OS */ }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Navigation Items
+            // Navigation Items — no extra top spacer; toolbar height provides the offset
             screens.forEach { screen ->
                 val isSelected = currentDestination == screen.route
                 MacSidebarItem(
@@ -61,27 +68,22 @@ fun MacLayout(
                 )
             }
         }
-        
-        // Vertical Divider
-        Box(
-            modifier = Modifier
-                .width(1.dp)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.outlineVariant)
-        )
 
         // --- Main Content ---
-        Column(modifier = Modifier.weight(1f)) {
-            // Top Draggable Area for Main Content (to match title bar)
-            PlatformDraggableArea(
+        // Content pane starts immediately; no extra draggable strip needed because
+        // the sidebar draggable area already acts as window drag.
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(28.dp)
+                    .fillMaxSize()
+                    .padding(top = 88.dp) // Push content below toolbar height
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
             ) {
-                // Could put page title here if needed
-            }
-            
-            Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
                 content()
             }
         }
@@ -94,26 +96,36 @@ fun MacSidebarItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor = if (isSelected) com.mrnrod45.nstk.ui.theme.SystemBlueLight else Color.Transparent
+    val interactionSource = remember { MutableInteractionSource() }
+
+    val isDark = MaterialTheme.colorScheme.background.red < 0.5f
+    val unselectedIconTint = if (isDark) MacDarkTertiaryLabel else MacLightTertiaryLabel
+
+    val backgroundColor = if (isSelected) SystemBlueLight else Color.Transparent
     val contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+    val iconTint = if (isSelected) Color.White else unselectedIconTint
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 10.dp, vertical = 4.dp)
-            .clip(RoundedCornerShape(6.dp))
+            .padding(horizontal = 8.dp, vertical = 3.dp)
+            .clip(RoundedCornerShape(10.dp))
             .background(backgroundColor)
-            .clickable(onClick = onClick)
-            .padding(vertical = 8.dp, horizontal = 12.dp),
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+            .padding(vertical = 7.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(screen.icon),
             contentDescription = screen.label,
-            tint = contentColor,
-            modifier = Modifier.size(18.dp)
+            tint = iconTint,
+            modifier = Modifier.size(16.dp) // SF Symbols sidebar icon size
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = screen.label,
             color = contentColor,

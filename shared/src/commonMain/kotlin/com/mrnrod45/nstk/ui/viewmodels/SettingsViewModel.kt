@@ -26,7 +26,7 @@ class SettingsViewModel : ViewModel() {
 
     private val _goldleafHost = MutableStateFlow("192.168.1.1")
     
-    private val _goldLeafVersion = MutableStateFlow("v0.10.0") // Default/Placeholder
+    private val _goldLeafVersion = MutableStateFlow("v0.10+") // Default/Placeholder
     val goldLeafVersion: StateFlow<String> = _goldLeafVersion.asStateFlow()
 
     // Awoo Settings
@@ -38,6 +38,19 @@ class SettingsViewModel : ViewModel() {
 
     private val _expertMode = MutableStateFlow(false)
     val expertMode: StateFlow<Boolean> = _expertMode.asStateFlow()
+
+    // Expert Mode sub-settings (NET transfer, mirrors original SettingsBlockTinfoilController)
+    private val _expertHostIp = MutableStateFlow("")          // blank = auto-detect
+    val expertHostIp: StateFlow<String> = _expertHostIp.asStateFlow()
+
+    private val _expertHostPort = MutableStateFlow("")        // blank = use default 6042
+    val expertHostPort: StateFlow<String> = _expertHostPort.asStateFlow()
+
+    private val _expertHostExtra = MutableStateFlow("")       // extra URL path suffix
+    val expertHostExtra: StateFlow<String> = _expertHostExtra.asStateFlow()
+
+    private val _expertNoRequestsServe = MutableStateFlow(false) // passive mode: switch connects to us
+    val expertNoRequestsServe: StateFlow<Boolean> = _expertNoRequestsServe.asStateFlow()
 
     // Theme Settings
     private val _themeConfig = MutableStateFlow(com.mrnrod45.nstk.ui.theme.AppThemeConfig())
@@ -78,6 +91,11 @@ class SettingsViewModel : ViewModel() {
     fun toggleExpertMode(enabled: Boolean) {
         _expertMode.value = enabled
     }
+
+    fun setExpertHostIp(ip: String) { _expertHostIp.value = ip }
+    fun setExpertHostPort(port: String) { _expertHostPort.value = port }
+    fun setExpertHostExtra(extra: String) { _expertHostExtra.value = extra }
+    fun toggleExpertNoRequestsServe(enabled: Boolean) { _expertNoRequestsServe.value = enabled }
 
     fun setThemeMode(mode: com.mrnrod45.nstk.ui.theme.ThemeMode) {
         _themeConfig.value = _themeConfig.value.copy(mode = mode)

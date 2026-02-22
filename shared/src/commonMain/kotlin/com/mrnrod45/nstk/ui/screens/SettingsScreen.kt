@@ -50,6 +50,10 @@ fun SettingsScreen(
     val allowXci by viewModel.allowXci.collectAsState()
     val validateIp by viewModel.validateIp.collectAsState()
     val expertMode by viewModel.expertMode.collectAsState()
+    val expertHostIp by viewModel.expertHostIp.collectAsState()
+    val expertHostPort by viewModel.expertHostPort.collectAsState()
+    val expertHostExtra by viewModel.expertHostExtra.collectAsState()
+    val expertNoRequestsServe by viewModel.expertNoRequestsServe.collectAsState()
 
     Scaffold(
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
@@ -262,14 +266,40 @@ fun SettingsScreen(
                 Text("Show only *.nsp in Goldleaf.")
             }
             
-             // Goldleaf Version (Placeholder)
+            // Goldleaf Version Selector
+            val goldleafVersions = listOf("v0.5", "v0.7.x", "v0.8-0.9", "v0.10+")
+            var glVersionExpanded by remember { mutableStateOf(false) }
             Row(
                 modifier = Modifier.padding(vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Goldleaf version", modifier = Modifier.width(120.dp))
-                Button(onClick = { /* TODO: Version Picker */ }) {
-                    Text(goldLeafVersion)
+                Text("Goldleaf version", modifier = Modifier.width(140.dp))
+                ExposedDropdownMenuBox(
+                    expanded = glVersionExpanded,
+                    onExpandedChange = { glVersionExpanded = !glVersionExpanded },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    OutlinedTextField(
+                        value = goldLeafVersion,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = glVersionExpanded) },
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = glVersionExpanded,
+                        onDismissRequest = { glVersionExpanded = false }
+                    ) {
+                        goldleafVersions.forEach { version ->
+                            DropdownMenuItem(
+                                text = { Text(version) },
+                                onClick = {
+                                    viewModel.setGoldLeafVersion(version)
+                                    glVersionExpanded = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
 
@@ -311,6 +341,68 @@ fun SettingsScreen(
                     onCheckedChange = { viewModel.toggleExpertMode(it) }
                 )
                 Text("Expert mode (NET setup)")
+            }
+
+            // Expert mode sub-fields — only visible when expert mode is on
+            if (expertMode) {
+                androidx.compose.foundation.layout.Column(
+                    modifier = Modifier.padding(start = 16.dp, top = 8.dp)
+                ) {
+                    // Passive mode — skip handshake, Switch connects manually
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = expertNoRequestsServe,
+                            onCheckedChange = { viewModel.toggleExpertNoRequestsServe(it) }
+                        )
+                        Text("Passive mode (don't send handshake to Switch)")
+                    }
+                    Text(
+                        "When enabled the app won't send a handshake to your Switch — you must trigger the connection from the Switch side.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+
+                    // Host IP override
+                    OutlinedTextField(
+                        value = expertHostIp,
+                        onValueChange = { viewModel.setExpertHostIp(it.filter { c -> !c.isWhitespace() }) },
+                        label = { Text("Host IP (blank = auto-detect)") },
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                        singleLine = true,
+                        enabled = !expertNoRequestsServe
+                    )
+
+                    // Host Port override
+                    OutlinedTextField(
+                        value = expertHostPort,
+                        onValueChange = {
+                            val filtered = it.filter { c -> c.isDigit() }
+                            if (filtered.isEmpty() || (filtered.toIntOrNull() ?: 0) <= 65535)
+                                viewModel.setExpertHostPort(filtered)
+                        },
+                        label = { Text("Host Port (blank = 6042)") },
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                        singleLine = true,
+                        enabled = !expertNoRequestsServe
+                    )
+
+                    // Extra path suffix
+                    OutlinedTextField(
+                        value = expertHostExtra,
+                        onValueChange = { viewModel.setExpertHostExtra(it.filter { c -> !c.isWhitespace() }) },
+                        label = { Text("Extra URL path (optional)") },
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                        singleLine = true,
+                        enabled = !expertNoRequestsServe
+                    )
+                    Text(
+                        "Appended to each file URL in the handshake. Leave blank normally.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 0.dp, bottom = 8.dp)
+                    )
+                }
             }
         }
     }

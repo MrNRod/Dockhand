@@ -2,7 +2,6 @@ package com.mrnrod45.nstk.ui.screens.mac
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,7 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,32 +43,20 @@ fun MacUploadScreen(
     val ipAddress by viewModel.ipAddress.collectAsState()
     val useRomFolder by settingsViewModel.useRomFolder.collectAsState()
 
-    var isProtocolDropdownExpanded by remember { mutableStateOf(false) }
-    var isTransportDropdownExpanded by remember { mutableStateOf(false) }
-
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // --- Header / Title ---
-        Text(
-            text = "Upload Files",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onSurface
-        )
 
-        // --- Configuration Area ---
-        MacGroup(title = "Connection Settings") {
+        // --- Connection Settings ---
+        MacGroup(title = "Connection") {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.Bottom
             ) {
-                // Protocol Selector
                 Column(modifier = Modifier.weight(1f)) {
-                    MacLabel("Protocol", modifier = Modifier.padding(bottom = 4.dp))
+                    MacLabel("Protocol", modifier = Modifier.padding(bottom = 5.dp))
                     MacDropdown(
                         items = listOf("Goldleaf", "Awoo", "Sphaira"),
                         selectedItem = selectedProtocol,
@@ -78,10 +65,9 @@ fun MacUploadScreen(
                     )
                 }
 
-                // Transport Selector
                 val isTransportEnabled = selectedProtocol == "Awoo"
                 Column(modifier = Modifier.weight(1f)) {
-                    MacLabel("Transport", modifier = Modifier.padding(bottom = 4.dp))
+                    MacLabel("Transport", modifier = Modifier.padding(bottom = 5.dp))
                     MacDropdown(
                         items = listOf("USB", "NET"),
                         selectedItem = transport,
@@ -91,97 +77,104 @@ fun MacUploadScreen(
                     )
                 }
             }
-            
-            // IP Address (Conditional)
+
             if (transport == "NET") {
-                Spacer(modifier = Modifier.height(12.dp))
-                MacLabel("Nintendo Switch IP Address", modifier = Modifier.padding(bottom = 4.dp))
+                Spacer(Modifier.height(10.dp))
+                MacLabel("Switch IP Address", modifier = Modifier.padding(bottom = 5.dp))
                 MacTextField(
                     value = ipAddress,
                     onValueChange = { viewModel.setIpAddress(it) },
+                    placeholder = "192.168.1.xxx",
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         }
 
-        // --- File Management Area ---
+        // --- File List ---
         Column(modifier = Modifier.weight(1f)) {
             MacLabel("Selected Files", modifier = Modifier.padding(bottom = 6.dp))
-            
-            // Mac-style List Box
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
             ) {
                 if (files.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("No files added", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                        Text(
+                            "No files added\nClick \"Add Files\" to get started",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 13.sp,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
                     }
                 } else {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(files) { file ->
-                            // Simple row item
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                                    .padding(horizontal = 12.dp, vertical = 7.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        text = file.name, 
-                                        fontSize = 13.sp, 
-                                        fontWeight = FontWeight.Medium, 
+                                        text = file.name,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Medium,
                                         color = MaterialTheme.colorScheme.onSurface,
-                                        lineHeight = 13.sp
+                                        lineHeight = 16.sp
                                     )
                                     Text(
-                                        text = file.path, 
-                                        fontSize = 11.sp, 
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant, 
+                                        text = file.path,
+                                        fontSize = 11.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1,
-                                        lineHeight = 11.sp
+                                        lineHeight = 13.sp
                                     )
                                 }
+                                Spacer(Modifier.width(8.dp))
                                 MacIconButton(
                                     onClick = { viewModel.removeFile(file) },
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(22.dp)
                                 ) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Remove", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Remove",
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(14.dp)
+                                    )
                                 }
                             }
                             if (files.indexOf(file) < files.size - 1) {
-                                MacDivider(modifier = Modifier.padding(horizontal = 4.dp))
+                                MacDivider(modifier = Modifier.padding(horizontal = 12.dp))
                             }
                         }
                     }
                 }
             }
         }
-        
-        // --- Bottom Actions ---
+
+        // --- Bottom Action Bar ---
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Add File Button (Secondary)
             MacButton(onClick = { viewModel.openFilePicker() }) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
-                Spacer(Modifier.width(4.dp))
-                Text(if (useRomFolder) "Add Folder" else "Add Files", fontSize = 13.sp, lineHeight = 13.sp)
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(13.dp))
+                Spacer(Modifier.width(5.dp))
+                Text(if (useRomFolder) "Add Folder…" else "Add Files…", fontSize = 13.sp, lineHeight = 13.sp)
             }
-            
-            // Upload Button (Primary)
+
             MacButton(
                 onClick = { viewModel.startUpload() },
                 enabled = files.isNotEmpty(),
                 primary = true
             ) {
                 Text(
-                    text = if (transport == "USB") "Upload to Switch" else "Upload to Network",
+                    text = if (transport == "USB") "Upload to Switch" else "Upload over Network",
                     fontSize = 13.sp,
                     lineHeight = 13.sp
                 )

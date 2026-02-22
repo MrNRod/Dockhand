@@ -12,31 +12,36 @@ actual class NetworkServer {
     private val isRunning = AtomicBoolean(false)
     private var executor: java.util.concurrent.ExecutorService? = null
 
-    actual fun start(files: List<UnifiedFile>, hostIp: String, port: Int, onLog: (String) -> Unit) {
+    actual fun start(
+        files: List<UnifiedFile>,
+        hostIp: String,
+        port: Int,
+        hostExtra: String,
+        noRequestsServe: Boolean,
+        switchIp: String,
+        onLog: (String) -> Unit
+    ) {
         if (isRunning.get()) return
         isRunning.set(true)
-        
+
         executor = Executors.newSingleThreadExecutor()
         executor?.submit {
             try {
-                // TinfoilNET.java Logic Parity
-                // 1. Resolve IP/Port (Passed in)
-                // 2. Open ServerSocket
                 serverSocket = ServerSocket(port)
                 onLog("NetworkServer started on port $port")
-                
-                // Send Handshake to Switch (hostIp:2000)
-                sendHandshake(files, hostIp, port, onLog)
+
+                if (noRequestsServe) {
+                    onLog("Expert mode: passive — skipping handshake, waiting for Switch to connect...")
+                } else {
+                    sendHandshake(files, switchIp, hostIp, port, hostExtra, onLog)
+                }
 
                 while (isRunning.get()) {
                     try {
                         val client = serverSocket?.accept() ?: break
                         handleClient(client, files)
                     } catch (e: Exception) {
-                        if (isRunning.get()) {
-                            // Only log stacktrace if we expect to be running (not during stop)
-                             e.printStackTrace()
-                        }
+                        if (isRunning.get()) e.printStackTrace()
                     }
                 }
             } catch (e: Exception) {
@@ -218,25 +223,33 @@ actual class NetworkServer {
         }
     }
     
-    private fun sendHandshake(files: List<UnifiedFile>, switchIp: String, myPort: Int, onLog: (String) -> Unit) {
+    private fun sendHandshake(
+        files: List<UnifiedFile>,
+        switchIp: String,
+        overrideHostIp: String,
+        myPort: Int,
+        hostExtra: String,
+        onLog: (String) -> Unit
+    ) {
         try {
-            // Get local IP
-            val myIp = getLocalIpAddress()
+            val myIp = if (overrideHostIp.isNotBlank()) overrideHostIp
+                       else getLocalIpAddress()
             if (myIp == null) {
                 onLog("MsgType.FAIL: Could not determine Local IP Address!")
                 return
             }
             onLog("Detected Local IP: $myIp")
-            
+
             val sb = StringBuilder()
             for (file in files) {
                 val encodedName = java.net.URLEncoder.encode(file.name, "UTF-8").replace("+", "%20")
-                sb.append(myIp).append(":").append(myPort).append("/").append(encodedName).append("\n")
+                val extraSlash = if (hostExtra.isNotBlank()) "${hostExtra.trimStart('/')}/" else ""
+                sb.append(myIp).append(":").append(myPort).append("/").append(extraSlash).append(encodedName).append("\n")
             }
-            
+
             val content = sb.toString().toByteArray(Charsets.UTF_8)
             val sizeBytes = java.nio.ByteBuffer.allocate(4).putInt(content.size).array()
-            
+
             onLog("Sending handshake to $switchIp:2000...")
             Socket(switchIp, 2000).use { socket ->
                 val out = socket.getOutputStream()

@@ -107,19 +107,44 @@ class UploadViewModel(
 
             if (_transport.value == "NET") {
                 val switchIp = _ipAddress.value
-                val hostPort = 6042 
-                
+                val expertMode = settingsViewModel.expertMode.value
+
+                // Resolve host IP: blank in settings = auto-detect, same as original app
+                val resolvedHostIp = if (expertMode && settingsViewModel.expertHostIp.value.isNotBlank())
+                    settingsViewModel.expertHostIp.value
+                else
+                    "" // NetworkServer auto-detects via InetAddress.getLocalHost()
+
+                // Resolve port: blank = use 6042 default
+                val resolvedPort = if (expertMode && settingsViewModel.expertHostPort.value.isNotBlank())
+                    settingsViewModel.expertHostPort.value.toIntOrNull() ?: 6042
+                else
+                    6042
+
+                val resolvedExtra = if (expertMode && !settingsViewModel.expertNoRequestsServe.value)
+                    settingsViewModel.expertHostExtra.value
+                else
+                    ""
+
+                val noRequestsServe = expertMode && settingsViewModel.expertNoRequestsServe.value
+
                 println("Stopping any existing Network Server...")
                 networkServer.stop()
-                
-                println("Starting Network Server on port $hostPort. Handshaking to $switchIp")
-                
+
+                println("Starting Network Server on port $resolvedPort. Expert=$expertMode, NoServe=$noRequestsServe")
+
                 try {
-                     networkServer.start(_files.value, switchIp, hostPort) { msg ->
-                         val type = if (msg.contains("FAIL")) com.mrnrod45.nstk.domain.models.MsgType.FAIL else com.mrnrod45.nstk.domain.models.MsgType.INFO
-                         logPrinter.print(msg, type)
-                     }
-                     // logPrinter.print("Network Server init...", com.mrnrod45.nstk.domain.models.MsgType.INFO) // Handled by callback
+                    networkServer.start(
+                        files = _files.value,
+                        hostIp = resolvedHostIp,
+                        port = resolvedPort,
+                        hostExtra = resolvedExtra,
+                        noRequestsServe = noRequestsServe,
+                        switchIp = switchIp
+                    ) { msg ->
+                        val type = if (msg.contains("FAIL")) com.mrnrod45.nstk.domain.models.MsgType.FAIL else com.mrnrod45.nstk.domain.models.MsgType.INFO
+                        logPrinter.print(msg, type)
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     logPrinter.print("Network Error: ${e.message}", com.mrnrod45.nstk.domain.models.MsgType.FAIL)
@@ -161,8 +186,36 @@ class UploadViewModel(
             
             try {
                 if (_selectedProtocol.value == "Goldleaf") {
-                    val protocol = com.mrnrod45.nstk.domain.protocols.Goldleaf(connection, logPrinter)
-                    protocol.start(fileMap)
+                    val glVersion = settingsViewModel.goldLeafVersion.value
+                    val showOnlyNsp = settingsViewModel.showOnlyNsp.value
+
+                    // Apply NSP-only filter to the file map if the setting is enabled.
+                    // This means non-NSP files that the user added won't be sent to Goldleaf.
+                    val filteredMap = if (showOnlyNsp) {
+                        fileMap.filter { (name, _) -> name.endsWith(".nsp", ignoreCase = true) }
+                            .also {
+                                val excluded = fileMap.size - it.size
+                                if (excluded > 0)
+                                    logPrinter.print("NSP-only filter: excluded $excluded non-NSP file(s)", com.mrnrod45.nstk.domain.models.MsgType.INFO)
+                            }
+                    } else fileMap
+
+                    // Version-specific routing mirrors the original UsbCommunications.java switch.
+                    // Currently a single Goldleaf.kt handles the v0.10+ handshake.
+                    // TODO: add GoldLeaf_05 / GoldLeaf_07 / GoldLeaf_08 protocol classes.
+                    logPrinter.print("Goldleaf version: $glVersion", com.mrnrod45.nstk.domain.models.MsgType.INFO)
+                    when (glVersion) {
+                        "v0.10+" -> {
+                            val protocol = com.mrnrod45.nstk.domain.protocols.Goldleaf(connection, logPrinter)
+                            protocol.start(filteredMap)
+                        }
+                        // v0.8-0.9, v0.7.x, v0.5 will use the same class until dedicated ones are implemented
+                        else -> {
+                            logPrinter.print("Note: $glVersion uses the same handler as v0.10+ pending dedicated implementation", com.mrnrod45.nstk.domain.models.MsgType.INFO)
+                            val protocol = com.mrnrod45.nstk.domain.protocols.Goldleaf(connection, logPrinter)
+                            protocol.start(filteredMap)
+                        }
+                    }
                 } else {
                     // Awoo / Tinfoil / Sphaira
                     val protocol = com.mrnrod45.nstk.domain.protocols.Tinfoil(connection, logPrinter)
@@ -186,18 +239,27 @@ class UploadViewModel(
         viewModelScope.launch {
             val allowXci = settingsViewModel.allowXci.value
             val useRomFolder = settingsViewModel.useRomFolder.value
-            
-            println("openFilePicker called. useRomFolder=$useRomFolder, allowXci=$allowXci")
-            
+            val isGoldleaf = _selectedProtocol.value == "Goldleaf"
+            val showOnlyNsp = settingsViewModel.showOnlyNsp.value
+
+            println("openFilePicker called. protocol=${ _selectedProtocol.value}, useRomFolder=$useRomFolder, allowXci=$allowXci, showOnlyNsp=$showOnlyNsp")
+
+            // Build the extension list.
+            // When Goldleaf + showOnlyNsp: only .nsp, regardless of allowXci.
             val allowedExtensions = mutableListOf<String>()
-            allowedExtensions.add("nsp") // Always allowed
-            
-            if (allowXci) {
-                allowedExtensions.add("xci")
-                allowedExtensions.add("nsz")
-                allowedExtensions.add("xcz")
+            allowedExtensions.add("nsp") // Always allowed for all protocols
+
+            if (!isGoldleaf || !showOnlyNsp) {
+                // Only add extra formats when we're NOT locked to NSP-only mode
+                if (allowXci) {
+                    allowedExtensions.add("xci")
+                    allowedExtensions.add("nsz")
+                    allowedExtensions.add("xcz")
+                }
             }
-            
+
+            println("Allowed extensions: $allowedExtensions")
+
             val picked = if (useRomFolder) {
                 println("Calling pickFolderAndListFiles")
                 filePicker.pickFolderAndListFiles(allowedExtensions)
@@ -205,7 +267,7 @@ class UploadViewModel(
                 println("Calling pickFiles")
                 filePicker.pickFiles(allowedExtensions)
             }
-            
+
             println("Picked ${picked.size} files")
             if (picked.isNotEmpty()) {
                 addFiles(picked)

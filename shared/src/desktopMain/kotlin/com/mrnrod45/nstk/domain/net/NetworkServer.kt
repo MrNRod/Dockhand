@@ -12,21 +12,32 @@ actual class NetworkServer {
     private val isRunning = AtomicBoolean(false)
     private var executor: java.util.concurrent.ExecutorService? = null
 
-    actual fun start(files: List<UnifiedFile>, hostIp: String, port: Int, onLog: (String) -> Unit) {
+    actual fun start(
+        files: List<UnifiedFile>,
+        hostIp: String,
+        port: Int,
+        hostExtra: String,
+        noRequestsServe: Boolean,
+        switchIp: String,
+        onLog: (String) -> Unit
+    ) {
         if (isRunning.get()) return
         isRunning.set(true)
-        
-        // Simulating usage
+
         onLog("Desktop Server starting...")
-        
+
         executor = java.util.concurrent.Executors.newSingleThreadExecutor()
         executor?.submit {
              try {
-                // Desktop specific implementation (matches Android largely due to java.net)
                 serverSocket = ServerSocket(port)
                 onLog("Desktop NetworkServer started on $port")
-                
-                sendHandshake(files, hostIp, port, onLog)
+
+                // noRequestsServe = passive mode: skip the handshake, Switch already knows our IP
+                if (noRequestsServe) {
+                    onLog("Expert mode: passive — skipping handshake, waiting for Switch to connect...")
+                } else {
+                    sendHandshake(files, switchIp, hostIp, port, hostExtra, onLog)
+                }
 
                 while (isRunning.get()) {
                     val client = serverSocket?.accept() ?: break
@@ -178,23 +189,32 @@ actual class NetworkServer {
         }
     }
 
-    private fun sendHandshake(files: List<UnifiedFile>, switchIp: String, myPort: Int, onLog: (String) -> Unit) {
+    private fun sendHandshake(
+        files: List<UnifiedFile>,
+        switchIp: String,
+        overrideHostIp: String,
+        myPort: Int,
+        hostExtra: String,
+        onLog: (String) -> Unit
+    ) {
         try {
-            val myIp = java.net.InetAddress.getLocalHost().hostAddress
+            val myIp = if (overrideHostIp.isNotBlank()) overrideHostIp
+                       else java.net.InetAddress.getLocalHost().hostAddress
             onLog("Detected Local IP: $myIp")
-            
+
             val sb = StringBuilder()
             for (file in files) {
-                // Format: ip:port/filename
+                // Format: ip:port/extra/filename (extra is the path suffix from expert mode)
                 val encodedName = java.net.URLEncoder.encode(file.name, "UTF-8").replace("+", "%20")
-                sb.append(myIp).append(":").append(myPort).append("/").append(encodedName).append("\n")
+                val extraSlash = if (hostExtra.isNotBlank()) "${hostExtra.trimStart('/')}/" else ""
+                sb.append(myIp).append(":").append(myPort).append("/").append(extraSlash).append(encodedName).append("\n")
             }
-            
+
             val content = sb.toString().toByteArray(Charsets.UTF_8)
             val sizeBytes = java.nio.ByteBuffer.allocate(4).putInt(content.size).array()
-            
+
             onLog("Sending handshake to $switchIp:2000...")
-            Socket(switchIp, 2000).use { socket ->
+            java.net.Socket(switchIp, 2000).use { socket ->
                 val out = socket.getOutputStream()
                 out.write(sizeBytes)
                 out.write(content)

@@ -64,16 +64,15 @@ private val MacLightColorScheme = lightColorScheme(
     onPrimary = androidx.compose.ui.graphics.Color.White,
     primaryContainer = MacLightPrimary.copy(alpha = 0.1f),
     onPrimaryContainer = MacLightPrimary,
-    // Secondary -> often used for gray elements or accents
     secondary = SystemGrayLight,
     onSecondary = androidx.compose.ui.graphics.Color.Black,
     background = MacLightBackground,
-    onBackground = androidx.compose.ui.graphics.Color.Black,
+    onBackground = androidx.compose.ui.graphics.Color(0xFF000000),
     surface = MacLightSurface,
-    onSurface = androidx.compose.ui.graphics.Color.Black,
+    onSurface = androidx.compose.ui.graphics.Color(0xFF000000), // NSColor.labelColor
     surfaceVariant = MacLightSurfaceVariant,
-    onSurfaceVariant = androidx.compose.ui.graphics.Color.Black, // Header text is usually black
-    surfaceContainerHigh = MacLightSurfaceVariant, // For adapting
+    onSurfaceVariant = MacLightSecondaryLabel,  // NSColor.secondaryLabelColor
+    surfaceContainerHigh = MacLightSurfaceVariant,
     outline = SystemGrayLight,
     outlineVariant = MacLightOutlineVariant,
 )
@@ -90,7 +89,7 @@ private val MacDarkColorScheme = darkColorScheme(
     surface = MacDarkSurface,
     onSurface = androidx.compose.ui.graphics.Color.White,
     surfaceVariant = MacDarkSurfaceVariant,
-    onSurfaceVariant = androidx.compose.ui.graphics.Color.White,
+    onSurfaceVariant = MacDarkSecondaryLabel,   // NSColor.secondaryLabelColor (dark)
     surfaceContainerHigh = MacDarkSurfaceVariant,
     outline = SystemGrayDark,
     outlineVariant = MacDarkOutlineVariant,

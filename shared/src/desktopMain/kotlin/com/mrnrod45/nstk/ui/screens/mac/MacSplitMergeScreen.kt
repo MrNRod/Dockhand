@@ -4,13 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,53 +38,54 @@ fun MacSplitMergeScreen(
     val isProcessing by viewModel.isProcessing.collectAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // --- Header ---
-        Text(
-            text = "Split & Merge",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onSurface
-        )
 
-        // --- Controls ---
+        // --- Operation ---
         MacGroup(title = "Operation") {
+
+            // Mode selector
             Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(7.dp)
+                ) {
                     MacRadioButton(
                         selected = isSplitMode,
-                        onClick = { viewModel.setSplitMode(true) },
-                        modifier = Modifier.padding(end = 8.dp) // Add spacing between radio and text
+                        onClick = { viewModel.setSplitMode(true) }
                     )
                     Text(
-                        text = "Split", 
-                        fontSize = 13.sp, 
+                        "Split",
+                        fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         style = LocalTextStyle.current.copy(lineHeight = 13.sp)
                     )
                 }
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(7.dp)
+                ) {
                     MacRadioButton(
                         selected = !isSplitMode,
-                        onClick = { viewModel.setSplitMode(false) },
-                        modifier = Modifier.padding(end = 8.dp) // Add spacing between radio and text
+                        onClick = { viewModel.setSplitMode(false) }
                     )
                     Text(
-                        text = "Merge", 
-                        fontSize = 13.sp, 
+                        "Merge",
+                        fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         style = LocalTextStyle.current.copy(lineHeight = 13.sp)
                     )
                 }
             }
-            
+
+            Spacer(Modifier.height(10.dp))
+
+            // File selector buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -91,25 +94,27 @@ fun MacSplitMergeScreen(
                     onClick = { viewModel.selectFile() },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(if (isSplitMode) "Select File..." else "Add Files...")
+                    Text(if (isSplitMode) "Select File…" else "Add Files…", fontSize = 13.sp)
                 }
-                
                 MacButton(
                     onClick = { viewModel.clearSelection() },
                     enabled = selectedPaths.isNotEmpty()
                 ) {
-                    Text("Clear")
+                    Text("Clear", fontSize = 13.sp)
                 }
             }
-            
-            Spacer(modifier = Modifier.height(10.dp))
-            
+
+            Spacer(Modifier.height(10.dp))
+
             // Output path
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 MacLabel(
-                    text = "Save to: ", 
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    text = "Save to:",
+                    modifier = Modifier.widthIn(min = 52.dp)
                 )
                 Text(
                     text = outputPath,
@@ -117,26 +122,32 @@ fun MacSplitMergeScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     lineHeight = 11.sp,
                     maxLines = 1,
-                    modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
                 MacButton(onClick = { viewModel.changeOutputPath() }) {
-                    Text("Change...")
+                    Text("Change…", fontSize = 13.sp)
                 }
             }
         }
 
         // --- File List ---
         Column(modifier = Modifier.weight(1f)) {
-            MacLabel("Files to Process")
+            MacLabel("Files to Process", modifier = Modifier.padding(bottom = 6.dp))
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
             ) {
                 if (selectedPaths.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("No file selected", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                        Text(
+                            "No files selected",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 13.sp
+                        )
                     }
                 } else {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -144,27 +155,40 @@ fun MacSplitMergeScreen(
                             Text(
                                 text = selectedPaths[index],
                                 fontSize = 12.sp,
+                                lineHeight = 15.sp,
                                 color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp)
+                                    .padding(horizontal = 12.dp, vertical = 8.dp)
                             )
                             if (index < selectedPaths.size - 1) {
-                                MacDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha=0.5f))
+                                MacDivider(
+                                    modifier = Modifier.padding(horizontal = 12.dp),
+                                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                                )
                             }
                         }
                     }
                 }
             }
         }
-        
-        // --- Status ---
+
+        // --- Status Badge ---
         if (statusMessage.isNotEmpty()) {
-            Text(
-                text = statusMessage,
-                fontSize = 12.sp,
-                color = if (statusMessage.contains("Success")) Color(0xFF2E7D32) else Color.Red
-            )
+            val isSuccess = statusMessage.contains("success", ignoreCase = true)
+            val bgColor = if (isSuccess) Color(0xFF1B5E20).copy(alpha = 0.12f) else Color(0xFFB71C1C).copy(alpha = 0.10f)
+            val textColor = if (isSuccess) Color(0xFF2E7D32) else Color(0xFFC62828)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(bgColor)
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Text(text = statusMessage, fontSize = 12.sp, lineHeight = 15.sp, color = textColor)
+            }
         }
 
         // --- Action ---
@@ -173,18 +197,18 @@ fun MacSplitMergeScreen(
                 onClick = { viewModel.startConversion() },
                 enabled = selectedPaths.isNotEmpty() && !isProcessing,
                 primary = true,
-                modifier = Modifier.width(120.dp)
+                modifier = Modifier.widthIn(min = 120.dp)
             ) {
                 if (isProcessing) {
                     CircularProgressIndicator(
                         color = Color.White,
                         strokeWidth = 2.dp,
-                        modifier = Modifier.size(14.dp)
+                        modifier = Modifier.size(13.dp)
                     )
                     Spacer(Modifier.width(6.dp))
-                    Text("Processing")
+                    Text("Processing…", fontSize = 13.sp)
                 } else {
-                    Text("Convert")
+                    Text(if (isSplitMode) "Split" else "Merge", fontSize = 13.sp)
                 }
             }
         }

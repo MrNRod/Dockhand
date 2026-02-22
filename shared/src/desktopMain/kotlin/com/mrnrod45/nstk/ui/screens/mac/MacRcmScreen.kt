@@ -4,16 +4,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mrnrod45.nstk.ui.components.MacButton
@@ -26,19 +28,11 @@ fun MacRcmScreen(
     viewModel: RcmViewModel
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // --- Header ---
-        Text(
-            text = "RCM Payload Injection",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onSurface
-        )
 
-        // --- Payload Selection ---
+        // --- Payload Section ---
         MacGroup(title = "Payload") {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -49,18 +43,25 @@ fun MacRcmScreen(
                     onClick = { viewModel.selectPayload() },
                     enabled = !viewModel.isBusy
                 ) {
-                    Text("Select Payload (.bin)")
+                    Text("Select Payload (.bin)", fontSize = 13.sp)
                 }
-                
+
                 Text(
                     text = viewModel.selectedPayload?.name ?: "No payload selected",
                     fontSize = 13.sp,
-                    color = if (viewModel.selectedPayload != null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                    lineHeight = 13.sp,
+                    color = if (viewModel.selectedPayload != null)
+                        MaterialTheme.colorScheme.onSurface
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
             }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
+
+            Spacer(Modifier.height(10.dp))
+
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 MacButton(
                     onClick = { viewModel.injectPayload() },
@@ -71,49 +72,55 @@ fun MacRcmScreen(
                         CircularProgressIndicator(
                             color = Color.White,
                             strokeWidth = 2.dp,
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(13.dp)
                         )
                         Spacer(Modifier.width(6.dp))
-                        Text("Injecting...")
+                        Text("Injecting…", fontSize = 13.sp)
                     } else {
-                        Text("Inject Payload")
+                        Text("Inject Payload", fontSize = 13.sp)
                     }
                 }
             }
         }
 
-        // --- Logs ---
+        // --- Log Section ---
         Column(modifier = Modifier.weight(1f)) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                MacLabel("Injection Logs")
+                MacLabel("Injection Log")
                 MacButton(onClick = { viewModel.clearLog() }) {
-                    Icon(Icons.Default.Refresh, contentDescription = "Clear", modifier = Modifier.size(12.dp))
+                    Icon(Icons.Default.Delete, contentDescription = "Clear", modifier = Modifier.size(12.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text("Clear")
+                    Text("Clear", fontSize = 13.sp)
                 }
             }
-            
-            // Console-like Log Box
+
+            // Console-style log box
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                    .padding(8.dp)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+                    .padding(12.dp)
             ) {
+                val scroll = rememberScrollState(Int.MAX_VALUE)
                 Text(
-                    text = viewModel.logText,
+                    text = viewModel.logText.ifBlank { "Logs will appear here after injection." },
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                    style = MaterialTheme.typography.bodySmall.copy(
+                        .verticalScroll(scroll),
+                    style = TextStyle(
                         fontFamily = FontFamily.Monospace,
                         fontSize = 11.sp,
-                        color = MaterialTheme.colorScheme.onSurface
+                        lineHeight = 16.sp,
+                        color = if (viewModel.logText.isBlank())
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        else
+                            MaterialTheme.colorScheme.onSurface
                     )
                 )
             }
