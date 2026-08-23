@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -197,8 +198,8 @@ fun MacGroup(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
                 .padding(14.dp)
         ) {
             Column {
@@ -338,6 +339,60 @@ fun MacRadioButton(
 }
 
 // -----------------------------------------------------------------------------
+// Mac Segmented Control — NSSegmentedControl equivalent for exclusive choices
+// -----------------------------------------------------------------------------
+@Composable
+fun MacSegmentedControl(
+    items: List<String>,
+    selectedIndex: Int,
+    onSegmentSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    Row(
+        modifier = modifier
+            .height(22.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f), RoundedCornerShape(6.dp))
+            .padding(2.dp)
+    ) {
+        items.forEachIndexed { index, label ->
+            val selected = index == selectedIndex
+            val interactionSource = remember { MutableInteractionSource() }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(5.dp))
+                    .then(
+                        if (selected)
+                            Modifier
+                                .shadow(1.dp, RoundedCornerShape(5.dp))
+                                .background(MaterialTheme.colorScheme.surface)
+                        else Modifier
+                    )
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        enabled = enabled,
+                        onClick = { onSegmentSelected(index) }
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = label,
+                    fontSize = 12.sp,
+                    lineHeight = 12.sp,
+                    fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
 // Mac Divider — NSColor.separatorColor equivalent
 // -----------------------------------------------------------------------------
 @Composable
@@ -401,14 +456,48 @@ fun MacDropdown(
     var expanded by remember { mutableStateOf(false) }
     var buttonWidthPx by remember { mutableStateOf(0) }
     val density = LocalDensity.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    // NSPopUpButton "rounded" bezel: subtle vertical gradient, less rounded
+    // than a pill-shaped push button, double-chevron affordance.
+    val bezelBrush = when {
+        !enabled  -> Brush.verticalGradient(listOf(
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        ))
+        isPressed -> Brush.verticalGradient(listOf(
+            MaterialTheme.colorScheme.surfaceVariant,
+            MaterialTheme.colorScheme.surfaceVariant
+        ))
+        else -> Brush.verticalGradient(listOf(
+            MaterialTheme.colorScheme.surface,
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ))
+    }
 
     Box(
         modifier = modifier.onGloballyPositioned { buttonWidthPx = it.size.width }
     ) {
-        MacButton(
-            onClick = { expanded = true },
-            enabled = enabled,
-            modifier = Modifier.fillMaxWidth()
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(22.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(bezelBrush)
+                .border(
+                    1.dp,
+                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = if (enabled) 0.8f else 0.4f),
+                    RoundedCornerShape(6.dp)
+                )
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    enabled = enabled,
+                    onClick = { expanded = true }
+                )
+                .padding(horizontal = 8.dp),
+            contentAlignment = Alignment.CenterStart
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -419,13 +508,13 @@ fun MacDropdown(
                     text = selectedItem,
                     fontSize = 13.sp,
                     lineHeight = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
+                    imageVector = Icons.Default.UnfoldMore,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(12.dp)
                 )
             }
         }

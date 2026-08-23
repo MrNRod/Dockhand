@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +21,7 @@ import com.mrnrod45.nstk.ui.components.MacButton
 import com.mrnrod45.nstk.ui.components.MacDivider
 import com.mrnrod45.nstk.ui.components.MacGroup
 import com.mrnrod45.nstk.ui.components.MacLabel
-import com.mrnrod45.nstk.ui.components.MacRadioButton
+import com.mrnrod45.nstk.ui.components.MacSegmentedControl
 import com.mrnrod45.nstk.ui.viewmodels.SplitMergeViewModel
 
 @Composable
@@ -46,42 +45,12 @@ fun MacSplitMergeScreen(
         MacGroup(title = "Operation") {
 
             // Mode selector
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(24.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(7.dp)
-                ) {
-                    MacRadioButton(
-                        selected = isSplitMode,
-                        onClick = { viewModel.setSplitMode(true) }
-                    )
-                    Text(
-                        "Split",
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = LocalTextStyle.current.copy(lineHeight = 13.sp)
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(7.dp)
-                ) {
-                    MacRadioButton(
-                        selected = !isSplitMode,
-                        onClick = { viewModel.setSplitMode(false) }
-                    )
-                    Text(
-                        "Merge",
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = LocalTextStyle.current.copy(lineHeight = 13.sp)
-                    )
-                }
-            }
+            MacSegmentedControl(
+                items = listOf("Split", "Merge"),
+                selectedIndex = if (isSplitMode) 0 else 1,
+                onSegmentSelected = { index -> viewModel.setSplitMode(index == 0) },
+                modifier = Modifier.width(180.dp)
+            )
 
             Spacer(Modifier.height(10.dp))
 
@@ -139,7 +108,7 @@ fun MacSplitMergeScreen(
                     .fillMaxSize()
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
             ) {
                 if (selectedPaths.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

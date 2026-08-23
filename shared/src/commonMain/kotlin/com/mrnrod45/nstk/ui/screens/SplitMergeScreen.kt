@@ -107,9 +107,9 @@ fun SplitMergeScreen(
                              horizontalArrangement = Arrangement.spacedBy(8.dp)
                          ) {
                              Text(
-                                 outputPath, 
-                                 style = MaterialTheme.typography.bodySmall, 
-                                 color = Color.Gray,
+                                 outputPath,
+                                 style = MaterialTheme.typography.bodySmall,
+                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                  modifier = Modifier.weight(1f)
                              )
                              OutlinedButton(
@@ -132,7 +132,7 @@ fun SplitMergeScreen(
                 contentAlignment = if (selectedPaths.isEmpty()) Alignment.Center else Alignment.TopStart
             ) {
                  if (selectedPaths.isEmpty()) {
-                     Text("No file selected", color = Color.Gray)
+                     Text("No file selected", color = MaterialTheme.colorScheme.onSurfaceVariant)
                  } else {
                      androidx.compose.foundation.lazy.LazyColumn {
                          items(selectedPaths.size) { index ->
@@ -142,7 +142,7 @@ fun SplitMergeScreen(
                                  modifier = Modifier.padding(vertical = 4.dp)
                              )
                              if (index < selectedPaths.size - 1) {
-                                 androidx.compose.material3.HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
+                                 androidx.compose.material3.HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
                              }
                          }
                      }

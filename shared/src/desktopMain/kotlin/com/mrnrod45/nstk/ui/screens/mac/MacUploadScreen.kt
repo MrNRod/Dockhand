@@ -5,7 +5,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -14,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,6 +45,7 @@ fun MacUploadScreen(
     val transport by viewModel.transport.collectAsState()
     val ipAddress by viewModel.ipAddress.collectAsState()
     val useRomFolder by settingsViewModel.useRomFolder.collectAsState()
+    val logs by viewModel.logs.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -98,7 +102,7 @@ fun MacUploadScreen(
                     .fillMaxSize()
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
             ) {
                 if (files.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -152,6 +156,37 @@ fun MacUploadScreen(
                             }
                         }
                     }
+                }
+            }
+        }
+
+        // --- Logs ---
+        if (logs.isNotBlank()) {
+            Column(modifier = Modifier.height(110.dp)) {
+                MacLabel("Logs", modifier = Modifier.padding(bottom = 6.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surface)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(8.dp))
+                        .padding(8.dp)
+                ) {
+                    val logScrollState = rememberScrollState()
+                    LaunchedEffect(logs) {
+                        logScrollState.scrollTo(logScrollState.maxValue)
+                    }
+                    Text(
+                        text = logs,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(logScrollState),
+                        fontSize = 11.sp,
+                        lineHeight = 14.sp,
+                        fontFamily = FontFamily.Monospace,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
         }

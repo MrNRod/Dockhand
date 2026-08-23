@@ -52,6 +52,10 @@ import androidx.compose.ui.draw.alpha
 
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.text.font.FontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +69,8 @@ fun UploadScreen(
     val selectedProtocol by viewModel.selectedProtocol.collectAsState()
     val transport by viewModel.transport.collectAsState()
     val ipAddress by viewModel.ipAddress.collectAsState()
-    
+    val logs by viewModel.logs.collectAsState()
+
     var isProtocolDropdownExpanded by remember { mutableStateOf(false) }
     var isTransportDropdownExpanded by remember { mutableStateOf(false) }
 
@@ -89,7 +94,7 @@ fun UploadScreen(
                     enabled = files.isNotEmpty()
                 ) {
                     Icon(Icons.Default.Send, contentDescription = null)
-                    Spacer(Modifier.padding(4.dp))
+                    Spacer(Modifier.width(4.dp))
                     Text(if (transport == "USB") "Upload to Switch" else "Upload to Network")
                 }
             }
@@ -233,7 +238,33 @@ fun UploadScreen(
                     }
                 }
             }
-            
+
+            // Transfer Logs
+            if (logs.isNotBlank()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Card(modifier = Modifier.fillMaxWidth().height(140.dp)) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Text("Logs", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(bottom = 4.dp))
+                        HorizontalDivider()
+                        val logScrollState = rememberScrollState()
+                        LaunchedEffect(logs) {
+                            logScrollState.scrollTo(logScrollState.maxValue)
+                        }
+                        SelectionContainer {
+                            Text(
+                                text = logs,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 4.dp)
+                                    .verticalScroll(logScrollState),
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Monospace
+                            )
+                        }
+                    }
+                }
+            }
+
         }
     }
 }

@@ -95,10 +95,8 @@ fun SettingsScreen(
                             value = selectedValue,
                             onValueChange = {},
                             readOnly = true,
-
-
                             trailingIcon = { androidx.compose.material3.ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                            modifier = Modifier.menuAnchor().fillMaxWidth()
+                            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                         )
                         ExposedDropdownMenu(
                             expanded = expanded,
@@ -201,12 +199,12 @@ fun SettingsScreen(
                 modifier = Modifier.padding(vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Language", modifier = Modifier.width(100.dp))
-                Button(onClick = { /* TODO: Language Picker */ }) {
+                Text("Language", modifier = Modifier.width(140.dp))
+                Button(onClick = { /* TODO: Language Picker */ }, enabled = false) {
                     Text("English (en_US)")
                 }
                 Spacer(Modifier.width(8.dp))
-                Button(onClick = { /* TODO: Confirm Language */ }) {
+                Button(onClick = { /* TODO: Confirm Language */ }, enabled = false) {
                     Text("OK")
                 }
             }
@@ -214,6 +212,7 @@ fun SettingsScreen(
             // Font Button
             Button(
                 onClick = { /* TODO: Font Picker */ },
+                enabled = false,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Text("Change application font")
@@ -231,6 +230,17 @@ fun SettingsScreen(
                 Text("Auto check for updates")
             }
             
+            Spacer(Modifier.height(16.dp))
+
+            // Split Files Option
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(
+                    checked = useSplitFiles,
+                    onCheckedChange = { viewModel.toggleSplitFiles(it) }
+                )
+                Text("Split files larger than 4GB (FAT32 compatibility)")
+            }
+
             Spacer(Modifier.height(16.dp))
 
             // ROM Folder Option

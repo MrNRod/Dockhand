@@ -103,15 +103,30 @@ class SplitMergeViewModel(
         viewModelScope.launch {
             var successCount = 0
             var failCount = 0
-            
-            for (file in files) {
+
+            // Merge resolves the whole split-folder from a single chunk within it, so if the
+            // user selected several chunks belonging to the same split set, only process one
+            // representative per folder — otherwise we'd re-run the merge once per chunk and
+            // write out several duplicate output files.
+            val filesToProcess = if (isSplitting) {
+                files
+            } else {
+                val seenGroups = mutableSetOf<String>()
+                files.filter { file ->
+                    val groupKey = if (file.isDirectory) file.path
+                        else file.path.replace('\\', '/').substringBeforeLast('/', file.path)
+                    seenGroups.add(groupKey)
+                }
+            }
+
+            for (file in filesToProcess) {
                  _statusMessage.value = "Processing: ${file.name}..."
                  val result = if (isSplitting) {
                     fileSplitter.splitFile(file, outDir)
                 } else {
                     fileSplitter.mergeFiles(file, outDir)
                 }
-                
+
                 if (result) successCount++ else failCount++
             }
             

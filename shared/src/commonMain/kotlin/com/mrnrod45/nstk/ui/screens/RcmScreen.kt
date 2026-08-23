@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -120,13 +121,17 @@ fun RcmScreen(
                     
                     HorizontalDivider()
                     
+                    val logScrollState = rememberScrollState()
+                    LaunchedEffect(viewModel.logText) {
+                        logScrollState.scrollTo(logScrollState.maxValue)
+                    }
                     SelectionContainer {
                         Text(
                             text = viewModel.logText,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(8.dp)
-                                .verticalScroll(rememberScrollState()),
+                                .verticalScroll(logScrollState),
                             style = MaterialTheme.typography.bodySmall,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                         )

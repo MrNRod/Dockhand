@@ -91,9 +91,6 @@ class UploadViewModel(
                 override fun print(message: String, type: com.mrnrod45.nstk.domain.models.MsgType) {
                     val logMsg = "[${type.name}] $message"
                     println(logMsg)
-                    _logs.value = logMsg + "\n" + _logs.value // Prepend for newest top or Append? Typically Append.
-                    // Let's Append but auto-scroll in UI. Actually Prepend is easier to read without scrolled.
-                    // Let's Append: `_logs.value += ...`
                     _logs.value += logMsg + "\n"
                 }
                 override fun updateProgress(value: Double) {

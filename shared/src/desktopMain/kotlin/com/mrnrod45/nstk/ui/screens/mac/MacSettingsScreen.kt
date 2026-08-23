@@ -86,7 +86,13 @@ fun MacSettingsScreen(
                 checked = autoCheckUpdates,
                 onCheckedChange = { viewModel.toggleAutoCheckUpdates(it) }
             )
-            
+
+            MacCheckboxRow(
+                label = "Split files larger than 4GB (FAT32 compatibility)",
+                checked = useSplitFiles,
+                onCheckedChange = { viewModel.toggleSplitFiles(it) }
+            )
+
             MacCheckboxRow(
                 label = "Use ROM folder select mode",
                 checked = useRomFolder,

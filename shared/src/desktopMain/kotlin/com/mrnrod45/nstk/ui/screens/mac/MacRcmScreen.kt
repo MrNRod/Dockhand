@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -104,10 +105,13 @@ fun MacRcmScreen(
                     .fillMaxSize()
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
                     .padding(12.dp)
             ) {
-                val scroll = rememberScrollState(Int.MAX_VALUE)
+                val scroll = rememberScrollState()
+                LaunchedEffect(viewModel.logText) {
+                    scroll.scrollTo(scroll.maxValue)
+                }
                 Text(
                     text = viewModel.logText.ifBlank { "Logs will appear here after injection." },
                     modifier = Modifier

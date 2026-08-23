@@ -69,6 +69,14 @@ fun MacLayout(
             }
         }
 
+        // Hairline separator between sidebar and content, matching NSColor.separatorColor
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(1.dp)
+                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        )
+
         // --- Main Content ---
         // Content pane starts immediately; no extra draggable strip needed because
         // the sidebar draggable area already acts as window drag.
