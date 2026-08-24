@@ -43,6 +43,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api(project(":core"))
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
@@ -66,15 +67,12 @@ kotlin {
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.appcompat)
                 implementation(libs.androidx.core.ktx)
-                implementation(libs.androidx.documentfile)
             }
         }
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.9.0")
-                implementation("io.github.dsheirer:usb4java:1.3.5")
-                implementation("io.github.dsheirer:usb4java-native-libraries:1.3.1")
             }
         }
     }

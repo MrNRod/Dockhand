@@ -1,5 +1,5 @@
 rootProject.name = "nstk"
-include(":shared", ":androidApp", ":desktopApp")
+include(":core", ":shared", ":androidApp", ":desktopApp")
 
 pluginManagement {
     repositories {

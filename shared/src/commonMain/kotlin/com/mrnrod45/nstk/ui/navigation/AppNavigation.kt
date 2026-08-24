@@ -1,7 +1,5 @@
 package com.mrnrod45.nstk.ui.navigation
 
-import com.mrnrod45.nstk.ui.components.PlatformDraggableArea
-
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,7 +38,7 @@ import com.mrnrod45.nstk.ui.screens.SettingsScreen
 import com.mrnrod45.nstk.ui.viewmodels.RcmViewModel
 import com.mrnrod45.nstk.ui.screens.UploadScreen
 import com.mrnrod45.nstk.ui.screens.SplitMergeScreen
-import getFileSplitter
+import com.mrnrod45.nstk.domain.file.getFileSplitter
 import com.mrnrod45.nstk.domain.usb.UsbController
 import com.mrnrod45.nstk.platform.file.FilePicker
 

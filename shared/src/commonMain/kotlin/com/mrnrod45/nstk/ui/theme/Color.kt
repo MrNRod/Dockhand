@@ -63,20 +63,3 @@ val LightColorScheme = lightColorScheme(
     background = GoogleLightSurface,
     surface = GoogleLightSurface,
 )
-
-// macOS Native UI Colors — matched to Apple HIG NSColor system palette
-val MacLightBackground = Color(0xFFF0F0F0)   // NSColor.windowBackgroundColor (light)
-val MacLightSurface = Color(0xFFFFFFFF)      // NSColor.textBackgroundColor / content panes
-val MacLightSurfaceVariant = Color(0xFFEBEBEB) // NSColor.underPageBackgroundColor / sidebar
-val MacLightOutlineVariant = Color(0xFFD0D0D0) // NSColor.separatorColor (light)
-val MacLightPrimary = SystemBlueLight         // NSColor.systemBlue (light)
-val MacLightSecondaryLabel = Color(0xFF6C6C70) // NSColor.secondaryLabelColor (light)
-val MacLightTertiaryLabel = Color(0xFF93939A)  // NSColor.tertiaryLabelColor (light)
-
-val MacDarkBackground = Color(0xFF282828)     // NSColor.windowBackgroundColor (dark)
-val MacDarkSurface = Color(0xFF1C1C1C)        // NSColor.textBackgroundColor (dark)
-val MacDarkSurfaceVariant = Color(0xFF323232) // NSColor.underPageBackgroundColor (dark)
-val MacDarkOutlineVariant = Color(0xFF3F3F3F) // NSColor.separatorColor (dark)
-val MacDarkPrimary = SystemBlueDark           // NSColor.systemBlue (dark)
-val MacDarkSecondaryLabel = Color(0xFFAAAAAA) // NSColor.secondaryLabelColor (dark)
-val MacDarkTertiaryLabel = Color(0xFF7A7A7E)  // NSColor.tertiaryLabelColor (dark)
