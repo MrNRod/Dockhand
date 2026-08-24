@@ -5,7 +5,17 @@
 
     <ScrollViewer Padding="24">
         <StackPanel Spacing="16" MaxWidth="600">
-            <TextBlock Text="General" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <TextBlock Text="Appearance" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <StackPanel Spacing="8">
+                <RadioButton x:Name="ThemeSystemRadio" Content="Use system setting" GroupName="ThemeGroup"
+                             Tag="System" Checked="ThemeRadio_Checked" />
+                <RadioButton x:Name="ThemeLightRadio" Content="Light" GroupName="ThemeGroup"
+                             Tag="Light" Checked="ThemeRadio_Checked" />
+                <RadioButton x:Name="ThemeDarkRadio" Content="Dark" GroupName="ThemeGroup"
+                             Tag="Dark" Checked="ThemeRadio_Checked" />
+            </StackPanel>
+
+            <TextBlock Text="General" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,0" />
             <ToggleSwitch Header="Auto-check for updates on launch" IsOn="True" />
             <ToggleSwitch Header="Select folder with ROM files instead of individually" IsOn="False" />
 

@@ -44,6 +44,10 @@ public sealed partial class UploadPage : Page
     private void ProtocolCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         _protocol = (string)((ComboBoxItem)ProtocolCombo.SelectedItem).Tag;
+        // ComboBox fires SelectionChanged as soon as its IsSelected="True" item is
+        // parsed, which happens before InitializeComponent() has assigned fields for
+        // elements declared later in the XAML tree (like TransportCombo).
+        if (TransportCombo == null) return;
         var transportEnabled = _protocol == "Awoo";
         TransportCombo.IsEnabled = transportEnabled;
         if (!transportEnabled)
@@ -56,6 +60,10 @@ public sealed partial class UploadPage : Page
     {
         if (TransportCombo.SelectedItem is not ComboBoxItem item) return;
         _transport = (string)item.Tag;
+        // Same early-fire issue as ProtocolCombo_SelectionChanged: IpAddressBox and
+        // UploadButton are declared later in the XAML tree and aren't assigned yet
+        // the first time this fires during parsing.
+        if (IpAddressBox == null || UploadButton == null) return;
         IpAddressBox.Visibility = _transport == "NET" ? Visibility.Visible : Visibility.Collapsed;
         UploadButton.Content = _transport == "USB" ? "Upload to Switch" : "Upload over Network";
     }

@@ -52,20 +52,10 @@ package-windows:
   rules:
     - if: $CI_COMMIT_TAG
 
-# --- macOS Packaging (Dmg, Pkg) ---
-package-macos:
-  stage: package
-  tags:
-    - mrnrod45-macos-small-m4
-  script:
-    - ./gradlew :desktopApp:packageDmg :desktopApp:packagePkg
-  artifacts:
-    paths:
-      - desktopApp/build/compose/binaries/main/dmg/
-      - desktopApp/build/compose/binaries/main/pkg/
-    expire_in: 1 week
-  rules:
-    - if: $CI_COMMIT_TAG
+# macOS packaging removed — desktopApp (Compose) no longer targets macOS.
+# macOS now ships as the native SwiftUI app in /macosApp (`swift build` in that
+# directory); it isn't wired into this pipeline yet since it isn't code-signed/
+# notarized or packaged for distribution.
 
 # --- Android Packaging (APK) ---
 package-android:
@@ -100,8 +90,6 @@ release-job:
       release-cli create --name "Release $CI_COMMIT_TAG" --tag-name "$CI_COMMIT_TAG" \
         --description "Released automatically via GitLab CI." \
         --assets-link "{\"name\":\"Android APK\",\"url\":\"${BASE_URL}/androidApp/build/outputs/apk/debug/nstk-android-${VERSION}.apk?job=package-android\",\"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"macOS DMG\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/dmg/nstk-${VERSION}.dmg?job=package-macos\",\"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"macOS PKG\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/pkg/nstk-${VERSION}.pkg?job=package-macos\",\"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"Windows MSI\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/msi/nstk-${VERSION}.msi?job=package-windows\",\"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"Linux DEB\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/deb/nstk-${VERSION}-1_amd64.deb?job=package-linux\",\"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"Linux RPM\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/rpm/nstk-${VERSION}-1.x86_64.rpm?job=package-linux\",\"link_type\":\"package\"}"

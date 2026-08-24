@@ -18,7 +18,7 @@ kotlin {
     sourceSets {
         val jvmMain by getting {
             dependencies {
-                implementation(project(":shared"))
+                implementation(project(":composeApp"))
                 implementation(compose.desktop.currentOs)
             }
         }
@@ -31,15 +31,14 @@ compose.desktop {
         jvmArgs += listOf("--enable-native-access=ALL-UNNAMED")
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
+            // macOS packaging removed — macOS now ships as the native SwiftUI app in
+            // /macosApp. This module currently targets Windows + Linux only (see
+            // README.md for the plan to retire it once windowsApp/linuxApp are verified).
+            targetFormats(TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "nstk"
             packageVersion = providers.gradleProperty("app.version").get()
             vendor = "Noel Rodriguez-Lebron"
 
-            macOS {
-                iconFile.set(project.file("src/jvmMain/resources/icon.icns"))
-                entitlementsFile.set(project.file("entitlements.plist"))
-            }
             windows {
                 iconFile.set(project.file("src/jvmMain/resources/icon.ico"))
                 menuGroup = "Noel Rodriguez-Lebron"
@@ -53,8 +52,3 @@ compose.desktop {
         }
     }
 }
-
-// Entitlements might need to be copied or referenced if they were in root/composeApp
-// Need to check where 'entitlements.plist' is. It was likely in composeApp root.
-// We moved the folder to 'shared'. So 'shared/entitlements.plist'.
-// We should probably move it to desktopApp?

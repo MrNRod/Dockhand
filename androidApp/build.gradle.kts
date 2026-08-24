@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":shared"))
+    implementation(project(":composeApp"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel)
 }

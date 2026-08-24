@@ -1,0 +1,71 @@
+﻿<Page
+    x:Class="NstkWindowsApp.Views.UploadPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="120" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                CornerRadius="8" Padding="16">
+            <StackPanel Orientation="Horizontal" Spacing="24">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Protocol" Style="{ThemeResource CaptionTextBlockStyle}" />
+                    <ComboBox x:ConnectionId='10' x:Name="ProtocolCombo" Width="180"                                                  >
+                        <ComboBoxItem Content="Goldleaf" Tag="Goldleaf" IsSelected="True" />
+                        <ComboBoxItem Content="Tinfoil (Awoo)" Tag="Awoo" />
+                        <ComboBoxItem Content="Tinfoil (Sphaira)" Tag="Sphaira" />
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Transport" Style="{ThemeResource CaptionTextBlockStyle}" />
+                    <ComboBox x:ConnectionId='9' x:Name="TransportCombo" Width="140"                                                   >
+                        <ComboBoxItem Content="USB" Tag="USB" IsSelected="True" />
+                        <ComboBoxItem Content="NET" Tag="NET" />
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <TextBox x:ConnectionId='2' x:Name="IpAddressBox" Grid.Row="1" Header="Switch IP Address" Text="192.168.1.1" Visibility="Collapsed" />
+
+        <Border Grid.Row="2" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="8">
+            <ListView x:ConnectionId='6' x:Name="FilesList">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{Binding Name}" />
+                                <TextBlock Text="{Binding Path}" Style="{ThemeResource CaptionTextBlockStyle}" Opacity="0.7" />
+                            </StackPanel>
+                            <Button x:ConnectionId='8' Grid.Column="1" Content="Remove"                          Tag="{Binding}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
+
+        <Border Grid.Row="3" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="8">
+            <ScrollViewer>
+                <TextBlock x:ConnectionId='5' x:Name="LogText" Padding="8" FontFamily="Cascadia Mono, Consolas" TextWrapping="Wrap" />
+            </ScrollViewer>
+        </Border>
+
+        <Grid Grid.Row="4" ColumnDefinitions="Auto,*,Auto">
+            <Button x:ConnectionId='3' Grid.Column="0" Content="Add Files…"                        />
+            <Button x:ConnectionId='4' Grid.Column="2" x:Name="UploadButton" Content="Upload to Switch"
+                    Style="{ThemeResource AccentButtonStyle}"                      IsEnabled="False" />
+        </Grid>
+    </Grid>
+</Page>
+

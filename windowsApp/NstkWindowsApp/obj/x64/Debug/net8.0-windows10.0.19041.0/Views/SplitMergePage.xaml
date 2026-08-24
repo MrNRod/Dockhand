@@ -1,0 +1,43 @@
+﻿<Page
+    x:Class="NstkWindowsApp.Views.SplitMergePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                CornerRadius="8" Padding="16">
+            <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <ToggleButton x:ConnectionId='9' x:Name="SplitToggle" Content="Split" IsChecked="True"                           />
+                    <ToggleButton x:ConnectionId='10' x:Name="MergeToggle" Content="Merge"                           />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button x:ConnectionId='7' x:Name="SelectFilesButton" Content="Select File…"                           />
+                    <Button x:ConnectionId='8' Content="Clear"                     />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Save to:" VerticalAlignment="Center" />
+                    <TextBlock x:ConnectionId='5' x:Name="OutputDirText" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    <Button x:ConnectionId='6' Content="Change…"                               />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="8">
+            <ListView x:ConnectionId='4' x:Name="PathsList" />
+        </Border>
+
+        <TextBlock x:ConnectionId='2' Grid.Row="2" x:Name="StatusText" />
+
+        <Button x:ConnectionId='3' Grid.Row="3" x:Name="ActionButton" Content="Split" HorizontalAlignment="Right"
+                Style="{ThemeResource AccentButtonStyle}"                      IsEnabled="False" />
+    </Grid>
+</Page>
+

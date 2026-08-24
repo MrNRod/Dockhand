@@ -39,7 +39,7 @@ struct RcmView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-            .padding(.horizontal)
+            .padding([.horizontal, .bottom])
             .frame(maxHeight: .infinity)
         }
         .padding(.top)

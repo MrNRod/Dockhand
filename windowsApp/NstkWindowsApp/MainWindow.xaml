@@ -16,7 +16,7 @@
             </NavigationViewItem>
             <NavigationViewItem Content="Payload" Tag="payload">
                 <NavigationViewItem.Icon>
-                    <SymbolIcon Symbol="Flash" />
+                    <FontIcon Glyph="&#xE945;" />
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
             <NavigationViewItem Content="Split &amp; Merge" Tag="splitmerge">
