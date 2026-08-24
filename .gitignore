@@ -45,3 +45,6 @@ captures/
 # Temporary files
 dist/
 tmp/
+
+# Agents
+.claude

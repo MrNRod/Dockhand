@@ -1,0 +1,19 @@
+<Page
+    x:Class="NstkWindowsApp.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="16" MaxWidth="600">
+            <TextBlock Text="General" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <ToggleSwitch Header="Auto-check for updates on launch" IsOn="True" />
+            <ToggleSwitch Header="Select folder with ROM files instead of individually" IsOn="False" />
+
+            <TextBlock Text="Goldleaf" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,0" />
+            <ToggleSwitch Header="Show only *.nsp files" IsOn="False" />
+
+            <TextBlock Text="Awoo / Tinfoil / Sphaira" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,0" />
+            <ToggleSwitch Header="Allow XCI / NSZ / XCZ selection" IsOn="True" />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

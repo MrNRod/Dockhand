@@ -1,0 +1,44 @@
+using Microsoft.UI.Xaml;
+using NstkWindowsApp.Services;
+
+namespace NstkWindowsApp;
+
+public partial class App : Application
+{
+    /// <summary>Shared backend connection, available to all pages via ((App)Application.Current).Backend.</summary>
+    public BackendClient Backend { get; } = new();
+
+    /// <summary>
+    /// The single main window. Pages need this to initialize WinRT pickers
+    /// (FileOpenPicker etc.) with a window handle, which desktop WinUI 3 apps
+    /// must do explicitly — there's no implicit "current window" like UWP had.
+    /// </summary>
+    public static Window MainWindowInstance { get; private set; } = null!;
+
+    public App()
+    {
+        InitializeComponent();
+    }
+
+    protected override async void OnLaunched(LaunchActivatedEventArgs args)
+    {
+        MainWindowInstance = new MainWindow();
+        MainWindowInstance.Activate();
+
+        // The backend jar isn't built by this project — run
+        // `gradlew :windowsApp:backend:fatJar` first and copy the output here,
+        // or adjust this path. See windowsApp/README.md.
+        var jarPath = System.IO.Path.Combine(AppContext.BaseDirectory, "nstk-windows-backend.jar");
+        try
+        {
+            await Backend.StartAsync(jarPath);
+        }
+        catch (Exception ex)
+        {
+            // In a real app, surface this in the UI (e.g. a dialog) rather than
+            // just logging — left minimal here since this whole project is an
+            // unverified scaffold pending testing on a real Windows machine.
+            System.Diagnostics.Debug.WriteLine($"Failed to start backend: {ex.Message}");
+        }
+    }
+}
