@@ -1,2 +1,0 @@
-\\Mac\nstk-repo\windowsApp\NstkWindowsApp\obj\arm64\Debug\net8.0-windows10.0.19041.0\NstkWindowsApp.csproj.AssemblyReference.cache
-Z:\windowsApp\NstkWindowsApp\obj\arm64\Debug\net8.0-windows10.0.19041.0\NstkWindowsApp.csproj.AssemblyReference.cache

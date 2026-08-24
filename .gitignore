@@ -42,6 +42,13 @@ captures/
 # VS Code
 .vscode/
 
+# .NET / Visual Studio (windowsApp)
+obj/
+**/obj/
+.vs/
+**/.vs/
+*.user
+
 # Temporary files
 dist/
 tmp/
