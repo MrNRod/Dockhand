@@ -1,0 +1,61 @@
+{
+  "": {
+    "swift-dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/primary.swiftdeps"
+  },
+  "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/AppState.swift": {
+    "dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/AppState.d",
+    "object": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/AppState.swift.o",
+    "swiftmodule": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/AppState~partial.swiftmodule",
+    "swift-dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/AppState.swiftdeps",
+    "diagnostics": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/AppState.dia"
+  },
+  "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/ContentView.swift": {
+    "dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/ContentView.d",
+    "object": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/ContentView.swift.o",
+    "swiftmodule": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/ContentView~partial.swiftmodule",
+    "swift-dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/ContentView.swiftdeps",
+    "diagnostics": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/ContentView.dia"
+  },
+  "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/LogStore.swift": {
+    "dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/LogStore.d",
+    "object": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/LogStore.swift.o",
+    "swiftmodule": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/LogStore~partial.swiftmodule",
+    "swift-dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/LogStore.swiftdeps",
+    "diagnostics": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/LogStore.dia"
+  },
+  "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/NstkMacApp.swift": {
+    "dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/NstkMacApp.d",
+    "object": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/NstkMacApp.swift.o",
+    "swiftmodule": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/NstkMacApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/NstkMacApp.swiftdeps",
+    "diagnostics": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/NstkMacApp.dia"
+  },
+  "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/RcmView.swift": {
+    "dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/RcmView.d",
+    "object": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/RcmView.swift.o",
+    "swiftmodule": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/RcmView~partial.swiftmodule",
+    "swift-dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/RcmView.swiftdeps",
+    "diagnostics": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/RcmView.dia"
+  },
+  "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/SettingsView.swift": {
+    "dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SettingsView.d",
+    "object": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SettingsView.swift.o",
+    "swiftmodule": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SettingsView~partial.swiftmodule",
+    "swift-dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SettingsView.swiftdeps",
+    "diagnostics": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SettingsView.dia"
+  },
+  "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/SplitMergeView.swift": {
+    "dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SplitMergeView.d",
+    "object": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SplitMergeView.swift.o",
+    "swiftmodule": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SplitMergeView~partial.swiftmodule",
+    "swift-dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SplitMergeView.swiftdeps",
+    "diagnostics": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SplitMergeView.dia"
+  },
+  "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/UploadView.swift": {
+    "dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/UploadView.d",
+    "object": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/UploadView.swift.o",
+    "swiftmodule": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/UploadView~partial.swiftmodule",
+    "swift-dependencies": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/UploadView.swiftdeps",
+    "diagnostics": "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/UploadView.dia"
+  }
+}

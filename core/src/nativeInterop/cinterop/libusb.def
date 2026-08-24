@@ -1,0 +1,5 @@
+headers = libusb.h
+headerFilter = libusb.h
+package = libusb.cinterop
+compilerOpts = -I/opt/homebrew/include/libusb-1.0
+linkerOpts = -L/opt/homebrew/lib -lusb-1.0

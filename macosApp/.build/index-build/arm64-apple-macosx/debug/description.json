@@ -1,0 +1,312 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.NstkMac-arm64-apple-macosx-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/sources",
+      "importPath" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/AppState.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/ContentView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/LogStore.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/NstkMacApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/RcmView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/SettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/SplitMergeView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/UploadView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/sources"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "NstkMac",
+      "moduleOutputPath" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/Modules/NstkMac.swiftmodule",
+      "objects" : [
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/AppState.swift.o",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/ContentView.swift.o",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/LogStore.swift.o",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/NstkMacApp.swift.o",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/RcmView.swift.o",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SettingsView.swift.o",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/SplitMergeView.swift.o",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/UploadView.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-Onone",
+        "-enable-testing",
+        "-j12",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "NstkMac_main",
+        "-swift-version",
+        "5",
+        "-Fsystem",
+        "../core/build/bin/macosArm64/debugFramework",
+        "-Xfrontend",
+        "-experimental-lazy-typecheck",
+        "-Xfrontend",
+        "-experimental-skip-all-function-bodies",
+        "-Xfrontend",
+        "-experimental-allow-module-with-compiler-errors",
+        "-Xfrontend",
+        "-empty-abi-descriptor",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "macosapp"
+      ],
+      "outputFileMapPath" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/Modules/NstkMac.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : true,
+      "sources" : [
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/AppState.swift",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/ContentView.swift",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/LogStore.swift",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/NstkMacApp.swift",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/RcmView.swift",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/SettingsView.swift",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/SplitMergeView.swift",
+        "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/UploadView.swift"
+      ],
+      "tempsPath" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "NstkMac" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "NstkMac",
+      "-package-name",
+      "macosapp",
+      "-c",
+      "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/AppState.swift",
+      "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/ContentView.swift",
+      "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/LogStore.swift",
+      "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/NstkMacApp.swift",
+      "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/RcmView.swift",
+      "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/SettingsView.swift",
+      "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/SplitMergeView.swift",
+      "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/UploadView.swift",
+      "-I",
+      "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-Onone",
+      "-enable-testing",
+      "-j12",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "NstkMac_main",
+      "-swift-version",
+      "5",
+      "-Fsystem",
+      "../core/build/bin/macosArm64/debugFramework",
+      "-Xfrontend",
+      "-experimental-lazy-typecheck",
+      "-Xfrontend",
+      "-experimental-skip-all-function-bodies",
+      "-Xfrontend",
+      "-experimental-allow-module-with-compiler-errors",
+      "-Xfrontend",
+      "-empty-abi-descriptor",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "macosapp",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "NstkMac" : [
+
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/AppState.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/ContentView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/LogStore.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/NstkMacApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/RcmView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/SettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/SplitMergeView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/Sources/NstkMac/UploadView.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/NstkMac.build/sources"
+    },
+    "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/noelr/Projects/Kotlin/ns-usbloader-kmp/macosApp/.build/index-build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}
