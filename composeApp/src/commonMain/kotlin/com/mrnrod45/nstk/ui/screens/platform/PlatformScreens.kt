@@ -24,7 +24,8 @@ expect fun PlatformRcmScreen(
 @Composable
 expect fun PlatformSplitMergeScreen(
     filePicker: FilePicker,
-    fileSplitter: FileSplitter
+    fileSplitter: FileSplitter,
+    settingsViewModel: SettingsViewModel
 )
 
 @Composable

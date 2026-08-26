@@ -148,7 +148,7 @@ class UploadPage(private val state: AppState) : Listener {
             return
         }
 
-        val dialog = FileDialog.builder().setTitle("Select Files").build()
+        val dialog = FileDialog.builder().setTitle("Select Files").setFilters(extensionFilterStore(extensions)).build()
         dialog.openMultiple(null, null) { _, result, _ ->
             try {
                 val list = dialog.openMultipleFinish(result)

@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import UniformTypeIdentifiers
 
 struct RcmView: View {
     @EnvironmentObject private var appState: AppState
@@ -57,8 +58,7 @@ struct RcmView: View {
 
     private func pickPayload() {
         let panel = NSOpenPanel()
-        panel.allowedContentTypes = []
-        panel.allowsOtherFileTypes = true
+        panel.allowedContentTypes = [UTType(filenameExtension: "bin")].compactMap { $0 }
         panel.canChooseDirectories = false
         if panel.runModal() == .OK, let url = panel.urls.first {
             appState.selectedPayload = FileEntry(file: .init(filePath: url.path))

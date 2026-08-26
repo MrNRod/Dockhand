@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mrnrod45.nstk.ui.viewmodels.SplitMergeViewModel
+import com.mrnrod45.nstk.ui.viewmodels.SettingsViewModel
 import com.mrnrod45.nstk.platform.file.FilePicker
 import com.mrnrod45.nstk.domain.file.FileSplitter
 
@@ -27,7 +28,8 @@ import com.mrnrod45.nstk.domain.file.FileSplitter
 fun SplitMergeScreen(
     filePicker: FilePicker,
     fileSplitter: FileSplitter,
-    viewModel: SplitMergeViewModel = viewModel { SplitMergeViewModel(filePicker, fileSplitter) }
+    settingsViewModel: SettingsViewModel,
+    viewModel: SplitMergeViewModel = viewModel { SplitMergeViewModel(filePicker, fileSplitter, settingsViewModel) }
 ) {
     val isSplitMode by viewModel.isSplitMode.collectAsState()
     val selectedPaths by viewModel.selectedPaths.collectAsState()

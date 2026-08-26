@@ -1,8 +1,10 @@
 import SwiftUI
 import AppKit
+import UniformTypeIdentifiers
 
 struct SplitMergeView: View {
     @EnvironmentObject private var appState: AppState
+    @AppStorage("allowXci") private var allowXci = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -70,11 +72,25 @@ struct SplitMergeView: View {
         .navigationTitle("Split & Merge")
     }
 
+    /// Mirrors UploadView's allowedExtensions(): .nsp always, XCI/NSZ/XCZ only when allowXci
+    /// is on. Only meaningful in split mode — merge mode selects split chunks (e.g.
+    /// "game.nsp.00"), which don't carry these extensions, so it's left unfiltered.
+    private func allowedExtensions() -> [String] {
+        var extensions = ["nsp"]
+        if allowXci {
+            extensions += ["xci", "nsz", "xcz"]
+        }
+        return extensions
+    }
+
     private func pickFiles() {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = !appState.isSplitMode
         panel.canChooseDirectories = true
         panel.canChooseFiles = true
+        if appState.isSplitMode {
+            panel.allowedContentTypes = allowedExtensions().compactMap { UTType(filenameExtension: $0) }
+        }
         if panel.runModal() == .OK {
             let entries = panel.urls.map { FileEntry(file: .init(filePath: $0.path)) }
             if appState.isSplitMode {

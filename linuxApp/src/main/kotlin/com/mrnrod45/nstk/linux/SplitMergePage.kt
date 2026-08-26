@@ -93,8 +93,23 @@ class SplitMergePage(private val state: AppState) : Listener {
         }
     }
 
+    /** Mirrors UploadPage's allowedExtensions(): .nsp always, XCI/NSZ/XCZ only when allowXci is on.
+     *  Only meaningful in split mode — merge mode selects split chunks (e.g. "game.nsp.00"),
+     *  which don't carry these extensions, so it's left unfiltered. */
+    private fun allowedExtensions(): List<String> {
+        val extensions = mutableListOf("nsp")
+        if (state.allowXci) {
+            extensions += listOf("xci", "nsz", "xcz")
+        }
+        return extensions
+    }
+
     private fun pickFiles() {
-        val dialog = FileDialog.builder().setTitle(if (state.isSplitMode) "Select File" else "Add Files").build()
+        val dialogBuilder = FileDialog.builder().setTitle(if (state.isSplitMode) "Select File" else "Add Files")
+        if (state.isSplitMode) {
+            dialogBuilder.setFilters(extensionFilterStore(allowedExtensions()))
+        }
+        val dialog = dialogBuilder.build()
         val onPicked: (List<String>) -> Unit = { paths ->
             val entries = paths.map { FileEntry(DesktopUnifiedFile(File(it))) }
             if (state.isSplitMode) {

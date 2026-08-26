@@ -100,7 +100,7 @@ fun AppNavigation(
             }
             composable(Screen.SplitMerge.route) {
                 val fileSplitter = getFileSplitter()
-                com.mrnrod45.nstk.ui.screens.platform.PlatformSplitMergeScreen(filePicker, fileSplitter)
+                com.mrnrod45.nstk.ui.screens.platform.PlatformSplitMergeScreen(filePicker, fileSplitter, settingsViewModel)
             }
             composable(Screen.Settings.route) {
                 com.mrnrod45.nstk.ui.screens.platform.PlatformSettingsScreen(settingsViewModel)

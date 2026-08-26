@@ -30,9 +30,10 @@ actual fun PlatformRcmScreen(
 @Composable
 actual fun PlatformSplitMergeScreen(
     filePicker: FilePicker,
-    fileSplitter: FileSplitter
+    fileSplitter: FileSplitter,
+    settingsViewModel: SettingsViewModel
 ) {
-    SplitMergeScreen(filePicker, fileSplitter)
+    SplitMergeScreen(filePicker, fileSplitter, settingsViewModel)
 }
 
 @Composable

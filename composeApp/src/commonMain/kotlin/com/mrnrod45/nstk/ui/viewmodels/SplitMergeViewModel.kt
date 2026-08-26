@@ -15,7 +15,8 @@ import com.mrnrod45.nstk.platform.getDefaultDownloadsPath
 
 class SplitMergeViewModel(
     private val filePicker: FilePicker,
-    private val fileSplitter: FileSplitter
+    private val fileSplitter: FileSplitter,
+    private val settingsViewModel: SettingsViewModel
 ) : ViewModel() {
     private val _isSplitMode = MutableStateFlow(true)
     val isSplitMode: StateFlow<Boolean> = _isSplitMode.asStateFlow()
@@ -46,7 +47,18 @@ class SplitMergeViewModel(
 
     fun selectFile() {
         viewModelScope.launch {
-            val files = filePicker.pickFiles()
+            // Split mode: picking a game file to split, so filter it like Upload does
+            // (.nsp always, XCI/NSZ/XCZ only when allowXci is on). Merge mode picks split
+            // chunks instead (e.g. "game.nsp.00"), which don't carry those extensions, so
+            // it stays unfiltered.
+            val allowedExtensions = if (_isSplitMode.value) {
+                val extensions = mutableListOf("nsp")
+                if (settingsViewModel.allowXci.value) extensions += listOf("xci", "nsz", "xcz")
+                extensions
+            } else {
+                emptyList()
+            }
+            val files = filePicker.pickFiles(allowedExtensions)
             if (files.isNotEmpty()) {
                 if (_isSplitMode.value) {
                     // Split Mode: User requested single item only (overwrite)

@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
+using NstkWindowsApp.Services;
 
 namespace NstkWindowsApp.Views;
 
@@ -48,10 +49,33 @@ public sealed partial class SplitMergePage : Page
         ActionButton.Content = "Merge";
     }
 
+    /// <summary>Mirrors UploadPage's AllowedExtensions(): .nsp always, XCI/NSZ/XCZ only when
+    /// allowXci is on. Only meaningful in split mode — merge mode selects split chunks (e.g.
+    /// "game.nsp.00"), which don't carry these extensions, so it stays unfiltered ("*").</summary>
+    private List<string> AllowedExtensions()
+    {
+        var extensions = new List<string> { "nsp" };
+        if (SettingsStore.LoadAllowXci())
+        {
+            extensions.AddRange(new[] { "xci", "nsz", "xcz" });
+        }
+        return extensions;
+    }
+
     private async void SelectFiles_Click(object sender, RoutedEventArgs e)
     {
         var picker = new FileOpenPicker { ViewMode = PickerViewMode.List };
-        picker.FileTypeFilter.Add("*");
+        if (_isSplitMode)
+        {
+            foreach (var ext in AllowedExtensions())
+            {
+                picker.FileTypeFilter.Add("." + ext);
+            }
+        }
+        else
+        {
+            picker.FileTypeFilter.Add("*");
+        }
         InitializeWithWindow.Initialize(picker, WindowNative.GetWindowHandle(App.MainWindowInstance));
 
         if (_isSplitMode)
