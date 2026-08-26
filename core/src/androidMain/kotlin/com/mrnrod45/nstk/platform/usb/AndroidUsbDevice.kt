@@ -19,6 +19,12 @@ class AndroidUsbDevice(
         get() = device.productId
 
     override fun open(): UsbConnection? {
+        if (!usbManager.hasPermission(device)) {
+            // Best-effort: ask now so a subsequent retry succeeds. open() can't suspend
+            // for the user's answer since it's part of the common, non-Android UsbDevice API.
+            AndroidUsbController.requestPermissionIfNeeded(usbManager, device)
+            return null
+        }
         val connection = usbManager.openDevice(device) ?: return null
         
         // For simplicity in this port, we assume interface 0. 

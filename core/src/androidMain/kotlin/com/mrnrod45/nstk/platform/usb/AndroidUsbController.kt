@@ -1,8 +1,17 @@
 package com.mrnrod45.nstk.platform.usb
 
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.hardware.usb.UsbManager
+import androidx.core.content.ContextCompat
+import com.mrnrod45.nstk.NSTKApplication
 import com.mrnrod45.nstk.domain.usb.UsbController
 import com.mrnrod45.nstk.domain.usb.UsbDevice
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 class AndroidUsbController(
     private val usbManager: UsbManager
@@ -14,6 +23,7 @@ class AndroidUsbController(
         val deviceList = usbManager.deviceList
         return deviceList.values
             .filter { it.vendorId == 0x057E } // Filter for Nintendo Switch
+            .onEach { requestPermissionIfNeeded(usbManager, it) }
             .map { device ->
                 AndroidUsbDevice(usbManager, device)
             }
@@ -24,7 +34,9 @@ class AndroidUsbController(
         val deviceList = usbManager.deviceList
         val rcmDevice = deviceList.values
             .firstOrNull { it.vendorId == 0x0955 && it.productId == 0x7321 }
-        
+
+        if (rcmDevice != null) requestPermissionIfNeeded(usbManager, rcmDevice)
+
         return if (rcmDevice != null) {
             AndroidUsbDevice(usbManager, rcmDevice)
         } else {
@@ -34,8 +46,12 @@ class AndroidUsbController(
 
     override suspend fun injectPayload(device: UsbDevice, payload: ByteArray): Boolean {
         if (device !is AndroidUsbDevice) return false
-        
+
         val androidDevice = device.device
+        if (!awaitUsbPermission(usbManager, androidDevice)) {
+            println("USB permission denied for ${androidDevice.deviceName}")
+            return false
+        }
         val connection = usbManager.openDevice(androidDevice) ?: return false
         
         try {
@@ -101,6 +117,59 @@ class AndroidUsbController(
             return false
         } finally {
             connection.close()
+        }
+    }
+
+    companion object {
+        private const val ACTION_USB_PERMISSION = "com.mrnrod45.nstk.USB_PERMISSION"
+
+        /**
+         * Fire-and-forget permission request, used right when a device is discovered
+         * (listDevices/findRcmDevice) so the system dialog has already been resolved by
+         * the time the user actually starts an upload or RCM injection.
+         */
+        internal fun requestPermissionIfNeeded(usbManager: UsbManager, device: android.hardware.usb.UsbDevice) {
+            if (usbManager.hasPermission(device)) return
+            val context = NSTKApplication.context
+            val receiver = object : BroadcastReceiver() {
+                override fun onReceive(ctx: Context, intent: Intent) {
+                    ctx.unregisterReceiver(this)
+                }
+            }
+            registerPermissionReceiver(context, receiver)
+            usbManager.requestPermission(device, permissionIntent(context, device))
+        }
+
+        /** Suspends until the user grants/denies USB access, or returns immediately if already granted. */
+        internal suspend fun awaitUsbPermission(usbManager: UsbManager, device: android.hardware.usb.UsbDevice): Boolean {
+            if (usbManager.hasPermission(device)) return true
+
+            return suspendCancellableCoroutine { cont ->
+                val context = NSTKApplication.context
+                val receiver = object : BroadcastReceiver() {
+                    override fun onReceive(ctx: Context, intent: Intent) {
+                        ctx.unregisterReceiver(this)
+                        val granted = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)
+                        if (cont.isActive) cont.resume(granted)
+                    }
+                }
+                registerPermissionReceiver(context, receiver)
+                usbManager.requestPermission(device, permissionIntent(context, device))
+            }
+        }
+
+        private fun registerPermissionReceiver(context: Context, receiver: BroadcastReceiver) {
+            ContextCompat.registerReceiver(
+                context,
+                receiver,
+                IntentFilter(ACTION_USB_PERMISSION),
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+        }
+
+        private fun permissionIntent(context: Context, device: android.hardware.usb.UsbDevice): PendingIntent {
+            val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            return PendingIntent.getBroadcast(context, device.deviceId, Intent(ACTION_USB_PERMISSION), flags)
         }
     }
 }
