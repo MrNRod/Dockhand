@@ -68,7 +68,7 @@ actual class NetworkServer {
             
             var line: String? = input.readLine()
             val packet = mutableListOf<String>()
-            
+
             while (line != null) {
                 if (line.trim().isEmpty()) { // End of headers
                     processPacket(packet, files, output, writer)
@@ -76,7 +76,10 @@ actual class NetworkServer {
                 } else {
                     packet.add(line)
                 }
-                if (input.ready()) line = input.readLine() else break // Simple non-blocking check
+                // Block for the next line rather than polling input.ready(): a slow client can
+                // send a header line, then pause before the next one arrives, which would make
+                // ready() return false and truncate the request before it's fully read.
+                line = input.readLine()
             }
         } catch (e: Exception) {
             e.printStackTrace()
