@@ -128,7 +128,7 @@ class AndroidUsbController(
          * (listDevices/findRcmDevice) so the system dialog has already been resolved by
          * the time the user actually starts an upload or RCM injection.
          */
-        internal fun requestPermissionIfNeeded(usbManager: UsbManager, device: android.hardware.usb.UsbDevice) {
+        fun requestPermissionIfNeeded(usbManager: UsbManager, device: android.hardware.usb.UsbDevice) {
             if (usbManager.hasPermission(device)) return
             val context = NSTKApplication.context
             val receiver = object : BroadcastReceiver() {

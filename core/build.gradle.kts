@@ -9,7 +9,9 @@ kotlin {
     androidTarget {
         @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_25)
+            // D8/R8 lag behind the JVM's own class-file versions; target a D8-safe LTS
+            // release here even though the rest of this module (desktop) targets 25.
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
@@ -72,16 +74,16 @@ kotlin {
 
 android {
     namespace = "com.mrnrod45.nstk.core"
-    compileSdk = 34
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     defaultConfig {
-        minSdk = 26
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_25
-        targetCompatibility = JavaVersion.VERSION_25
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
