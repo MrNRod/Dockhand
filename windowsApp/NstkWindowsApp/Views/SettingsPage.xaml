@@ -16,14 +16,14 @@
             </StackPanel>
 
             <TextBlock Text="General" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,0" />
-            <ToggleSwitch Header="Auto-check for updates on launch" IsOn="True" />
-            <ToggleSwitch Header="Select folder with ROM files instead of individually" IsOn="False" />
+            <ToggleSwitch x:Name="AutoCheckUpdatesToggle" Header="Auto-check for updates on launch"
+                          Toggled="AutoCheckUpdatesToggle_Toggled" />
+            <ToggleSwitch x:Name="UseRomFolderToggle" Header="Select folder with ROM files instead of individually"
+                          Toggled="UseRomFolderToggle_Toggled" />
 
-            <TextBlock Text="Goldleaf" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,0" />
-            <ToggleSwitch Header="Show only *.nsp files" IsOn="False" />
-
-            <TextBlock Text="Awoo / Tinfoil / Sphaira" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,0" />
-            <ToggleSwitch Header="Allow XCI / NSZ / XCZ selection" IsOn="True" />
+            <TextBlock Text="File Selection" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,0" />
+            <ToggleSwitch x:Name="AllowXciToggle" Header="Allow XCI / NSZ / XCZ selection"
+                          Toggled="AllowXciToggle_Toggled" />
         </StackPanel>
     </ScrollViewer>
 </Page>

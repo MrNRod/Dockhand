@@ -9,6 +9,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
+
+        // No .app bundle means no CFBundleIconFile lookup either — set the
+        // Dock/Cmd+Tab icon directly from the bundled resource instead.
+        if let url = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
+           let image = NSImage(contentsOf: url) {
+            NSApp.applicationIconImage = image
+        }
     }
 }
 

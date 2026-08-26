@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 using NstkWindowsApp.Models;
+using NstkWindowsApp.Services;
 
 namespace NstkWindowsApp.Views;
 
@@ -68,10 +69,47 @@ public sealed partial class UploadPage : Page
         UploadButton.Content = _transport == "USB" ? "Upload to Switch" : "Upload over Network";
     }
 
+    /// <summary>Mirrors composeApp's UploadViewModel.openFilePicker() extension logic.</summary>
+    private List<string> AllowedExtensions()
+    {
+        var extensions = new List<string> { "nsp" };
+        if (SettingsStore.LoadAllowXci())
+        {
+            extensions.AddRange(new[] { "xci", "nsz", "xcz" });
+        }
+        return extensions;
+    }
+
     private async void AddFiles_Click(object sender, RoutedEventArgs e)
     {
+        var extensions = AllowedExtensions();
+
+        if (SettingsStore.LoadUseRomFolder())
+        {
+            var folderPicker = new FolderPicker();
+            folderPicker.FileTypeFilter.Add("*");
+            InitializeWithWindow.Initialize(folderPicker, WindowNative.GetWindowHandle(App.MainWindowInstance));
+
+            var folder = await folderPicker.PickSingleFolderAsync();
+            if (folder is null) return;
+
+            foreach (var path in Directory.EnumerateFiles(folder.Path, "*", SearchOption.AllDirectories))
+            {
+                var ext = Path.GetExtension(path).TrimStart('.').ToLowerInvariant();
+                if (extensions.Contains(ext))
+                {
+                    _files.Add(new FileEntry(Path.GetFileName(path), path));
+                }
+            }
+            UpdateUploadButtonState();
+            return;
+        }
+
         var picker = new FileOpenPicker { ViewMode = PickerViewMode.List };
-        picker.FileTypeFilter.Add("*");
+        foreach (var ext in extensions)
+        {
+            picker.FileTypeFilter.Add("." + ext);
+        }
         // Desktop (unpackaged) WinUI 3 apps must associate pickers with a window handle.
         InitializeWithWindow.Initialize(picker, WindowNative.GetWindowHandle(App.MainWindowInstance));
 

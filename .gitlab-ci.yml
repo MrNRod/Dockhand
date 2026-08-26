@@ -23,16 +23,17 @@ package-linux:
     - saas-linux-small-amd64
   script:
     - apt-get update && apt-get install -y rpm binutils fakeroot
-    - ./gradlew :desktopApp:packageDeb :desktopApp:packageRpm
+    - ./gradlew :linuxApp:jpackageDeb :linuxApp:jpackageRpm
   artifacts:
     paths:
-      - desktopApp/build/compose/binaries/main/deb/
-      - desktopApp/build/compose/binaries/main/rpm/
+      - linuxApp/build/jpackage/
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
 
-# --- Windows Packaging (Msi) ---
+# --- Windows Packaging ---
+# No MSI/MSIX installer yet (see windowsApp/README.md's known gaps) — this builds the
+# JVM backend jar and the WinUI frontend, bundles them together, and ships a zip.
 package-windows:
   stage: package
   tags:
@@ -44,17 +45,20 @@ package-windows:
     - $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
     - java -version
   script:
-    - ./gradlew.bat :desktopApp:packageMsi
+    - ./gradlew.bat :windowsApp:backend:fatJar
+    - New-Item -ItemType Directory -Force -Path windowsApp\NstkWindowsApp\backend
+    - Copy-Item windowsApp\backend\build\libs\nstk-windows-backend.jar windowsApp\NstkWindowsApp\backend\
+    - dotnet build windowsApp\NstkWindowsApp\NstkWindowsApp.csproj -c Release -p:Platform=x64
+    - Compress-Archive -Path windowsApp\NstkWindowsApp\bin\x64\Release\* -DestinationPath nstk-windows.zip
   artifacts:
     paths:
-      - desktopApp/build/compose/binaries/main/msi/
+      - nstk-windows.zip
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
 
-# macOS packaging removed — desktopApp (Compose) no longer targets macOS.
-# macOS now ships as the native SwiftUI app in /macosApp (`swift build` in that
-# directory); it isn't wired into this pipeline yet since it isn't code-signed/
+# macOS packaging isn't wired into this pipeline yet — macosApp ships as the native
+# SwiftUI app in /macosApp (`swift build` in that directory) and isn't code-signed/
 # notarized or packaged for distribution.
 
 # --- Android Packaging (APK) ---
@@ -90,6 +94,6 @@ release-job:
       release-cli create --name "Release $CI_COMMIT_TAG" --tag-name "$CI_COMMIT_TAG" \
         --description "Released automatically via GitLab CI." \
         --assets-link "{\"name\":\"Android APK\",\"url\":\"${BASE_URL}/androidApp/build/outputs/apk/debug/nstk-android-${VERSION}.apk?job=package-android\",\"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"Windows MSI\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/msi/nstk-${VERSION}.msi?job=package-windows\",\"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"Linux DEB\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/deb/nstk-${VERSION}-1_amd64.deb?job=package-linux\",\"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"Linux RPM\",\"url\":\"${BASE_URL}/desktopApp/build/compose/binaries/main/rpm/nstk-${VERSION}-1.x86_64.rpm?job=package-linux\",\"link_type\":\"package\"}"
+        --assets-link "{\"name\":\"Windows (zip)\",\"url\":\"${BASE_URL}/nstk-windows.zip?job=package-windows\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Linux DEB\",\"url\":\"${BASE_URL}/linuxApp/build/jpackage/ns-toolkit_${VERSION}_amd64.deb?job=package-linux\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Linux RPM\",\"url\":\"${BASE_URL}/linuxApp/build/jpackage/ns-toolkit-${VERSION}-1.x86_64.rpm?job=package-linux\",\"link_type\":\"package\"}"

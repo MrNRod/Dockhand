@@ -26,7 +26,7 @@ class RcmPage(private val state: AppState) : Listener {
         selectButton.onClicked { pickPayload() }
         payloadRow.append(selectButton)
         payloadRow.append(payloadLabel)
-        root.append(Frame.builder().setLabel("Payload Selection").setChild(payloadRow).build())
+        root.append(Frame.builder().setLabel("Payload Selection").setChild(payloadRow.withMargin()).build())
 
         injectButton.addCssClass("suggested-action")
         injectButton.onClicked { injectPayload() }
@@ -37,7 +37,7 @@ class RcmPage(private val state: AppState) : Listener {
         val logScroller = ScrolledWindow()
         logScroller.setChild(logView)
         logScroller.vexpand = true
-        root.append(Frame.builder().setLabel("Logs").setChild(logScroller).build())
+        root.append(Frame.builder().setLabel("Logs").setChild(logScroller.withMargin()).build())
 
         state.addListener(this)
         onChanged()

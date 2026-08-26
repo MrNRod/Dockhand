@@ -21,6 +21,10 @@ public sealed partial class SettingsPage : Page
             _ => ThemeSystemRadio
         };
         radio.IsChecked = true;
+
+        AutoCheckUpdatesToggle.IsOn = SettingsStore.LoadAutoCheckUpdates();
+        UseRomFolderToggle.IsOn = SettingsStore.LoadUseRomFolder();
+        AllowXciToggle.IsOn = SettingsStore.LoadAllowXci();
     }
 
     private void ThemeRadio_Checked(object sender, RoutedEventArgs e)
@@ -29,4 +33,13 @@ public sealed partial class SettingsPage : Page
         SettingsStore.SaveTheme(theme);
         (App.MainWindowInstance as MainWindow)?.ApplyTheme(theme);
     }
+
+    private void AutoCheckUpdatesToggle_Toggled(object sender, RoutedEventArgs e) =>
+        SettingsStore.SaveAutoCheckUpdates(AutoCheckUpdatesToggle.IsOn);
+
+    private void UseRomFolderToggle_Toggled(object sender, RoutedEventArgs e) =>
+        SettingsStore.SaveUseRomFolder(UseRomFolderToggle.IsOn);
+
+    private void AllowXciToggle_Toggled(object sender, RoutedEventArgs e) =>
+        SettingsStore.SaveAllowXci(AllowXciToggle.IsOn);
 }

@@ -51,13 +51,13 @@ class SplitMergePage(private val state: AppState) : Listener {
         operationBox.append(modeRow)
         operationBox.append(filesRow)
         operationBox.append(outputRow)
-        root.append(Frame.builder().setLabel("Operation").setChild(operationBox).build())
+        root.append(Frame.builder().setLabel("Operation").setChild(operationBox.withMargin()).build())
 
         val pathsScroller = ScrolledWindow()
         pathsScroller.setChild(pathsListBox)
         pathsScroller.vexpand = true
         pathsListBox.setPlaceholder(Label.builder().setLabel("No files selected").build())
-        root.append(Frame.builder().setLabel("Files to Process").setChild(pathsScroller).build())
+        root.append(Frame.builder().setLabel("Files to Process").setChild(pathsScroller.withMargin()).build())
 
         root.append(statusLabel)
 

@@ -6,6 +6,7 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>NstkWindowsApp</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <Platforms>x64;arm64</Platforms>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
@@ -30,6 +31,16 @@
     <None Include="backend\nstk-windows-backend.jar" Condition="Exists('backend\nstk-windows-backend.jar')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- <ApplicationIcon> above only embeds this into the .exe's own resources
+         (Explorer/taskbar) — AppWindow.SetIcon() in MainWindow.xaml.cs loads it
+         from a file on disk at runtime for the titlebar icon, so it also needs
+         to be copied to the output directory. -->
+    <Content Include="Assets\AppIcon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

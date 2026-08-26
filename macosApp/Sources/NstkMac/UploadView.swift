@@ -1,8 +1,11 @@
 import SwiftUI
 import AppKit
+import UniformTypeIdentifiers
 
 struct UploadView: View {
     @EnvironmentObject private var appState: AppState
+    @AppStorage("useRomFolder") private var useRomFolder = false
+    @AppStorage("allowXci") private var allowXci = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -104,12 +107,50 @@ struct UploadView: View {
     }
 
     private func pickFiles() {
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = true
-        panel.canChooseDirectories = false
-        panel.canChooseFiles = true
-        if panel.runModal() == .OK {
-            appState.addFiles(panel.urls)
+        let extensions = allowedExtensions()
+
+        if useRomFolder {
+            let panel = NSOpenPanel()
+            panel.canChooseDirectories = true
+            panel.canChooseFiles = false
+            panel.allowsMultipleSelection = false
+            guard panel.runModal() == .OK, let folder = panel.urls.first else { return }
+            appState.addFiles(enumerateFiles(in: folder, extensions: extensions))
+        } else {
+            let panel = NSOpenPanel()
+            panel.allowsMultipleSelection = true
+            panel.canChooseDirectories = false
+            panel.canChooseFiles = true
+            if !extensions.isEmpty {
+                panel.allowedContentTypes = extensions.compactMap { UTType(filenameExtension: $0) }
+            }
+            if panel.runModal() == .OK {
+                appState.addFiles(panel.urls)
+            }
         }
+    }
+
+    /// Mirrors composeApp's UploadViewModel.openFilePicker() extension logic:
+    /// .nsp is always allowed; XCI/NSZ/XCZ only when allowXci is on.
+    private func allowedExtensions() -> [String] {
+        var extensions = ["nsp"]
+        if allowXci {
+            extensions += ["xci", "nsz", "xcz"]
+        }
+        return extensions
+    }
+
+    private func enumerateFiles(in folder: URL, extensions: [String]) -> [URL] {
+        guard let enumerator = FileManager.default.enumerator(
+            at: folder, includingPropertiesForKeys: [.isRegularFileKey]
+        ) else { return [] }
+
+        var results: [URL] = []
+        for case let url as URL in enumerator {
+            if extensions.contains(url.pathExtension.lowercased()) {
+                results.append(url)
+            }
+        }
+        return results
     }
 }

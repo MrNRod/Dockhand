@@ -1,19 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.6.1")
-    }
-    configurations.classpath {
-        resolutionStrategy {
-            force("com.guardsquare:proguard-gradle:7.6.1")
-        }
-    }
-}
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
@@ -33,13 +17,7 @@ kotlin {
     }
     
     jvmToolchain(25)
-    
-    jvm("desktop") {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_25)
-        }
-    }
-    
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -67,12 +45,6 @@ kotlin {
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.appcompat)
                 implementation(libs.androidx.core.ktx)
-            }
-        }
-        val desktopMain by getting {
-            dependencies {
-                implementation(compose.desktop.currentOs)
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.9.0")
             }
         }
     }

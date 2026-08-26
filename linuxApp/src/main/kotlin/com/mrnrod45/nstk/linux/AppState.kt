@@ -62,6 +62,14 @@ class AppState {
     var statusMessage: String = ""
         set(value) { field = value; notifyChanged() }
 
+    // Settings — persisted via java.util.prefs, read by UploadPage's file picker/upload logic.
+    var useRomFolder: Boolean = SettingsStore.getBool("useRomFolder", false)
+        set(value) { field = value; SettingsStore.setBool("useRomFolder", value); notifyChanged() }
+    var allowXci: Boolean = SettingsStore.getBool("allowXci", true)
+        set(value) { field = value; SettingsStore.setBool("allowXci", value); notifyChanged() }
+    var autoCheckUpdates: Boolean = SettingsStore.getBool("autoCheckUpdates", true)
+        set(value) { field = value; SettingsStore.setBool("autoCheckUpdates", value); notifyChanged() }
+
     val isTransportEnabled: Boolean get() = selectedProtocol == "Awoo"
 
     private val listeners = mutableListOf<Listener>()

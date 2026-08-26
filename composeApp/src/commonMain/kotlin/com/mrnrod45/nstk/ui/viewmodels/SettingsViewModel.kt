@@ -20,15 +20,6 @@ class SettingsViewModel : ViewModel() {
     private val _useRomFolder = MutableStateFlow(false)
     val useRomFolder: StateFlow<Boolean> = _useRomFolder.asStateFlow()
 
-    // Goldleaf Settings
-    private val _showOnlyNsp = MutableStateFlow(false)
-    val showOnlyNsp: StateFlow<Boolean> = _showOnlyNsp.asStateFlow()
-
-    private val _goldleafHost = MutableStateFlow("192.168.1.1")
-    
-    private val _goldLeafVersion = MutableStateFlow("v0.10+") // Default/Placeholder
-    val goldLeafVersion: StateFlow<String> = _goldLeafVersion.asStateFlow()
-
     // Awoo Settings
     private val _allowXci = MutableStateFlow(true) // Checked by default in screenshot
     val allowXci: StateFlow<Boolean> = _allowXci.asStateFlow()
@@ -70,14 +61,6 @@ class SettingsViewModel : ViewModel() {
 
     fun toggleUseRomFolder(enabled: Boolean) {
         _useRomFolder.value = enabled
-    }
-
-    fun toggleShowOnlyNsp(enabled: Boolean) {
-        _showOnlyNsp.value = enabled
-    }
-
-    fun setGoldLeafVersion(version: String) {
-        _goldLeafVersion.value = version
     }
 
     fun toggleAllowXci(enabled: Boolean) {

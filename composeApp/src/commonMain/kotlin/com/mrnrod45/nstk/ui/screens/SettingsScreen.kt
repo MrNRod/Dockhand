@@ -45,8 +45,6 @@ fun SettingsScreen(
     val useSplitFiles by viewModel.useSplitFiles.collectAsState()
     val autoCheckUpdates by viewModel.autoCheckUpdates.collectAsState()
     val useRomFolder by viewModel.useRomFolder.collectAsState()
-    val showOnlyNsp by viewModel.showOnlyNsp.collectAsState()
-    val goldLeafVersion by viewModel.goldLeafVersion.collectAsState()
     val allowXci by viewModel.allowXci.collectAsState()
     val validateIp by viewModel.validateIp.collectAsState()
     val expertMode by viewModel.expertMode.collectAsState()
@@ -260,64 +258,9 @@ fun SettingsScreen(
 
             HorizontalDivider()
 
-            // Goldleaf Section
+            // File format selection (applies to all protocols)
             Text(
-                "Goldleaf Settings",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = showOnlyNsp,
-                    onCheckedChange = { viewModel.toggleShowOnlyNsp(it) }
-                )
-                Text("Show only *.nsp in Goldleaf.")
-            }
-            
-            // Goldleaf Version Selector
-            val goldleafVersions = listOf("v0.5", "v0.7.x", "v0.8-0.9", "v0.10+")
-            var glVersionExpanded by remember { mutableStateOf(false) }
-            Row(
-                modifier = Modifier.padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Goldleaf version", modifier = Modifier.width(140.dp))
-                ExposedDropdownMenuBox(
-                    expanded = glVersionExpanded,
-                    onExpandedChange = { glVersionExpanded = !glVersionExpanded },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    OutlinedTextField(
-                        value = goldLeafVersion,
-                        onValueChange = {},
-                        readOnly = true,
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = glVersionExpanded) },
-                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = glVersionExpanded,
-                        onDismissRequest = { glVersionExpanded = false }
-                    ) {
-                        goldleafVersions.forEach { version ->
-                            DropdownMenuItem(
-                                text = { Text(version) },
-                                onClick = {
-                                    viewModel.setGoldLeafVersion(version)
-                                    glVersionExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-            // Awoo Section
-            Text(
-                "Awoo Installer and compatible",
+                "File Selection",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(vertical = 8.dp)
@@ -328,10 +271,10 @@ fun SettingsScreen(
                     checked = allowXci,
                     onCheckedChange = { viewModel.toggleAllowXci(it) }
                 )
-                Text("Allow XCI / NSZ / XCZ files selection for Awoo/TinWoo Installer and Sphaira.")
+                Text("Allow XCI / NSZ / XCZ file selection (in addition to NSP).")
             }
              Text(
-                "Used by applications that support XCI/NSZ/XCZ and utilizes Tinfoil (aka Awoo/TinWoo/Sphaira) transfer protocol. Don't change if not sure. Enable for Awoo/TinWoo Installer and Sphaira.",
+                "When off, only *.nsp files can be selected regardless of protocol.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)

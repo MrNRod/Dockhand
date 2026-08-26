@@ -1,5 +1,5 @@
 rootProject.name = "nstk"
-include(":core", ":composeApp", ":androidApp", ":desktopApp", ":linuxApp", ":windowsApp:backend")
+include(":core", ":composeApp", ":androidApp", ":linuxApp", ":windowsApp:backend")
 
 pluginManagement {
     repositories {

@@ -1,9 +1,10 @@
 # :composeApp
 
 Compose Multiplatform UI (Material 3) — screens, view models, navigation, and theming.
-Consumed by `androidApp` (where Compose is genuinely native) and `desktopApp` (where it's
-a cross-platform renderer, currently covering Windows + Linux — see the root README for
-the plan to eventually replace that with `linuxApp`/`windowsApp`).
+Consumed only by `androidApp`, where Compose is genuinely native (Android's own modern
+UI toolkit, not a cross-platform renderer). The JVM `desktop` target this module used to
+also support was removed once `desktopApp` was retired in favor of the native
+`macosApp`/`linuxApp`/`windowsApp` apps — see the root README's architecture section.
 
 This module has **no domain logic of its own** — it depends on `:core` (`api(project(":core"))`
 in `build.gradle.kts`) for everything USB/network/file-related and only contains
@@ -15,17 +16,14 @@ presentation-layer code.
 ui/
   screens/            UploadScreen, RcmScreen, SplitMergeScreen, SettingsScreen — the
                        common (shared) implementations.
-  screens/platform/    expect/actual PlatformUploadScreen etc. Currently both the
-                       androidMain and desktopMain actuals just delegate straight to the
-                       common screens (desktopMain used to branch on macOS here before
-                       macosApp existed — that branch is gone now).
+  screens/platform/    expect/actual PlatformUploadScreen etc. — only an androidMain
+                       actual now, delegating straight to the common screens.
   viewmodels/          UploadViewModel, RcmViewModel, SplitMergeViewModel, SettingsViewModel.
                        Hold UI state as StateFlow/mutableStateOf, call into :core's classes
                        directly (UsbController, protocols, FileSplitter, NetworkServer).
   navigation/          AppNavigation.kt — the NavHost + Screen enum (Upload/Rcm/SplitMerge/
-                       Settings), and PlatformAppLayout (expect/actual — Android gets a
-                       bottom NavigationBar, Desktop gets an OS-aware sidebar/rail, see
-                       ui/layout/DesktopLayouts.kt for the Windows/Linux-specific styling).
+                       Settings), and PlatformAppLayout (expect/actual, androidMain only —
+                       a bottom NavigationBar).
   components/          PlatformAppLayout, PlatformDraggableArea — expect/actual per-platform
                        chrome helpers.
   theme/               Color.kt, Theme.kt (expect/actual), Type.kt, ThemeConfig.kt.

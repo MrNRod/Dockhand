@@ -14,14 +14,17 @@ class SettingsPage(private val state: AppState) {
         root.marginTop = 16; root.marginBottom = 16; root.marginStart = 16; root.marginEnd = 16
 
         root.append(sectionLabel("General"))
-        root.append(switchRow("Auto-check for updates on launch", initial = true) { })
-        root.append(switchRow("Select folder with ROM files instead of individually", initial = false) { })
+        root.append(switchRow("Auto-check for updates on launch", initial = state.autoCheckUpdates) {
+            state.autoCheckUpdates = it
+        })
+        root.append(switchRow("Select folder with ROM files instead of individually", initial = state.useRomFolder) {
+            state.useRomFolder = it
+        })
 
-        root.append(sectionLabel("Goldleaf"))
-        root.append(switchRow("Show only *.nsp files", initial = false) { })
-
-        root.append(sectionLabel("Awoo / Tinfoil / Sphaira"))
-        root.append(switchRow("Allow XCI / NSZ / XCZ selection", initial = true) { })
+        root.append(sectionLabel("File Selection"))
+        root.append(switchRow("Allow XCI / NSZ / XCZ selection", initial = state.allowXci) {
+            state.allowXci = it
+        })
     }
 
     private fun sectionLabel(text: String): Label =

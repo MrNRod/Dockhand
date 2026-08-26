@@ -3,15 +3,15 @@
 Pure Kotlin domain logic — USB communication, network transfer, file splitting, RCM
 payload injection. **No UI dependency of any kind.** This is what makes the
 native-UI-per-platform architecture possible: every app in this repo (`androidApp` via
-`composeApp`, `desktopApp` via `composeApp`, `macosApp`, `linuxApp`, `windowsApp`) links
-against this same module and gets identical protocol behavior.
+`composeApp`, `macosApp`, `linuxApp`, `windowsApp`) links against this same module and
+gets identical protocol behavior.
 
 ## Targets
 
 | Target | Source set | Notes |
 |---|---|---|
 | Android | `androidMain` | Consumed by `composeApp` → `androidApp`. |
-| JVM (desktop) | `desktopMain` | Consumed by `composeApp` → `desktopApp`, and directly by `linuxApp` and `windowsApp/backend`. |
+| JVM (desktop) | `desktopMain` | Consumed directly by `linuxApp` and `windowsApp/backend`. |
 | `macosArm64` (Kotlin/Native) | `macosArm64Main` | Consumed by `macosApp` via a linked `.framework`. |
 
 ## Package layout

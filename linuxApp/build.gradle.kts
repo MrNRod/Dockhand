@@ -42,3 +42,49 @@ tasks.withType<JavaExec>().configureEach {
         environment("DYLD_FALLBACK_LIBRARY_PATH", "/opt/homebrew/lib")
     }
 }
+
+// Native Linux packages via jpackage (bundled with the JDK, no extra plugin needed).
+// jpackage also auto-generates the .desktop file + installs the icon — GTK4 removed
+// per-window icon APIs, so this is the only way the app gets a taskbar/launcher icon
+// on Linux at all, not just a distribution nicety.
+//
+// Must run on the target OS: `jpackageDeb` needs dpkg-deb (present by default on
+// Debian/Ubuntu), `jpackageRpm` needs rpmbuild (`apt install rpm` on Debian/Ubuntu).
+fun registerJpackageTask(taskName: String, type: String) = tasks.register<Exec>(taskName) {
+    dependsOn("installDist")
+    group = "distribution"
+    description = "Builds a native .$type package via jpackage."
+
+    val installLibDir = layout.buildDirectory.dir("install/linuxApp/lib")
+    val destDir = layout.buildDirectory.dir("jpackage")
+    val appIcon = project.file("packaging/icon.png")
+
+    inputs.dir(installLibDir)
+    outputs.dir(destDir)
+    doFirst { destDir.get().asFile.mkdirs() }
+
+    commandLine(
+        "jpackage",
+        "--type", type,
+        "--name", "NS-ToolKit",
+        "--app-version", "1.0.0",
+        "--vendor", "mrnrod45",
+        "--input", installLibDir.get().asFile.absolutePath,
+        "--main-jar", "linuxApp.jar",
+        "--main-class", "com.mrnrod45.nstk.linux.MainKt",
+        "--icon", appIcon.absolutePath,
+        "--dest", destDir.get().asFile.absolutePath,
+        "--linux-shortcut",
+        "--linux-menu-group", "Utility",
+        // Overrides jpackage's auto-generated .desktop file to add StartupWMClass,
+        // matching the GApplication ID set in Main.kt — without it, GNOME Shell's
+        // dock can't associate a running window back to this launcher's icon
+        // (it falls back to matching by Exec name, which doesn't line up), even
+        // though the app-grid icon (read straight from the .desktop file) is fine.
+        "--resource-dir", project.file("packaging/linux").absolutePath,
+        "--java-options", "--enable-native-access=ALL-UNNAMED"
+    )
+}
+
+registerJpackageTask("jpackageDeb", "deb")
+registerJpackageTask("jpackageRpm", "rpm")

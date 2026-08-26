@@ -183,36 +183,8 @@ class UploadViewModel(
             
             try {
                 if (_selectedProtocol.value == "Goldleaf") {
-                    val glVersion = settingsViewModel.goldLeafVersion.value
-                    val showOnlyNsp = settingsViewModel.showOnlyNsp.value
-
-                    // Apply NSP-only filter to the file map if the setting is enabled.
-                    // This means non-NSP files that the user added won't be sent to Goldleaf.
-                    val filteredMap = if (showOnlyNsp) {
-                        fileMap.filter { (name, _) -> name.endsWith(".nsp", ignoreCase = true) }
-                            .also {
-                                val excluded = fileMap.size - it.size
-                                if (excluded > 0)
-                                    logPrinter.print("NSP-only filter: excluded $excluded non-NSP file(s)", com.mrnrod45.nstk.domain.models.MsgType.INFO)
-                            }
-                    } else fileMap
-
-                    // Version-specific routing mirrors the original UsbCommunications.java switch.
-                    // Currently a single Goldleaf.kt handles the v0.10+ handshake.
-                    // TODO: add GoldLeaf_05 / GoldLeaf_07 / GoldLeaf_08 protocol classes.
-                    logPrinter.print("Goldleaf version: $glVersion", com.mrnrod45.nstk.domain.models.MsgType.INFO)
-                    when (glVersion) {
-                        "v0.10+" -> {
-                            val protocol = com.mrnrod45.nstk.domain.protocols.Goldleaf(connection, logPrinter)
-                            protocol.start(filteredMap)
-                        }
-                        // v0.8-0.9, v0.7.x, v0.5 will use the same class until dedicated ones are implemented
-                        else -> {
-                            logPrinter.print("Note: $glVersion uses the same handler as v0.10+ pending dedicated implementation", com.mrnrod45.nstk.domain.models.MsgType.INFO)
-                            val protocol = com.mrnrod45.nstk.domain.protocols.Goldleaf(connection, logPrinter)
-                            protocol.start(filteredMap)
-                        }
-                    }
+                    val protocol = com.mrnrod45.nstk.domain.protocols.Goldleaf(connection, logPrinter)
+                    protocol.start(fileMap)
                 } else {
                     // Awoo / Tinfoil / Sphaira
                     val protocol = com.mrnrod45.nstk.domain.protocols.Tinfoil(connection, logPrinter)
@@ -236,23 +208,15 @@ class UploadViewModel(
         viewModelScope.launch {
             val allowXci = settingsViewModel.allowXci.value
             val useRomFolder = settingsViewModel.useRomFolder.value
-            val isGoldleaf = _selectedProtocol.value == "Goldleaf"
-            val showOnlyNsp = settingsViewModel.showOnlyNsp.value
 
-            println("openFilePicker called. protocol=${ _selectedProtocol.value}, useRomFolder=$useRomFolder, allowXci=$allowXci, showOnlyNsp=$showOnlyNsp")
+            println("openFilePicker called. protocol=${ _selectedProtocol.value}, useRomFolder=$useRomFolder, allowXci=$allowXci")
 
-            // Build the extension list.
-            // When Goldleaf + showOnlyNsp: only .nsp, regardless of allowXci.
-            val allowedExtensions = mutableListOf<String>()
-            allowedExtensions.add("nsp") // Always allowed for all protocols
-
-            if (!isGoldleaf || !showOnlyNsp) {
-                // Only add extra formats when we're NOT locked to NSP-only mode
-                if (allowXci) {
-                    allowedExtensions.add("xci")
-                    allowedExtensions.add("nsz")
-                    allowedExtensions.add("xcz")
-                }
+            // .nsp is always allowed for all protocols; XCI/NSZ/XCZ only when allowXci is on.
+            val allowedExtensions = mutableListOf("nsp")
+            if (allowXci) {
+                allowedExtensions.add("xci")
+                allowedExtensions.add("nsz")
+                allowedExtensions.add("xcz")
             }
 
             println("Allowed extensions: $allowedExtensions")

@@ -15,15 +15,11 @@ everything.
                  at all. Targets: Android, JVM (desktop), macosArm64 (Kotlin/Native).
                  Consumed directly by every app below.                    → core/README.md
 
-:composeApp      Compose Multiplatform UI (Material 3), consumed by androidApp and
-                 desktopApp. Android is genuinely native here — Compose is Android's own
-                 modern UI toolkit, not a cross-platform renderer, for that target.
-                                                                       → composeApp/README.md
+:composeApp      Compose Multiplatform UI (Material 3), consumed only by androidApp —
+                 Compose is Android's own modern UI toolkit, not a cross-platform
+                 renderer, for that target.                          → composeApp/README.md
 
 :androidApp      Thin Android application shell wrapping :composeApp.     → androidApp/README.md
-:desktopApp      Compose Desktop shell wrapping :composeApp — currently serves
-                 Windows + Linux (see note below on macosApp/linuxApp/windowsApp).
-                                                                        → desktopApp/README.md
 
 macosApp/        Native SwiftUI app (Swift Package, not a Gradle module) linking directly
                  against a Kotlin/Native framework built from :core. Real NavigationSplitView
@@ -32,7 +28,7 @@ macosApp/        Native SwiftUI app (Swift Package, not a Gradle module) linking
 
 linuxApp/        Native GTK4 UI (Kotlin/JVM via java-gi, the Foreign Function & Memory
                  API bindings for GTK4) calling :core's existing desktop JVM code directly.
-                                                                          → linuxApp/README.md
+                 Packaged as a real .deb via jpackage.                   → linuxApp/README.md
 
 windowsApp/      Native WinUI 3 (C#) frontend + a small JVM backend (windowsApp/backend,
                  also built on :core) that the frontend spawns as a subprocess and talks
@@ -42,15 +38,13 @@ windowsApp/      Native WinUI 3 (C#) frontend + a small JVM backend (windowsApp/
 ### Status of the native apps
 
 - **macosApp**: built, run, and verified — a real native window with working navigation.
-- **linuxApp**: compiles cleanly against `:core`; not yet visually confirmed in a real
-  Linux environment (see `linuxApp/README.md` for why and what to check).
-- **windowsApp**: the JVM backend is built and tested end-to-end; the WinUI frontend is
-  unverified — it needs an actual Windows machine or VM to build and run at all (see
-  `windowsApp/README.md`).
+- **linuxApp**: built, run, and verified on real Ubuntu 24.04 (ARM64) — packaged and
+  installed as a `.deb`, with a working dock icon and native GTK4 chrome.
+- **windowsApp**: built, run, and verified on Windows 11 — the WinUI frontend talks to
+  the JVM backend over the local socket protocol.
 
-`desktopApp` (Compose) is being kept as the Windows/Linux fallback until `linuxApp` and
-`windowsApp` are each confirmed working, at which point it'll be scoped down or retired
-per platform.
+There is no Compose Desktop fallback anymore — each of macOS/Linux/Windows now has a
+real, verified native UI, so the temporary `desktopApp` module has been retired.
 
 ## Features
 
@@ -77,11 +71,6 @@ per platform.
 ./gradlew :androidApp:installDebug
 ```
 
-**Desktop (Windows/Linux, Compose)**:
-```bash
-./gradlew :desktopApp:run
-```
-
 **macOS (native SwiftUI)**:
 ```bash
 ./gradlew :core:linkDebugFrameworkMacosArm64
@@ -98,26 +87,23 @@ cd macosApp && swift run NstkMac
 
 ### Generating Installers
 
-The project is configured to generate native installers using `jpackage` for the Compose
-Desktop app, which now targets **Windows and Linux only** (`desktopApp` no longer builds
-a macOS package — macOS ships as the native SwiftUI app in `macosApp/` instead). Run the
-packaging command on the corresponding OS.
-
-**Windows**:
+**Linux** — a real `.deb`/`.rpm` via `jpackage` (bundled with the JDK, no extra plugin):
 ```bash
-./gradlew :desktopApp:packageMsi
+./gradlew :linuxApp:jpackageDeb
+./gradlew :linuxApp:jpackageRpm
 ```
+Must run on the target OS — `jpackageDeb` needs `dpkg-deb` (present by default on
+Debian/Ubuntu), `jpackageRpm` needs `rpmbuild` (`apt install rpm` on Debian/Ubuntu).
 
-**Linux**:
-```bash
-./gradlew :desktopApp:packageDeb
-./gradlew :desktopApp:packageRpm
-```
+**Windows** — see `windowsApp/README.md`; there's no MSI installer yet, just a
+`dotnet build` output folder plus the JVM backend jar.
+
+**macOS** — no packaged `.app`/notarization yet; see `macosApp/README.md`'s known gaps.
 
 ### CI/CD Pipeline
 This project uses **GitLab CI** to automate the build process.
 -   Pipelines are triggered by **Git Tags** (e.g., `v1.0.0`).
--   Generates all desktop installers and Android APKs as job artifacts.
+-   Generates installers/APKs as job artifacts.
 
 ## Credits
 

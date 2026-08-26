@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.gnome.gio.ListStore
 import org.gnome.gtk.*
+import java.io.File
 
 class UploadPage(private val state: AppState) : Listener {
 
@@ -31,16 +32,14 @@ class UploadPage(private val state: AppState) : Listener {
     init {
         root.marginTop = 16; root.marginBottom = 16; root.marginStart = 16; root.marginEnd = 16
 
-        val connectionRow = Box(Orientation.HORIZONTAL, 16)
-        val protocolBox = Box(Orientation.VERTICAL, 4)
-        protocolBox.append(Label.builder().setLabel("Protocol").setHalign(Align.START).build())
-        protocolBox.append(protocolDropdown)
-        val transportBox = Box(Orientation.VERTICAL, 4)
-        transportBox.append(Label.builder().setLabel("Transport").setHalign(Align.START).build())
-        transportBox.append(transportDropdown)
-        connectionRow.append(protocolBox)
-        connectionRow.append(transportBox)
-        root.append(Frame.builder().setLabel("Connection").setChild(connectionRow).build())
+        val connectionGrid = Grid()
+        connectionGrid.columnSpacing = 16
+        connectionGrid.rowSpacing = 4
+        connectionGrid.attach(Label.builder().setLabel("Protocol").setHalign(Align.START).build(), 0, 0, 1, 1)
+        connectionGrid.attach(Label.builder().setLabel("Transport").setHalign(Align.START).build(), 1, 0, 1, 1)
+        connectionGrid.attach(protocolDropdown, 0, 1, 1, 1)
+        connectionGrid.attach(transportDropdown, 1, 1, 1, 1)
+        root.append(Frame.builder().setLabel("Connection").setChild(connectionGrid.withMargin()).build())
 
         ipRow.append(Label.builder().setLabel("Switch IP Address").build())
         ipRow.append(ipEntry)
@@ -52,7 +51,7 @@ class UploadPage(private val state: AppState) : Listener {
         filesScroller.setChild(filesListBox)
         filesScroller.vexpand = true
         filesListBox.setPlaceholder(emptyLabel)
-        root.append(Frame.builder().setLabel("Selected Files").setChild(filesScroller).build())
+        root.append(Frame.builder().setLabel("Selected Files").setChild(filesScroller.withMargin()).build())
 
         logView.editable = false
         logView.monospace = true
@@ -115,14 +114,43 @@ class UploadPage(private val state: AppState) : Listener {
         logBuffer.setText(state.uploadLog.toString(), -1)
     }
 
+    /** Mirrors composeApp's UploadViewModel.openFilePicker() extension logic. */
+    private fun allowedExtensions(): List<String> {
+        val extensions = mutableListOf("nsp")
+        if (state.allowXci) {
+            extensions += listOf("xci", "nsz", "xcz")
+        }
+        return extensions
+    }
+
     private fun pickFiles() {
+        val extensions = allowedExtensions()
+
+        if (state.useRomFolder) {
+            val dialog = FileDialog.builder().setTitle("Select ROM Folder").build()
+            dialog.selectFolder(null, null) { _, result, _ ->
+                try {
+                    val folder = dialog.selectFolderFinish(result)
+                    val path = folder.path ?: return@selectFolder
+                    val matches = File(path).walkTopDown()
+                        .filter { it.isFile && extensions.any { ext -> it.name.endsWith(ext, ignoreCase = true) } }
+                        .map { it.absolutePath }
+                        .toList()
+                    state.addFiles(matches)
+                } catch (e: Exception) {
+                    // User cancelled or dialog error — nothing to do.
+                }
+            }
+            return
+        }
+
         val dialog = FileDialog.builder().setTitle("Select Files").build()
         dialog.openMultiple(null, null) { _, result, _ ->
             try {
                 val list = dialog.openMultipleFinish(result)
                 val paths = (0 until list.nItems).mapNotNull { i ->
                     (list.getItem(i) as? org.gnome.gio.File)?.path
-                }
+                }.filter { path -> extensions.any { ext -> path.endsWith(ext, ignoreCase = true) } }
                 state.addFiles(paths)
             } catch (e: Exception) {
                 // User cancelled or dialog error — nothing to do.

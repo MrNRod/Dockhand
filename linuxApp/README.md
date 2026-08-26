@@ -8,17 +8,15 @@ only supplies a GTK4 UI layer in place of Compose Desktop.
 
 ## Status
 
-- **Compiles cleanly** against `:core`'s `jvm("desktop")` target.
-- **Could not be visually verified on macOS.** Running it here gets all the way through
-  loading `libgtk-4`/`libgobject-2.0`/`libgio-2.0` via Panama and into
-  `gtk_application_startup`, then crashes with a native `NSException` — Homebrew's `gtk4`
-  formula has no `quartz` GDK backend, so it can't actually open a window on macOS at all
-  (the exact same wall hit independently with the Rust/`gtk4-rs` prototype in
-  `~/Projects/Rust/nstk-native`). Since the crash happens deep inside GTK's own native
-  code, past all of this module's Kotlin code, that's strong evidence the Kotlin/java-gi
-  code itself is correct — it just needs a real Linux X11/Wayland session to render into.
-- **Needs testing in a real Linux VM** to confirm the actual window/widgets render as
-  intended.
+**Built, run, and verified on real Ubuntu 24.04 (ARM64)** — a genuine GTK4 window with
+working navigation, native file dialogs, and a custom icon+label sidebar. Also packaged
+and installed as a real `.deb` via `jpackage` (see below), with a correctly matched dock
+icon.
+
+(It can't run on macOS at all, for reference — Homebrew's `gtk4` formula has no `quartz`
+GDK backend, so `gtk_application_startup` crashes immediately with a native `NSException`
+before ever reaching this module's own code — the exact same wall hit independently with
+the Rust/`gtk4-rs` prototype in `~/Projects/Rust/nstk-native`. It only runs on real Linux.)
 
 ## Building and running
 
@@ -32,6 +30,22 @@ real Linux, where these libs are already on the standard system search path.
 
 On a Linux VM, you'll need GTK4 installed (e.g. `apt install libgtk-4-1` on
 Debian/Ubuntu, or `dnf install gtk4` on Fedora) and a JDK 22+ on `PATH`.
+
+## Packaging
+
+```sh
+./gradlew :linuxApp:jpackageDeb   # needs dpkg-deb (present by default on Debian/Ubuntu)
+./gradlew :linuxApp:jpackageRpm   # needs rpmbuild (`apt install rpm` on Debian/Ubuntu)
+```
+
+Output lands in `build/jpackage/`. `jpackage` also generates the `.desktop` file and
+installs the icon — GTK4 removed per-window icon APIs entirely, so this is the *only* way
+the app gets a taskbar/launcher icon on Linux at all, not just a packaging nicety. A
+custom `.desktop` template lives at `packaging/linux/NS-ToolKit.desktop`, overriding
+jpackage's auto-generated one to add `StartupWMClass` — without it, GNOME Shell's dock
+can't match the running window back to its icon (it falls back to matching by `Exec` name,
+which doesn't line up with the app's actual GApplication ID), even though the static
+app-grid icon is fine either way since that's read straight from the `.desktop` file.
 
 ## Architecture notes
 

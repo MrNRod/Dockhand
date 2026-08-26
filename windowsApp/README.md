@@ -10,15 +10,15 @@ engine when true language interop isn't available.
 
 ## Status
 
-- **`backend/` is fully built and tested from this machine** — pure JVM, no OS-specific
-  dependency. Verified: starts, prints its listening port, accepts a connection, and
-  correctly handles `listDevices`, `findRcmDevice`, and unknown-method error cases over
-  the real JSON-RPC protocol (tested with a plain Python socket client standing in for
-  the C# frontend).
-- **`NstkWindowsApp/` (the WinUI 3 project) is NOT built or run.** This machine has no
-  Windows OS and no .NET SDK, and WinUI 3 has no macOS backend regardless of tooling — it
-  needs a real Windows machine or CI to compile and test at all. The C# code was written
-  carefully against known WinUI 3 APIs and patterns, but is unverified.
+**Built, run, and verified on Windows 11 (ARM64)** — the WinUI 3 frontend builds via
+Visual Studio, spawns the JVM backend, and talks to it correctly over the loopback
+JSON-RPC socket. Settings (theme, ROM folder/XCI toggles) persist and are wired into real
+upload/file-picker behavior; the titlebar icon, Mica backdrop, and dark/light theming all
+match native Windows 11 chrome.
+
+- **`backend/`** is pure JVM, no OS-specific dependency — verified standalone too: starts,
+  prints its listening port, accepts a connection, and correctly handles `listDevices`,
+  `findRcmDevice`, and unknown-method error cases over the real JSON-RPC protocol.
 
 ## Architecture
 

@@ -10,38 +10,53 @@ namespace NstkWindowsApp.Services;
 /// </summary>
 public static class SettingsStore
 {
-    private record StoredSettings(string Theme);
+    private record StoredSettings(
+        string Theme,
+        bool UseRomFolder = false,
+        bool AllowXci = true,
+        bool AutoCheckUpdates = true);
 
     private static readonly string FilePath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "NstkWindowsApp", "settings.json");
 
-    /// <summary>"System", "Light", or "Dark". Defaults to "System".</summary>
-    public static string LoadTheme()
+    private static StoredSettings Load()
     {
         try
         {
-            if (!File.Exists(FilePath)) return "System";
+            if (!File.Exists(FilePath)) return new StoredSettings("System");
             var json = File.ReadAllText(FilePath);
-            var settings = JsonSerializer.Deserialize<StoredSettings>(json);
-            return settings?.Theme ?? "System";
+            return JsonSerializer.Deserialize<StoredSettings>(json) ?? new StoredSettings("System");
         }
         catch
         {
-            return "System";
+            return new StoredSettings("System");
         }
     }
 
-    public static void SaveTheme(string theme)
+    private static void Save(StoredSettings settings)
     {
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
-            File.WriteAllText(FilePath, JsonSerializer.Serialize(new StoredSettings(theme)));
+            File.WriteAllText(FilePath, JsonSerializer.Serialize(settings));
         }
         catch
         {
             // Best-effort; a failed save just means the choice won't persist.
         }
     }
+
+    /// <summary>"System", "Light", or "Dark". Defaults to "System".</summary>
+    public static string LoadTheme() => Load().Theme;
+    public static void SaveTheme(string theme) => Save(Load() with { Theme = theme });
+
+    public static bool LoadUseRomFolder() => Load().UseRomFolder;
+    public static void SaveUseRomFolder(bool value) => Save(Load() with { UseRomFolder = value });
+
+    public static bool LoadAllowXci() => Load().AllowXci;
+    public static void SaveAllowXci(bool value) => Save(Load() with { AllowXci = value });
+
+    public static bool LoadAutoCheckUpdates() => Load().AutoCheckUpdates;
+    public static void SaveAutoCheckUpdates(bool value) => Save(Load() with { AutoCheckUpdates = value });
 }

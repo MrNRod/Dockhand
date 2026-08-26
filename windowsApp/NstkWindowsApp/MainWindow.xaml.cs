@@ -1,4 +1,6 @@
 using System.Runtime.InteropServices;
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -23,6 +25,14 @@ public sealed partial class MainWindow : Window
         // Mica is the native Windows 11 backdrop material — without it the client
         // area falls back to a flat, overly dark color instead of matching the OS.
         SystemBackdrop = new MicaBackdrop();
+
+        // <ApplicationIcon> in the csproj only sets the .exe's own icon resource
+        // (Explorer/taskbar) — the titlebar icon is a separate runtime AppWindow
+        // property that has to be set explicitly, loaded from a file on disk.
+        var hwnd = WindowNative.GetWindowHandle(this);
+        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
+        AppWindow.GetFromWindowId(windowId).SetIcon(
+            Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.ico"));
 
         ApplyTheme(SettingsStore.LoadTheme());
     }
