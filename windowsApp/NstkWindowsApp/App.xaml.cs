@@ -28,7 +28,9 @@ public partial class App : Application
         // The backend jar isn't built by this project — run
         // `gradlew :windowsApp:backend:fatJar` first and copy the output here,
         // or adjust this path. See windowsApp/README.md.
-        var jarPath = System.IO.Path.Combine(AppContext.BaseDirectory, "nstk-windows-backend.jar");
+        // Note: "backend" subfolder matches the .csproj's
+        // <None Include="backend\nstk-windows-backend.jar"> copy destination.
+        var jarPath = System.IO.Path.Combine(AppContext.BaseDirectory, "backend", "nstk-windows-backend.jar");
         try
         {
             await Backend.StartAsync(jarPath);

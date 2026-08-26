@@ -26,13 +26,26 @@ public sealed class BackendClient : IAsyncDisposable
     private int _nextId = 1;
     private Task? _readLoopTask;
 
+    /// <summary>
+    /// Prefers the jlink-bundled runtime shipped next to the app (see jlinkRuntime in
+    /// windowsApp/backend/build.gradle.kts, packaged by the MSI installer) so installed
+    /// users need nothing preinstalled; falls back to "java" on PATH for local dev
+    /// builds that skip the jlink step.
+    /// </summary>
+    private static string ResolveJavaExecutable()
+    {
+        var bundled = Path.Combine(AppContext.BaseDirectory, "runtime", "bin", "java.exe");
+        return File.Exists(bundled) ? bundled : "java";
+    }
+
     public async Task StartAsync(string backendJarPath, CancellationToken cancellationToken = default)
     {
+        var javaExe = ResolveJavaExecutable();
         _process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = "java",
+                FileName = javaExe,
                 Arguments = $"-jar \"{backendJarPath}\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -40,7 +53,19 @@ public sealed class BackendClient : IAsyncDisposable
                 CreateNoWindow = true
             }
         };
-        _process.Start();
+        try
+        {
+            _process.Start();
+        }
+        catch (System.ComponentModel.Win32Exception ex)
+        {
+            var bundledPath = Path.Combine(AppContext.BaseDirectory, "runtime", "bin", "java.exe");
+            throw new InvalidOperationException(
+                $"Could not launch the Java backend (tried '{javaExe}'). Expected a bundled " +
+                $"runtime at '{bundledPath}', or 'java' on PATH as a fallback. Run " +
+                "`gradlew :windowsApp:backend:jlinkRuntime` and copy its output to " +
+                "NstkWindowsApp/runtime/, or install a JDK 17+.", ex);
+        }
 
         // First line of stdout is "PORT <n>" — see Main.kt in the backend module.
         var firstLine = await _process.StandardOutput.ReadLineAsync(cancellationToken)
