@@ -202,8 +202,8 @@ class UploadPage(private val state: AppState) : Listener {
                     return@launch
                 }
                 try {
-                    if (!connection.claimInterface(0)) {
-                        logPrinter.print("Failed to claim USB interface.", MsgType.FAIL)
+                    if (!connection.claimInterface(connection.activeInterfaceIndex)) {
+                        logPrinter.print("Failed to claim USB interface ${connection.activeInterfaceIndex}.", MsgType.FAIL)
                         return@launch
                     }
                     if (protocolName == "Goldleaf") {

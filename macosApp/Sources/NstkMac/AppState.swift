@@ -86,8 +86,8 @@ final class AppState: ObservableObject {
             }
             defer { connection.close() }
 
-            guard connection.claimInterface(interfaceNumber: 0) else {
-                await MainActor.run { self.uploadLog.append("[FAIL] Failed to claim USB interface.") }
+            guard connection.claimInterface(interfaceNumber: connection.activeInterfaceIndex) else {
+                await MainActor.run { self.uploadLog.append("[FAIL] Failed to claim USB interface \(connection.activeInterfaceIndex).") }
                 return
             }
 

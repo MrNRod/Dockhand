@@ -85,8 +85,8 @@ class RequestHandler(private val sendEvent: (Event) -> Unit) {
                 return
             }
             try {
-                if (!connection.claimInterface(0)) {
-                    sendEvent(Event("log", "[FAIL] Failed to claim USB interface."))
+                if (!connection.claimInterface(connection.activeInterfaceIndex)) {
+                    sendEvent(Event("log", "[FAIL] Failed to claim USB interface ${connection.activeInterfaceIndex}."))
                     return
                 }
                 if (protocolName == "Goldleaf") {
