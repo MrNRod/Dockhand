@@ -102,26 +102,11 @@ class DesktopUsbController : UsbController {
             while (offset < payload.size) {
                  val end = minOf(offset + chunkSize, payload.size)
                  val length = end - offset
-                 
+
                  writeBuffer.clear()
                  writeBuffer.put(payload, offset, length)
-                 // Padding if last chunk < 4096? 
-                 // RcmPayloadBuilder pads total size to 4096 alignment, so we should be good.
-                 // But strictly speaking, writeBuffer position must be reset to 0/limit set for reading by LibUsb?
-                 // No, put() advances position. We need to clear/put/flip or just use put and then...
-                 // LibUsb.bulkTransfer reads from buffer current position? Or from 0? 
-                 // Documentation: "data to be sent". uses buffer from start?
-                 // Usually safest to rely on direct buffer properties.
-                 
-                 // Let's use simpler loop
-                 // Re-allocate isn't efficient but safe:
-                 // Actually, let's use the one buffer but be careful.
-                 
-                 // CORRECT WAY:
-                 writeBuffer.clear()
-                 writeBuffer.put(payload, offset, length)
-                 // Pad with zeros if needed? No, payload is already padded by builder.
-                 
+                 writeBuffer.flip() // bulkTransfer sends [position, limit); without this, remaining() is 0 and nothing is sent.
+
                  val res = LibUsb.bulkTransfer(handle, 0x01.toByte(), writeBuffer, transferred, 5000)
                  if (res != LibUsb.SUCCESS) {
                      println("Bulk transfer failed at offset $offset: $res")

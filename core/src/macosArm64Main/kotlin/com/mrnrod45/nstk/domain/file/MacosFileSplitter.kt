@@ -20,7 +20,7 @@ class MacosFileSplitter : FileSplitter {
     // 0xffff0000 bytes (approx 3.99 GB) - Legacy NS-USBloader threshold
     private val SPLIT_SIZE = 0xFFFF0000L
     private val BUFFER_SIZE = 4 * 1024 * 1024 // 4MB
-    private val chunkNameRegex = Regex("^[0-9][0-9]$")
+    private val chunkNameRegex = Regex(".*\\.[0-9]{2}$")
 
     override suspend fun splitFile(sourceFile: UnifiedFile, outputDir: String): Boolean = withContext(IoDispatcher) {
         try {
@@ -73,7 +73,7 @@ class MacosFileSplitter : FileSplitter {
             val splitDir = if (firstFile.isDirectory) firstFile.path else firstFile.path.substringBeforeLast('/')
             val folderName = splitDir.substringAfterLast('/')
 
-            // Chunks are bare two-digit filenames ("00", "01", ...) inside the split folder.
+            // Chunks are named "baseName.00", "baseName.01", ... (see partPath below).
             val chunkNames = listChunkNames(splitDir).sorted()
             if (chunkNames.isEmpty()) return@withContext false
 

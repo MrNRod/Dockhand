@@ -73,9 +73,9 @@ class DesktopFileSplitter : FileSplitter {
 
             if (splitDir == null || !splitDir.isDirectory) return@withContext false
 
-            // Collect "00", "01"... files
-            val chunks = splitDir.listFiles { _, name -> name.matches(Regex("^[0-9][0-9]$")) }
-                ?.sorted()
+            // Collect "*.00", "*.01"... chunk files (see splitFile's naming above)
+            val chunks = splitDir.listFiles { _, name -> name.matches(Regex(".*\\.[0-9]{2}$")) }
+                ?.sortedBy { it.name }
                 ?: return@withContext false
                 
             if (chunks.isEmpty()) return@withContext false
