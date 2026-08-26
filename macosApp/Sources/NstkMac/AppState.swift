@@ -34,6 +34,10 @@ final class AppState: ObservableObject {
     let usbController = MacosUsbController()
     let fileSplitter = FileSplitterFactory_macosKt.getFileSplitter()
 
+    // Retained so a running network upload session can actually be stopped later —
+    // starting a new NetworkServer() per upload leaked the previous listener forever.
+    let networkServer = NetworkServer()
+
     var isTransportEnabled: Bool { selectedProtocol == "Awoo" }
 
     func setProtocol(_ protocolName: String) {
@@ -51,7 +55,19 @@ final class AppState: ObservableObject {
         files.removeAll { $0.id == entry.id }
     }
 
+    var servingOverNet: Bool { isUploading && transport == "NET" }
+
+    func stopNetworkServer() {
+        networkServer.stop()
+        isUploading = false
+        uploadLog.append("[INFO] Network server stopped.")
+    }
+
     func startUpload() {
+        if servingOverNet {
+            stopNetworkServer()
+            return
+        }
         guard !files.isEmpty, !isUploading else { return }
         isUploading = true
         uploadLog.clear()
@@ -61,23 +77,27 @@ final class AppState: ObservableObject {
         let transportMode = transport
         let switchIp = ipAddress
 
+        if transportMode == "NET" {
+            // Stop any previous session before starting a new one — the server
+            // otherwise keeps listening on its old port forever.
+            networkServer.stop()
+            networkServer.start(
+                files: Array(fileMap.values),
+                hostIp: "",
+                port: 6042,
+                hostExtra: "",
+                noRequestsServe: false,
+                switchIp: switchIp
+            ) { message in
+                Task { @MainActor in self.uploadLog.append(message) }
+            }
+            // isUploading stays true — the server keeps running until stopNetworkServer()
+            // is called (see the servingOverNet early-return above).
+            return
+        }
+
         Task {
             defer { Task { @MainActor in self.isUploading = false } }
-
-            if transportMode == "NET" {
-                let server = NetworkServer()
-                server.start(
-                    files: Array(fileMap.values),
-                    hostIp: "",
-                    port: 6042,
-                    hostExtra: "",
-                    noRequestsServe: false,
-                    switchIp: switchIp
-                ) { message in
-                    Task { @MainActor in self.uploadLog.append(message) }
-                }
-                return
-            }
 
             let devices = usbController.listDevices()
             guard let device = devices.first, let connection = device.open() else {

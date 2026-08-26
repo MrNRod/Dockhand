@@ -91,14 +91,16 @@ struct UploadView: View {
                 Button {
                     appState.startUpload()
                 } label: {
-                    if appState.isUploading {
+                    if appState.servingOverNet {
+                        Text("Stop Server")
+                    } else if appState.isUploading {
                         ProgressView().controlSize(.small)
                     } else {
                         Text(appState.transport == "USB" ? "Upload to Switch" : "Upload over Network")
                     }
                 }
                 .keyboardShortcut(.defaultAction)
-                .disabled(appState.files.isEmpty || appState.isUploading)
+                .disabled(!appState.servingOverNet && (appState.files.isEmpty || appState.isUploading))
             }
             .padding([.horizontal, .bottom])
         }

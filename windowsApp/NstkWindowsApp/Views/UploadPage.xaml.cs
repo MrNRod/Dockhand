@@ -66,7 +66,7 @@ public sealed partial class UploadPage : Page
         // the first time this fires during parsing.
         if (IpAddressBox == null || UploadButton == null) return;
         IpAddressBox.Visibility = _transport == "NET" ? Visibility.Visible : Visibility.Collapsed;
-        UploadButton.Content = _transport == "USB" ? "Upload to Switch" : "Upload over Network";
+        UpdateUploadButtonState();
     }
 
     /// <summary>Mirrors composeApp's UploadViewModel.openFilePicker() extension logic.</summary>
@@ -130,19 +130,36 @@ public sealed partial class UploadPage : Page
         }
     }
 
+    private bool ServingOverNet => _isUploading && _transport == "NET";
+
     private void UpdateUploadButtonState()
     {
-        UploadButton.IsEnabled = _files.Count > 0 && !_isUploading;
+        UploadButton.IsEnabled = ServingOverNet || (_files.Count > 0 && !_isUploading);
+        UploadButton.Content = ServingOverNet ? "Stop Server" : (_transport == "USB" ? "Upload to Switch" : "Upload over Network");
     }
 
     private async void Upload_Click(object sender, RoutedEventArgs e)
     {
+        var app = (App)Application.Current;
+
+        if (ServingOverNet)
+        {
+            try
+            {
+                await app.Backend.CallAsync("stopUpload", new { });
+            }
+            catch (Exception ex)
+            {
+                LogText.Text += $"[FAIL] {ex.Message}\n";
+            }
+            return;
+        }
+
         if (_files.Count == 0 || _isUploading) return;
         _isUploading = true;
         UpdateUploadButtonState();
         LogText.Text = "";
 
-        var app = (App)Application.Current;
         var parameters = new
         {
             protocol = _protocol,
@@ -154,6 +171,8 @@ public sealed partial class UploadPage : Page
         try
         {
             await app.Backend.CallAsync("startUpload", parameters);
+            // For NET transport, isUploading stays true (and the button becomes "Stop
+            // Server") until the backend sends uploadDone in response to "stopUpload".
         }
         catch (Exception ex)
         {

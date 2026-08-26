@@ -30,6 +30,10 @@ class RequestHandler(private val sendEvent: (Event) -> Unit) {
     private val fileSplitter = getFileSplitter()
     private val scope = CoroutineScope(Dispatchers.Default)
 
+    // Retained so a running network upload session can actually be stopped later —
+    // starting a new NetworkServer() per upload leaked the previous listener forever.
+    private val networkServer = NetworkServer()
+
     fun handle(request: Request): JsonElement {
         val params = request.params
         return when (request.method) {
@@ -42,6 +46,13 @@ class RequestHandler(private val sendEvent: (Event) -> Unit) {
                 val filePaths = params.strList("files")
                 scope.launch { runUpload(protocolName, transport, ip, filePaths) }
                 buildJsonObject { put("status", "started") }
+            }
+
+            "stopUpload" -> {
+                networkServer.stop()
+                sendEvent(Event("log", "Network server stopped."))
+                sendEvent(Event("uploadDone", "done"))
+                buildJsonObject { put("status", "stopped") }
             }
 
             "findRcmDevice" -> usbController.findRcmDevice()?.toJson() ?: JsonNull
@@ -69,15 +80,25 @@ class RequestHandler(private val sendEvent: (Event) -> Unit) {
         val files = filePaths.map { DesktopUnifiedFile(File(it)) }
         val fileMap = files.associateBy { it.name }
 
-        try {
-            if (transport == "NET") {
-                NetworkServer().start(
+        if (transport == "NET") {
+            try {
+                // Stop any previous session before starting a new one — the server
+                // otherwise keeps listening on its old port forever.
+                networkServer.stop()
+                networkServer.start(
                     files = files, hostIp = "", port = 6042, hostExtra = "",
                     noRequestsServe = false, switchIp = ip
                 ) { msg -> sendEvent(Event("log", msg)) }
-                return
+            } catch (e: Exception) {
+                sendEvent(Event("log", "[FAIL] Upload error: ${e.message}"))
+                sendEvent(Event("uploadDone", "done"))
             }
+            // No uploadDone here — the server keeps running until the client calls
+            // "stopUpload", which is what actually signals completion for NET transport.
+            return
+        }
 
+        try {
             val device = usbController.listDevices().firstOrNull()
             val connection = device?.open()
             if (connection == null) {

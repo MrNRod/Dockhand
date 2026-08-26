@@ -26,7 +26,11 @@ actual class NetworkServer {
 
         onLog("Desktop Server starting...")
 
-        executor = java.util.concurrent.Executors.newSingleThreadExecutor()
+        // Daemon thread: if a caller forgets to stop() this server (or the app is killed
+        // while it's still listening), it must not keep the JVM alive on its own.
+        executor = java.util.concurrent.Executors.newSingleThreadExecutor { runnable ->
+            Thread(runnable, "NetworkServer").apply { isDaemon = true }
+        }
         executor?.submit {
              try {
                 serverSocket = ServerSocket(port)

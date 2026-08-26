@@ -4,7 +4,6 @@ import com.mrnrod45.nstk.domain.models.LogPrinter
 import com.mrnrod45.nstk.domain.models.MsgType
 import com.mrnrod45.nstk.domain.models.UnifiedFile
 import com.mrnrod45.nstk.domain.models.FileStatus
-import com.mrnrod45.nstk.domain.net.NetworkServer
 import com.mrnrod45.nstk.domain.protocols.Goldleaf
 import com.mrnrod45.nstk.domain.protocols.Tinfoil
 import kotlinx.coroutines.CoroutineScope
@@ -88,8 +87,13 @@ class UploadPage(private val state: AppState) : Listener {
     override fun onChanged() {
         transportDropdown.sensitive = state.isTransportEnabled
         ipRow.visible = state.transport == "NET"
-        uploadButton.label = if (state.transport == "USB") "Upload to Switch" else "Upload over Network"
-        uploadButton.sensitive = state.files.isNotEmpty() && !state.isUploading
+        val servingOverNet = state.isUploading && state.transport == "NET"
+        uploadButton.label = when {
+            servingOverNet -> "Stop Server"
+            state.transport == "USB" -> "Upload to Switch"
+            else -> "Upload over Network"
+        }
+        uploadButton.sensitive = servingOverNet || (state.files.isNotEmpty() && !state.isUploading)
 
         var child = filesListBox.firstChild
         while (child != null) {
@@ -159,6 +163,13 @@ class UploadPage(private val state: AppState) : Listener {
     }
 
     private fun startUpload() {
+        if (state.isUploading && state.transport == "NET") {
+            state.networkServer.stop()
+            state.isUploading = false
+            state.uploadLog.append("[INFO] Network server stopped.\n")
+            javaFxSafeNotify()
+            return
+        }
         if (state.files.isEmpty() || state.isUploading) return
         state.isUploading = true
         state.uploadLog.clear()
@@ -182,9 +193,12 @@ class UploadPage(private val state: AppState) : Listener {
         val switchIp = state.ipAddress
 
         scope.launch {
-            try {
-                if (transportMode == "NET") {
-                    NetworkServer().start(
+            if (transportMode == "NET") {
+                try {
+                    // Stop any previous session before starting a new one — the server
+                    // otherwise keeps listening on its old port forever.
+                    state.networkServer.stop()
+                    state.networkServer.start(
                         files = fileMap.values.toList(),
                         hostIp = "",
                         port = 6042,
@@ -192,9 +206,16 @@ class UploadPage(private val state: AppState) : Listener {
                         noRequestsServe = false,
                         switchIp = switchIp
                     ) { msg -> logPrinter.print(msg, MsgType.INFO) }
-                    return@launch
+                } catch (e: Exception) {
+                    logPrinter.print("Upload error: ${e.message}", MsgType.FAIL)
+                    state.isUploading = false
                 }
+                // isUploading stays true — the server keeps running until the user hits
+                // "Stop Server" (see startUpload's early-return branch above).
+                return@launch
+            }
 
+            try {
                 val device = state.usbController.listDevices().firstOrNull()
                 val connection = device?.open()
                 if (connection == null) {

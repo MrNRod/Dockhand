@@ -29,6 +29,10 @@ class AppState {
 
     val fileSplitter: FileSplitter = getFileSplitter()
 
+    // Retained so a running network upload session can actually be stopped later —
+    // starting a new NetworkServer() per upload leaked the previous listener forever.
+    val networkServer = com.mrnrod45.nstk.domain.net.NetworkServer()
+
     // Upload screen
     var selectedProtocol: String = "Goldleaf"
         set(value) {
