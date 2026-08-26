@@ -3,6 +3,7 @@ package com.mrnrod45.nstk.domain.protocols
 import com.mrnrod45.nstk.domain.models.*
 import com.mrnrod45.nstk.domain.usb.UsbConnection
 import com.mrnrod45.nstk.domain.util.IoDispatcher
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 class Goldleaf(
@@ -15,10 +16,16 @@ class Goldleaf(
     suspend fun start(files: Map<String, UnifiedFile>) = withContext(IoDispatcher) {
         logPrinter.print("Starting Goldleaf protocol", MsgType.INFO)
         
-        // Use the first file for context (Goldleaf usually handles one NSP at a time or browses)
-        // For simplicity, we grab the first file to "Set" as the context for commands 1/3/5.
-        // If map is empty, we return.
-        if (files.isEmpty()) return@withContext
+        // This implementation only serves a single NSP per session (Goldleaf's commands
+        // 1/3/5 all address content by NCA index within one file, not by name), so if more
+        // than one file was selected, only the first is installable via this session.
+        if (files.isEmpty()) {
+            logPrinter.print("GL No file selected to install", MsgType.FAIL)
+            return@withContext
+        }
+        if (files.size > 1) {
+            logPrinter.print("GL Goldleaf install only supports one file at a time; using '${files.values.first().name}'", MsgType.WARNING)
+        }
         val file = files.values.first()
         val pfs = Pfs0(file)
         
@@ -37,17 +44,25 @@ class Goldleaf(
         logPrinter.print("GL Waiting for Switch command...", MsgType.INFO)
         
         // Command Loop
+        // readUsb has a 5000ms bulk-transfer timeout, so a null/empty result means "timed out",
+        // not "disconnected". Bound the number of consecutive timeouts so a Switch that never
+        // sends anything doesn't spin this loop forever, and check cancellation each iteration
+        // so stopping the upload from the UI actually stops the USB polling.
+        var consecutiveTimeouts = 0
+        val maxConsecutiveTimeouts = 60 // ~5 minutes at 5s per timeout
         while (true) {
+            ensureActive()
             val rxBuffer = readUsb(0x200)
             if (rxBuffer == null || rxBuffer.isEmpty()) {
-                // If we haven't started yet, this might just be waiting.
-                // But loop shouldn't busy wait forever if read returns null immediately.
-                // My bulkTransfer has 5000ms timeout.
-                // So if it returns null, it timed out.
-                // We should probably loop? Or Check cancellation?
+                consecutiveTimeouts++
+                if (consecutiveTimeouts >= maxConsecutiveTimeouts) {
+                    logPrinter.print("GL Timed out waiting for Switch command", MsgType.FAIL)
+                    return@withContext
+                }
                 continue
             }
-            
+            consecutiveTimeouts = 0
+
             // Check Magic GLUC
             if (rxBuffer.size >= 4 && rxBuffer.copyOfRange(0, 4).contentEquals(CMD_GLUC)) {
                  // Command ID (4 bytes)

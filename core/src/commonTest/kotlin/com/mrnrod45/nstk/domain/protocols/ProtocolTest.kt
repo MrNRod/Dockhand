@@ -39,7 +39,9 @@ class ProtocolTest {
     }
 
     class MockLogPrinter : LogPrinter {
+        val messages = mutableListOf<Pair<String, MsgType>>()
         override fun print(message: String, type: MsgType) {
+            messages.add(message to type)
             println("MockLog: $message")
         }
         override fun updateProgress(value: Double) {}
@@ -48,32 +50,87 @@ class ProtocolTest {
         override fun close() {}
     }
 
+    /** A minimal single-entry PFS0 (NSP) backed entirely by an in-memory byte array. */
+    class MockNspFile(override val name: String = "test.nsp") : UnifiedFile {
+        private val ncaName = "test.nca"
+        private val ncaData = ByteArray(16) { it.toByte() }
+        val bytes: ByteArray = run {
+            val nameBytes = ncaName.encodeToByteArray()
+            val stringTableSize = nameBytes.size + 1
+            val entriesSize = 24
+            val headerSize = 16 + entriesSize + stringTableSize
+            val buf = ByteArray(headerSize + ncaData.size)
+
+            "PFS0".encodeToByteArray().copyInto(buf, 0)
+            leInt(1).copyInto(buf, 4) // filesCount
+            leInt(stringTableSize).copyInto(buf, 8) // stringTableSize
+            // bytes 12..15: reserved, left zero
+
+            // Single entry: dataOffset(8) + dataSize(8) + nameOffset(4) + reserved(4)
+            leLong(0).copyInto(buf, 16)
+            leLong(ncaData.size.toLong()).copyInto(buf, 24)
+            leInt(0).copyInto(buf, 32)
+
+            nameBytes.copyInto(buf, 16 + entriesSize)
+            ncaData.copyInto(buf, headerSize)
+            buf
+        }
+
+        override val size: Long = bytes.size.toLong()
+        override val isDirectory: Boolean = false
+        override val path: String = "mock://$name"
+        override fun listFiles(): List<UnifiedFile> = emptyList()
+        override suspend fun readBytes(): ByteArray = bytes
+        override suspend fun readChunk(offset: Long, size: Int): ByteArray {
+            val start = offset.toInt()
+            val end = minOf(start + size, bytes.size)
+            return if (start >= bytes.size) ByteArray(0) else bytes.copyOfRange(start, end)
+        }
+
+        private fun leInt(v: Int) = byteArrayOf(
+            (v and 0xFF).toByte(), ((v shr 8) and 0xFF).toByte(),
+            ((v shr 16) and 0xFF).toByte(), ((v shr 24) and 0xFF).toByte()
+        )
+        private fun leLong(v: Long) = ByteArray(8) { i -> ((v shr (i * 8)) and 0xFF).toByte() }
+    }
+
+    private fun goldleafCommandBuffer(cmd: Int): ByteArray {
+        val buffer = ByteArray(512)
+        byteArrayOf(0x47, 0x4c, 0x55, 0x43).copyInto(buffer, 0) // "GLUC"
+        byteArrayOf(cmd.toByte(), 0, 0, 0).copyInto(buffer, 4)
+        return buffer
+    }
+
+    @Test
+    fun testGoldleafEmptyFileMapLogsFailureAndExits() = kotlinx.coroutines.test.runTest {
+        val mockConnection = MockUsbConnection()
+        val mockLogger = MockLogPrinter()
+        val goldleaf = Goldleaf(mockConnection, mockLogger)
+
+        goldleaf.start(emptyMap())
+
+        // Must bail without touching the USB connection at all.
+        assertTrue(mockConnection.sentData.isEmpty())
+        assertTrue(mockLogger.messages.any { it.second == MsgType.FAIL })
+    }
+
     @Test
     fun testGoldleafHandshake() = kotlinx.coroutines.test.runTest {
         val mockConnection = MockUsbConnection()
         val mockLogger = MockLogPrinter()
         val goldleaf = Goldleaf(mockConnection, mockLogger)
+        val file = MockNspFile()
 
-        // Mock "Finish" command to exit loop
-        // Goldleaf loop reads 0x200 bytes.
-        // Needs GLUC (4) + Cmd ID (4) ...
-        // Cmd 7 is Finish.
-        val gluc = byteArrayOf(0x47, 0x4c, 0x55, 0x43)
-        val cmdFinish = byteArrayOf(0x07, 0x00, 0x00, 0x00)
-        
-        // We prepare a buffer that simulates a command from Switch
-        val buffer = ByteArray(512)
-        gluc.copyInto(buffer, 0)
-        cmdFinish.copyInto(buffer, 4)
-        
-        mockConnection.readResponses.add(buffer)
-        
-        goldleaf.start(emptyMap<String, UnifiedFile>())
-        
-        // Assertions (Legacy assertions were loose, checking if anything was sent)
-        // Goldleaf HandshakeResponse is triggered by Cmd 1. We sent Cmd 7, so it just exits.
-        // If we want to test handshake, we should send Cmd 1 first, then Cmd 7.
-        // But for now, ensuring it exits is enough to fix build hang.
+        // Switch sends ConnectionResponse (cmd 1), then Finish (cmd 7).
+        mockConnection.readResponses.add(goldleafCommandBuffer(1))
+        mockConnection.readResponses.add(goldleafCommandBuffer(7))
+
+        goldleaf.start(mapOf(file.name to file))
+
+        // ConnectionResponse handling writes GLUC, then a NSPName command with the file name.
+        assertTrue(mockConnection.sentData.isNotEmpty())
+        assertTrue(mockConnection.sentData[0].contentEquals(byteArrayOf(0x47, 0x4c, 0x55, 0x43)))
+        assertTrue(mockLogger.messages.any { it.second == MsgType.PASS })
     }
 
     @Test
