@@ -10,3 +10,9 @@ plugins {
     alias(libs.plugins.jetbrainsCompose).apply(false)
     alias(libs.plugins.composeCompiler).apply(false)
 }
+
+// Lets packaging scripts (macosApp/package.sh, the Windows CI job) read the single
+// source of truth for the app version without re-parsing gradle.properties themselves.
+tasks.register("printVersion") {
+    doLast { println(providers.gradleProperty("app.version").get()) }
+}
