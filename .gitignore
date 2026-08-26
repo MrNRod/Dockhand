@@ -50,6 +50,12 @@ obj/
 **/.vs/
 *.user
 
+# Windows packaging (jlink runtime bundle, JVM backend jar, dotnet publish output, MSI)
+windowsApp/NstkWindowsApp/runtime/
+windowsApp/NstkWindowsApp/backend/
+windowsApp/NstkWindowsApp/publish/
+*.msi
+
 # Temporary files
 dist/
 tmp/
