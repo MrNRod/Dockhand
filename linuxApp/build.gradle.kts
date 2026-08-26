@@ -67,7 +67,7 @@ fun registerJpackageTask(taskName: String, type: String) = tasks.register<Exec>(
         "jpackage",
         "--type", type,
         "--name", "NS-ToolKit",
-        "--app-version", "1.0.0",
+        "--app-version", project.providers.gradleProperty("app.version").get(),
         "--vendor", "mrnrod45",
         "--input", installLibDir.get().asFile.absolutePath,
         "--main-jar", "linuxApp.jar",

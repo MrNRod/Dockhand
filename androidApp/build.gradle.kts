@@ -19,7 +19,6 @@ android {
         targetSdk = 34
         versionCode = providers.gradleProperty("app.version.code").get().toInt()
         versionName = providers.gradleProperty("app.version").get()
-        versionName = providers.gradleProperty("app.version").get()
     }
 
     buildTypes {
