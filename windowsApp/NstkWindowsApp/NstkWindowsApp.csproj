@@ -13,10 +13,17 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
-    <!-- Unpackaged app (no MSIX) — simplest setup for `dotnet run` in a test VM. -->
+    <!-- Unpackaged app (no MSIX) — simplest setup for `dotnet run` in a test VM.
+         Still gets a real MSI installer (see windowsApp/packaging/windows/Product.wxs),
+         just not an MSIX package. -->
     <WindowsPackageType>None</WindowsPackageType>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <EnableMsixTooling>false</EnableMsixTooling>
+
+    <!-- Local-dev fallback; the package-windows CI job overrides this via
+         -p:Version=/-p:FileVersion=/-p:AssemblyVersion= from gradle.properties'
+         app.version, the same single source of truth Android/Linux packaging use. -->
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +37,16 @@
          or point BackendClient at a different path. Not built by this project. -->
     <None Include="backend\nstk-windows-backend.jar" Condition="Exists('backend\nstk-windows-backend.jar')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <!-- Bundled minimal JRE (built via `gradlew :windowsApp:backend:jlinkRuntime`),
+         copied here from windowsApp/backend/build/runtime before building/publishing.
+         See BackendClient.ResolveJavaExecutable, which invokes runtime\bin\java.exe
+         relative to AppContext.BaseDirectory, falling back to PATH if this folder is
+         absent (e.g. local dev builds that skip the jlink step). -->
+    <None Include="runtime\**" Condition="Exists('runtime')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>runtime\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
   </ItemGroup>
 

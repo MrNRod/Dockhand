@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Built via: dotnet wix build Product.wxs -d ProductVersion=<version> -d PublishDir=<dir> -arch x64
+  See .gitlab-ci.yml's package-windows job.
+
+  UpgradeCode and the shortcut Component's Guid are fixed identities — never regenerate
+  them. UpgradeCode is what lets MajorUpgrade detect "this is a newer version of the
+  same product" across releases; changing it would make every future release install
+  side-by-side instead of upgrading.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+      Name="NS-ToolKit"
+      Manufacturer="mrnrod45"
+      Version="$(var.ProductVersion)"
+      UpgradeCode="5CD84303-5CED-4443-AB80-FB42EB375431"
+      Compressed="yes"
+      InstallerVersion="500">
+
+    <SummaryInformation Description="NS-ToolKit Setup" Manufacturer="mrnrod45" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of NS-ToolKit is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="AppIcon.ico" SourceFile="$(var.PublishDir)\Assets\AppIcon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="NS-ToolKit" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="NS-ToolKit" />
+    </StandardDirectory>
+
+    <Feature Id="MainFeature" Title="NS-ToolKit" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="ShortcutComponents" />
+    </Feature>
+  </Package>
+
+  <!-- Harvests the entire dotnet-publish output (exe, WindowsAppSDK runtime, satellite
+       resource folders, Assets\AppIcon.ico, backend\nstk-windows-backend.jar,
+       runtime\ jlink image) via WiX's glob-based file harvesting, so this file doesn't
+       need a per-file <Component> entry or a separate heat.exe harvest step. -->
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Files Include="$(var.PublishDir)\**" />
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ShortcutComponents" Directory="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="924EA5F6-65C3-4EFD-8DEE-138E70F5E7CC">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="NS-ToolKit"
+                  Description="NS-USBloader toolkit"
+                  Target="[INSTALLFOLDER]NstkWindowsApp.exe"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="AppIcon.ico" />
+        <RemoveFolder Id="CleanUpShortcutFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU"
+                        Key="Software\mrnrod45\NS-ToolKit"
+                        Name="installed"
+                        Type="integer"
+                        Value="1"
+                        KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
