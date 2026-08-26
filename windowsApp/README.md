@@ -56,8 +56,10 @@ NstkWindowsApp (WinUI 3, C#)  <--loopback TCP, newline-delimited JSON-->  backen
 2. **On the Windows VM**, install:
    - .NET 8 SDK
    - Windows App SDK workload (`dotnet workload install ...` or via Visual Studio)
-   - A JDK 17+ on `PATH` (the backend jar needs `java` to be invokable — this is what
-     `BackendClient.StartAsync` shells out to)
+   - Optionally, a JDK 17+ on `PATH` — only needed for this `dotnet run` local-dev path.
+     `BackendClient.ResolveJavaExecutable` prefers a bundled `runtime\bin\java.exe`
+     (produced by `gradlew :windowsApp:backend:jlinkRuntime`, see below) and only falls
+     back to `java` on `PATH` if that folder isn't present.
 
 3. Build and run:
    ```powershell
@@ -65,13 +67,30 @@ NstkWindowsApp (WinUI 3, C#)  <--loopback TCP, newline-delimited JSON-->  backen
    dotnet run
    ```
 
+## Building the MSI installer
+
+```powershell
+dotnet tool restore
+./gradlew.bat :windowsApp:backend:fatJar :windowsApp:backend:jlinkRuntime
+New-Item -ItemType Directory -Force -Path windowsApp\NstkWindowsApp\backend
+Copy-Item windowsApp\backend\build\libs\nstk-windows-backend.jar windowsApp\NstkWindowsApp\backend\
+New-Item -ItemType Directory -Force -Path windowsApp\NstkWindowsApp\runtime
+Copy-Item -Recurse -Force windowsApp\backend\build\runtime\* windowsApp\NstkWindowsApp\runtime\
+dotnet publish windowsApp\NstkWindowsApp\NstkWindowsApp.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -o windowsApp\NstkWindowsApp\publish
+dotnet wix build windowsApp\packaging\windows\Product.wxs -d ProductVersion=1.0.0 -d PublishDir=windowsApp\NstkWindowsApp\publish -arch x64 -out nstk-windows.msi
+```
+
+This bundles a minimal `jlink`-built JRE alongside the backend jar and WinUI frontend, so
+the installed app needs nothing preinstalled. See the root `.gitlab-ci.yml`'s
+`package-windows` job for the exact sequence this is run with in CI (including version
+wiring from `gradle.properties`' `app.version`).
+
 ## Known gaps to check first when testing
 
-- `BackendClient.StartAsync` assumes `java` is on `PATH` — if the VM doesn't have one, the
-  Process.Start call will throw before ever reaching the "no output" error message.
-- The app is unpackaged (`WindowsPackageType=None`) for simplicity — no MSIX manifest, no
-  Start Menu registration. Fine for VM smoke-testing; would need packaging work for real
-  distribution.
+- The app is unpackaged in the `dotnet run`/`dotnet build` sense (`WindowsPackageType=None`,
+  no MSIX manifest) — that's still true for local dev, but the MSI built above **does**
+  register a proper Start Menu shortcut and Programs-and-Features uninstall entry; it's
+  just not an MSIX package.
 - File pickers (`FileOpenPicker`/`FolderPicker`) require `InitializeWithWindow` on desktop
   WinUI 3 apps, which is wired up via `App.MainWindowInstance` — if picker calls throw
   immediately, that's the first place to check.

@@ -49,13 +49,31 @@ swift run NstkMac
 linker/compiler `-F`/`-framework` flags, not an `.xcframework`/`binaryTarget`) — this is
 Apple-Silicon-only for now and intentionally skips the XCFramework merge step, which
 requires full Xcode (`xcodebuild -create-xcframework`) rather than just Command Line
-Tools. See `:core`'s README for the cinterop/Xcode requirement in more detail.
+Tools. See `:core`'s README for the cinterop/Xcode requirement in more detail. It reads
+`NSTK_FRAMEWORK_DIR` (default `debugFramework`) to pick which build type to link against —
+`package.sh` (below) sets it to `releaseFramework` for packaged builds.
+
+## Packaging
+
+```bash
+./macosApp/package.sh
+```
+
+Builds `:core`'s release framework, builds the Swift executable in release config,
+assembles a real `NstkMac.app` bundle (generating `AppIcon.icns` from the existing
+`Resources/AppIcon.png`, embedding `core.framework` and Homebrew's `libusb-1.0.0.dylib`
+relinked to `@rpath` so the packaged app doesn't need Homebrew installed), ad-hoc
+code-signs it, and produces `build/dist/NS-ToolKit-<version>-macos-arm64.dmg`. See the
+root `.gitlab-ci.yml`'s `package-macos` job for how this runs in CI.
 
 ## Known gaps
 
 - Only `macosArm64` — no Intel Mac (`macosX64`) support yet, and no universal/XCFramework
   build for distribution.
-- Not code-signed or notarized — fine for local dev, not for distribution.
+- Ad-hoc code-signed only (`codesign --sign -`, via `package.sh`) — not notarized, so
+  Gatekeeper shows an "unidentified developer" warning on first launch (right-click →
+  Open, or `xattr -cr NS-ToolKit.app`, bypasses it). Proper Developer ID signing +
+  notarization would need an Apple Developer Program membership.
 - Feature scope is intentionally streamlined relative to `:composeApp`'s screens (e.g.
   Settings here is a handful of `@AppStorage`-backed toggles, not a full 1:1 port) — the
   goal was proving the architecture end-to-end, not exhaustive parity.

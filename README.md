@@ -62,6 +62,8 @@ real, verified native UI, so the temporary `desktopApp` module has been retired.
     full Xcode toolchain, not just Command Line Tools).
 -   **GTK4** (for `linuxApp` — e.g. `apt install libgtk-4-1` on Debian/Ubuntu).
 -   **.NET 8 SDK + Windows App SDK** (for `windowsApp`'s WinUI frontend — Windows only).
+    WiX Toolset (for the MSI installer) is installed automatically via the pinned
+    `dotnet tool` manifest — run `dotnet tool restore`.
 -   **Android Studio** (Ladybug or newer) or **IntelliJ IDEA** (2024.3+).
 
 ## Build & Run
@@ -95,10 +97,23 @@ cd macosApp && swift run NstkMac
 Must run on the target OS — `jpackageDeb` needs `dpkg-deb` (present by default on
 Debian/Ubuntu), `jpackageRpm` needs `rpmbuild` (`apt install rpm` on Debian/Ubuntu).
 
-**Windows** — see `windowsApp/README.md`; there's no MSI installer yet, just a
-`dotnet build` output folder plus the JVM backend jar.
+**Windows** — a real `.msi` via WiX Toolset, with a bundled minimal JRE (`jlink`) so
+end users don't need Java preinstalled:
+```powershell
+dotnet tool restore
+./gradlew.bat :windowsApp:backend:fatJar :windowsApp:backend:jlinkRuntime
+# copy backend/build/libs and backend/build/runtime into NstkWindowsApp/backend and
+# NstkWindowsApp/runtime — see windowsApp/README.md for the full sequence
+dotnet publish windowsApp/NstkWindowsApp/NstkWindowsApp.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -o windowsApp/NstkWindowsApp/publish
+dotnet wix build windowsApp/packaging/windows/Product.wxs -d ProductVersion=1.0.0 -d PublishDir=windowsApp/NstkWindowsApp/publish -arch x64 -out nstk-windows.msi
+```
 
-**macOS** — no packaged `.app`/notarization yet; see `macosApp/README.md`'s known gaps.
+**macOS** — a real `.app` bundle + `.dmg` via `macosApp/package.sh`, ad-hoc code-signed
+(not notarized — Gatekeeper will show an "unidentified developer" warning on first
+launch; right-click → Open, or `xattr -cr NS-ToolKit.app`, bypasses it):
+```bash
+./macosApp/package.sh
+```
 
 ### CI/CD Pipeline
 This project uses **GitLab CI** to automate the build process.
