@@ -82,7 +82,10 @@ fun registerJpackageTask(taskName: String, type: String) = tasks.register<Exec>(
         // (it falls back to matching by Exec name, which doesn't line up), even
         // though the app-grid icon (read straight from the .desktop file) is fine.
         "--resource-dir", project.file("packaging/linux").absolutePath,
-        "--java-options", "--enable-native-access=ALL-UNNAMED"
+        "--java-options", "--enable-native-access=ALL-UNNAMED",
+        // jpackage doesn't auto-detect the GTK4 native dependency (java-gi loads it via
+        // FFM at runtime, not a link-time dependency jpackage's own tooling can see).
+        "--linux-package-deps", "libgtk-4-1"
     )
 }
 

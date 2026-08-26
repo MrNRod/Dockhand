@@ -1,12 +1,14 @@
 stages:
+  - test
   - package
   - release
 
 variables:
   # Disable the Gradle daemon for CI to save memory
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  # Define the java toolchain (if needed by environment, commonly handled by gradle toolchain)
-  JAVA_HOME: ""
+  # Gradle's dependency/build cache lives here, not in the project dir — without this,
+  # the `cache:` block below (which only caches project-relative paths) caches nothing.
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
 
 # Shared cache configuration to speed up builds
 cache:
@@ -14,6 +16,16 @@ cache:
   paths:
     - .gradle/wrapper
     - .gradle/caches
+
+# --- Build & test on every push, not just tags — previously only the tag-gated
+# packaging jobs below ever ran, so broken Kotlin could land on main/MRs indefinitely.
+check:
+  stage: test
+  image: gradle:jdk25
+  tags:
+    - saas-linux-small-amd64
+  script:
+    - ./gradlew :core:check :linuxApp:compileKotlin :windowsApp:backend:compileKotlin
 
 # --- Linux Packaging (Deb, Rpm) ---
 package-linux:
@@ -64,7 +76,10 @@ package-windows:
 # --- Android Packaging (APK) ---
 package-android:
   stage: package
-  image: mobiledevops/android-sdk-image:latest
+  # Pinned rather than :latest — an unpinned floating tag means the JDK/SDK versions
+  # this job builds against (and the D8/R8 behavior in particular) can change under us
+  # between otherwise-identical CI runs.
+  image: mobiledevops/android-sdk-image:36.1.0
   tags:
     - saas-linux-small-amd64
   script:
