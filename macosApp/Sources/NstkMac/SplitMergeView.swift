@@ -1,6 +1,5 @@
 import SwiftUI
 import AppKit
-import UniformTypeIdentifiers
 
 struct SplitMergeView: View {
     @EnvironmentObject private var appState: AppState
@@ -88,11 +87,20 @@ struct SplitMergeView: View {
         panel.allowsMultipleSelection = !appState.isSplitMode
         panel.canChooseDirectories = true
         panel.canChooseFiles = true
-        if appState.isSplitMode {
-            panel.allowedContentTypes = allowedExtensions().compactMap { UTType(filenameExtension: $0) }
-        }
+        // Not using allowedContentTypes: combining several dynamically-synthesized UTTypes
+        // for non-registered extensions (nsp/xci/nsz/xcz) can make NSOpenPanel refuse to let
+        // the user select anything at all on some macOS versions. Filter the result instead.
         if panel.runModal() == .OK {
-            let entries = panel.urls.map { FileEntry(file: .init(filePath: $0.path)) }
+            var urls = panel.urls
+            if appState.isSplitMode {
+                let extensions = allowedExtensions()
+                urls = urls.filter { url in
+                    var isDirectory: ObjCBool = false
+                    FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory)
+                    return isDirectory.boolValue || extensions.contains(url.pathExtension.lowercased())
+                }
+            }
+            let entries = urls.map { FileEntry(file: .init(filePath: $0.path)) }
             if appState.isSplitMode {
                 appState.selectedPaths = entries
             } else {

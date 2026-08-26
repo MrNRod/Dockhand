@@ -1,6 +1,5 @@
 import SwiftUI
 import AppKit
-import UniformTypeIdentifiers
 
 struct RcmView: View {
     @EnvironmentObject private var appState: AppState
@@ -58,10 +57,16 @@ struct RcmView: View {
 
     private func pickPayload() {
         let panel = NSOpenPanel()
-        panel.allowedContentTypes = [UTType(filenameExtension: "bin")].compactMap { $0 }
         panel.canChooseDirectories = false
-        if panel.runModal() == .OK, let url = panel.urls.first {
+        panel.allowsMultipleSelection = false
+        // Not using allowedContentTypes: a dynamically-synthesized UTType for a
+        // non-registered extension like "bin" can make NSOpenPanel refuse to let the user
+        // select anything at all on some macOS versions. Filter the result instead.
+        guard panel.runModal() == .OK, let url = panel.urls.first else { return }
+        if url.pathExtension.lowercased() == "bin" {
             appState.selectedPayload = FileEntry(file: .init(filePath: url.path))
+        } else {
+            appState.rcmLog.append("[FAIL] Please select a .bin payload file.")
         }
     }
 }

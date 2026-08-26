@@ -1,6 +1,5 @@
 import SwiftUI
 import AppKit
-import UniformTypeIdentifiers
 
 struct UploadView: View {
     @EnvironmentObject private var appState: AppState
@@ -123,11 +122,14 @@ struct UploadView: View {
             panel.allowsMultipleSelection = true
             panel.canChooseDirectories = false
             panel.canChooseFiles = true
-            if !extensions.isEmpty {
-                panel.allowedContentTypes = extensions.compactMap { UTType(filenameExtension: $0) }
-            }
+            // Not using allowedContentTypes here: combining several dynamically-synthesized
+            // UTTypes for non-registered extensions (nsp/xci/nsz/xcz) can make NSOpenPanel
+            // refuse to let the user select *any* file at all on some macOS versions, rather
+            // than just narrowing the list. Filter the result instead, like every other
+            // picker in this codebase already does.
             if panel.runModal() == .OK {
-                appState.addFiles(panel.urls)
+                let matched = panel.urls.filter { extensions.contains($0.pathExtension.lowercased()) }
+                appState.addFiles(matched)
             }
         }
     }
