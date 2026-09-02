@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Dockhand
+Comment=Dockhand
+Exec=/opt/dockhand/bin/Dockhand
+Icon=/opt/dockhand/lib/Dockhand.png
+Terminal=false
+Type=Application
+Categories=Utility
+StartupWMClass=com.mrnrod45.dockhand.linux
+MimeType=

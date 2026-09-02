@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>NS-ToolKit</string>
+    <string>Dockhand</string>
     <key>CFBundleDisplayName</key>
-    <string>NS-ToolKit</string>
+    <string>Dockhand</string>
     <key>CFBundleIdentifier</key>
-    <string>com.mrnrod45.nstk.mac</string>
+    <string>com.mrnrod45.dockhand.mac</string>
     <key>CFBundleExecutable</key>
-    <string>NstkMac</string>
+    <string>DockhandMac</string>
     <key>CFBundleVersion</key>
     <string>1.0</string>
     <key>CFBundleShortVersionString</key>
@@ -21,6 +21,6 @@
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>NSHumanReadableCopyright</key>
-    <string>NS-ToolKit</string>
+    <string>Dockhand</string>
 </dict>
 </plist>

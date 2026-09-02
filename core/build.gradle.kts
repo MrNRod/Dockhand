@@ -73,7 +73,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.mrnrod45.nstk.core"
+    namespace = "com.mrnrod45.dockhand.core"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")

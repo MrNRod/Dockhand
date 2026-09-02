@@ -15,7 +15,7 @@ throughout.
 
 ```
 Swift (this package)  <--calls directly-->  core.framework (Kotlin/Native, macosArm64)
-     NstkMacApp                                   Goldleaf, Tinfoil, RcmPayloadBuilder,
+     DockhandMacApp                                Goldleaf, Tinfoil, RcmPayloadBuilder,
      ContentView (NavigationSplitView)             MacosUsbController, NetworkServer,
      UploadView / RcmView /                        MacosFileSplitter, MacUnifiedFile
      SplitMergeView / SettingsView
@@ -42,7 +42,7 @@ Swift (this package)  <--calls directly-->  core.framework (Kotlin/Native, macos
 ./gradlew :core:linkDebugFrameworkMacosArm64
 cd macosApp
 swift build
-swift run NstkMac
+swift run DockhandMac
 ```
 
 `Package.swift` links against the single-arch `macosArm64` debug framework directly (via
@@ -50,7 +50,7 @@ linker/compiler `-F`/`-framework` flags, not an `.xcframework`/`binaryTarget`) �
 Apple-Silicon-only for now and intentionally skips the XCFramework merge step, which
 requires full Xcode (`xcodebuild -create-xcframework`) rather than just Command Line
 Tools. See `:core`'s README for the cinterop/Xcode requirement in more detail. It reads
-`NSTK_FRAMEWORK_DIR` (default `debugFramework`) to pick which build type to link against —
+`DOCKHAND_FRAMEWORK_DIR` (default `debugFramework`) to pick which build type to link against —
 `package.sh` (below) sets it to `releaseFramework` for packaged builds.
 
 ## Packaging
@@ -60,10 +60,10 @@ Tools. See `:core`'s README for the cinterop/Xcode requirement in more detail. I
 ```
 
 Builds `:core`'s release framework, builds the Swift executable in release config,
-assembles a real `NstkMac.app` bundle (generating `AppIcon.icns` from the existing
+assembles a real `DockhandMac.app` bundle (generating `AppIcon.icns` from the existing
 `Resources/AppIcon.png`, embedding `core.framework` and Homebrew's `libusb-1.0.0.dylib`
 relinked to `@rpath` so the packaged app doesn't need Homebrew installed), ad-hoc
-code-signs it, and produces `build/dist/NS-ToolKit-<version>-macos-arm64.dmg`. See the
+code-signs it, and produces `build/dist/Dockhand-<version>-macos-arm64.dmg`. See the
 root `.gitlab-ci.yml`'s `package-macos` job for how this runs in CI.
 
 ## Known gaps
@@ -72,7 +72,7 @@ root `.gitlab-ci.yml`'s `package-macos` job for how this runs in CI.
   build for distribution.
 - Ad-hoc code-signed only (`codesign --sign -`, via `package.sh`) — not notarized, so
   Gatekeeper shows an "unidentified developer" warning on first launch (right-click →
-  Open, or `xattr -cr NS-ToolKit.app`, bypasses it). Proper Developer ID signing +
+  Open, or `xattr -cr Dockhand.app`, bypasses it). Proper Developer ID signing +
   notarization would need an Apple Developer Program membership.
 - Feature scope is intentionally streamlined relative to `:composeApp`'s screens (e.g.
   Settings here is a handful of `@AppStorage`-backed toggles, not a full 1:1 port) — the

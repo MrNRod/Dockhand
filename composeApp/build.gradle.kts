@@ -52,7 +52,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.mrnrod45.nstk.composeApp"
+    namespace = "com.mrnrod45.dockhand.composeApp"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")

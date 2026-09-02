@@ -17,11 +17,11 @@ kotlin {
 }
 
 android {
-    namespace = "com.mrnrod45.nstk"
+    namespace = "com.mrnrod45.dockhand"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.mrnrod45.nstk"
+        applicationId = "com.mrnrod45.dockhand"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = providers.gradleProperty("app.version.code").get().toInt()
@@ -41,7 +41,7 @@ android {
     applicationVariants.all(object : org.gradle.api.Action<com.android.build.gradle.api.ApplicationVariant> {
         override fun execute(variant: com.android.build.gradle.api.ApplicationVariant) {
             variant.outputs.forEach { output ->
-                (output as? com.android.build.gradle.internal.api.BaseVariantOutputImpl)?.outputFileName = "nstk-android-${variant.versionName}.apk"
+                (output as? com.android.build.gradle.internal.api.BaseVariantOutputImpl)?.outputFileName = "dockhand-android-${variant.versionName}.apk"
             }
         }
     })

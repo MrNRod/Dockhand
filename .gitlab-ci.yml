@@ -61,15 +61,15 @@ package-windows:
   script:
     - $env:APP_VERSION = (./gradlew.bat -q printVersion | Select-Object -Last 1).Trim()
     - ./gradlew.bat :windowsApp:backend:fatJar :windowsApp:backend:jlinkRuntime
-    - New-Item -ItemType Directory -Force -Path windowsApp\NstkWindowsApp\backend
-    - Copy-Item windowsApp\backend\build\libs\nstk-windows-backend.jar windowsApp\NstkWindowsApp\backend\
-    - New-Item -ItemType Directory -Force -Path windowsApp\NstkWindowsApp\runtime
-    - Copy-Item -Recurse -Force windowsApp\backend\build\runtime\* windowsApp\NstkWindowsApp\runtime\
-    - dotnet publish windowsApp\NstkWindowsApp\NstkWindowsApp.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -p:Version=$env:APP_VERSION -p:FileVersion="$env:APP_VERSION.0" -p:AssemblyVersion="$env:APP_VERSION.0" -o windowsApp\NstkWindowsApp\publish
-    - dotnet wix build windowsApp\packaging\windows\Product.wxs -d "ProductVersion=$env:APP_VERSION" -d "PublishDir=windowsApp\NstkWindowsApp\publish" -arch x64 -out "nstk-windows-$env:APP_VERSION.msi"
+    - New-Item -ItemType Directory -Force -Path windowsApp\DockhandWindowsApp\backend
+    - Copy-Item windowsApp\backend\build\libs\dockhand-windows-backend.jar windowsApp\DockhandWindowsApp\backend\
+    - New-Item -ItemType Directory -Force -Path windowsApp\DockhandWindowsApp\runtime
+    - Copy-Item -Recurse -Force windowsApp\backend\build\runtime\* windowsApp\DockhandWindowsApp\runtime\
+    - dotnet publish windowsApp\DockhandWindowsApp\DockhandWindowsApp.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -p:Version=$env:APP_VERSION -p:FileVersion="$env:APP_VERSION.0" -p:AssemblyVersion="$env:APP_VERSION.0" -o windowsApp\DockhandWindowsApp\publish
+    - dotnet wix build windowsApp\packaging\windows\Product.wxs -d "ProductVersion=$env:APP_VERSION" -d "PublishDir=windowsApp\DockhandWindowsApp\publish" -arch x64 -out "dockhand-windows-$env:APP_VERSION.msi"
   artifacts:
     paths:
-      - nstk-windows-*.msi
+      - dockhand-windows-*.msi
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
@@ -130,8 +130,8 @@ release-job:
     - |
       release-cli create --name "Release $CI_COMMIT_TAG" --tag-name "$CI_COMMIT_TAG" \
         --description "Released automatically via GitLab CI." \
-        --assets-link "{\"name\":\"Android APK\",\"url\":\"${BASE_URL}/androidApp/build/outputs/apk/debug/nstk-android-${VERSION}.apk?job=package-android\",\"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"Windows (MSI)\",\"url\":\"${BASE_URL}/nstk-windows-${VERSION}.msi?job=package-windows\",\"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"macOS (DMG, ad-hoc signed)\",\"url\":\"${BASE_URL}/macosApp/build/dist/NS-ToolKit-${VERSION}-macos-arm64.dmg?job=package-macos\",\"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"Linux DEB\",\"url\":\"${BASE_URL}/linuxApp/build/jpackage/ns-toolkit_${VERSION}_amd64.deb?job=package-linux\",\"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"Linux RPM\",\"url\":\"${BASE_URL}/linuxApp/build/jpackage/ns-toolkit-${VERSION}-1.x86_64.rpm?job=package-linux\",\"link_type\":\"package\"}"
+        --assets-link "{\"name\":\"Android APK\",\"url\":\"${BASE_URL}/androidApp/build/outputs/apk/debug/dockhand-android-${VERSION}.apk?job=package-android\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Windows (MSI)\",\"url\":\"${BASE_URL}/dockhand-windows-${VERSION}.msi?job=package-windows\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"macOS (DMG, ad-hoc signed)\",\"url\":\"${BASE_URL}/macosApp/build/dist/Dockhand-${VERSION}-macos-arm64.dmg?job=package-macos\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Linux DEB\",\"url\":\"${BASE_URL}/linuxApp/build/jpackage/dockhand_${VERSION}_amd64.deb?job=package-linux\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Linux RPM\",\"url\":\"${BASE_URL}/linuxApp/build/jpackage/dockhand-${VERSION}-1.x86_64.rpm?job=package-linux\",\"link_type\":\"package\"}"

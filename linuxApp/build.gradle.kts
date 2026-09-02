@@ -26,7 +26,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("com.mrnrod45.nstk.linux.MainKt")
+    mainClass.set("com.mrnrod45.dockhand.linux.MainKt")
     applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
 }
 
@@ -66,12 +66,12 @@ fun registerJpackageTask(taskName: String, type: String) = tasks.register<Exec>(
     commandLine(
         "jpackage",
         "--type", type,
-        "--name", "NS-ToolKit",
+        "--name", "Dockhand",
         "--app-version", project.providers.gradleProperty("app.version").get(),
         "--vendor", "mrnrod45",
         "--input", installLibDir.get().asFile.absolutePath,
         "--main-jar", "linuxApp.jar",
-        "--main-class", "com.mrnrod45.nstk.linux.MainKt",
+        "--main-class", "com.mrnrod45.dockhand.linux.MainKt",
         "--icon", appIcon.absolutePath,
         "--dest", destDir.get().asFile.absolutePath,
         "--linux-shortcut",

@@ -23,7 +23,7 @@ match native Windows 11 chrome.
 ## Architecture
 
 ```
-NstkWindowsApp (WinUI 3, C#)  <--loopback TCP, newline-delimited JSON-->  backend (JVM, Kotlin)
+DockhandWindowsApp (WinUI 3, C#)  <--loopback TCP, newline-delimited JSON-->  backend (JVM, Kotlin)
         |                                                                          |
    NavigationView shell                                                    RequestHandler
    Upload / Payload /                                                      -> :core's
@@ -40,7 +40,7 @@ NstkWindowsApp (WinUI 3, C#)  <--loopback TCP, newline-delimited JSON-->  backen
 - Protocol: `{"id", "method", "params"}` requests, `{"id", "result"|"error"}` responses,
   plus one-way `{"event", "message"}` pushes for streaming log lines during
   upload/inject/convert operations. See `backend/.../Protocol.kt` and
-  `NstkWindowsApp/Models/Protocol.cs` — the two are hand-kept in sync (no shared schema
+  `DockhandWindowsApp/Models/Protocol.cs` — the two are hand-kept in sync (no shared schema
   generation for a protocol this small).
 
 ## Building and testing in a Windows VM
@@ -49,9 +49,9 @@ NstkWindowsApp (WinUI 3, C#)  <--loopback TCP, newline-delimited JSON-->  backen
    ```sh
    ./gradlew :windowsApp:backend:fatJar
    ```
-   Copy the resulting `windowsApp/backend/build/libs/nstk-windows-backend.jar` into
-   `windowsApp/NstkWindowsApp/backend/` (create that folder) before running the C# app —
-   see the `<None Include>` in `NstkWindowsApp.csproj`.
+   Copy the resulting `windowsApp/backend/build/libs/dockhand-windows-backend.jar` into
+   `windowsApp/DockhandWindowsApp/backend/` (create that folder) before running the C# app —
+   see the `<None Include>` in `DockhandWindowsApp.csproj`.
 
 2. **On the Windows VM**, install:
    - .NET 8 SDK
@@ -63,7 +63,7 @@ NstkWindowsApp (WinUI 3, C#)  <--loopback TCP, newline-delimited JSON-->  backen
 
 3. Build and run:
    ```powershell
-   cd windowsApp\NstkWindowsApp
+   cd windowsApp\DockhandWindowsApp
    dotnet run
    ```
 
@@ -72,12 +72,12 @@ NstkWindowsApp (WinUI 3, C#)  <--loopback TCP, newline-delimited JSON-->  backen
 ```powershell
 dotnet tool restore
 ./gradlew.bat :windowsApp:backend:fatJar :windowsApp:backend:jlinkRuntime
-New-Item -ItemType Directory -Force -Path windowsApp\NstkWindowsApp\backend
-Copy-Item windowsApp\backend\build\libs\nstk-windows-backend.jar windowsApp\NstkWindowsApp\backend\
-New-Item -ItemType Directory -Force -Path windowsApp\NstkWindowsApp\runtime
-Copy-Item -Recurse -Force windowsApp\backend\build\runtime\* windowsApp\NstkWindowsApp\runtime\
-dotnet publish windowsApp\NstkWindowsApp\NstkWindowsApp.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -o windowsApp\NstkWindowsApp\publish
-dotnet wix build windowsApp\packaging\windows\Product.wxs -d ProductVersion=1.0.0 -d PublishDir=windowsApp\NstkWindowsApp\publish -arch x64 -out nstk-windows.msi
+New-Item -ItemType Directory -Force -Path windowsApp\DockhandWindowsApp\backend
+Copy-Item windowsApp\backend\build\libs\dockhand-windows-backend.jar windowsApp\DockhandWindowsApp\backend\
+New-Item -ItemType Directory -Force -Path windowsApp\DockhandWindowsApp\runtime
+Copy-Item -Recurse -Force windowsApp\backend\build\runtime\* windowsApp\DockhandWindowsApp\runtime\
+dotnet publish windowsApp\DockhandWindowsApp\DockhandWindowsApp.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -o windowsApp\DockhandWindowsApp\publish
+dotnet wix build windowsApp\packaging\windows\Product.wxs -d ProductVersion=1.0.0 -d PublishDir=windowsApp\DockhandWindowsApp\publish -arch x64 -out dockhand-windows.msi
 ```
 
 This bundles a minimal `jlink`-built JRE alongside the backend jar and WinUI frontend, so

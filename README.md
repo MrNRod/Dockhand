@@ -1,6 +1,6 @@
-# NS-ToolKit (NSTK)
+# Dockhand
 
-**NS-ToolKit** is a modern, cross-platform fork and merger of [NS-USBloader](https://github.com/developersu/ns-usbloader) and [NS-USBloader-mobile](https://github.com/developersu/ns-usbloader-mobile).
+**Dockhand** is a modern, cross-platform fork and merger of [NS-USBloader](https://github.com/developersu/ns-usbloader) and [NS-USBloader-mobile](https://github.com/developersu/ns-usbloader-mobile).
 
 The core USB/network/file logic (Goldleaf, Tinfoil/Awoo/Sphaira protocols, RCM payload
 injection, split/merge) is written once in Kotlin Multiplatform and shared across every
@@ -76,7 +76,7 @@ real, verified native UI, so the temporary `desktopApp` module has been retired.
 **macOS (native SwiftUI)**:
 ```bash
 ./gradlew :core:linkDebugFrameworkMacosArm64
-cd macosApp && swift run NstkMac
+cd macosApp && swift run DockhandMac
 ```
 
 **Linux (native GTK4)**:
@@ -102,15 +102,15 @@ end users don't need Java preinstalled:
 ```powershell
 dotnet tool restore
 ./gradlew.bat :windowsApp:backend:fatJar :windowsApp:backend:jlinkRuntime
-# copy backend/build/libs and backend/build/runtime into NstkWindowsApp/backend and
-# NstkWindowsApp/runtime — see windowsApp/README.md for the full sequence
-dotnet publish windowsApp/NstkWindowsApp/NstkWindowsApp.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -o windowsApp/NstkWindowsApp/publish
-dotnet wix build windowsApp/packaging/windows/Product.wxs -d ProductVersion=1.0.0 -d PublishDir=windowsApp/NstkWindowsApp/publish -arch x64 -out nstk-windows.msi
+# copy backend/build/libs and backend/build/runtime into DockhandWindowsApp/backend and
+# DockhandWindowsApp/runtime — see windowsApp/README.md for the full sequence
+dotnet publish windowsApp/DockhandWindowsApp/DockhandWindowsApp.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -o windowsApp/DockhandWindowsApp/publish
+dotnet wix build windowsApp/packaging/windows/Product.wxs -d ProductVersion=1.0.0 -d PublishDir=windowsApp/DockhandWindowsApp/publish -arch x64 -out dockhand-windows.msi
 ```
 
 **macOS** — a real `.app` bundle + `.dmg` via `macosApp/package.sh`, ad-hoc code-signed
 (not notarized — Gatekeeper will show an "unidentified developer" warning on first
-launch; right-click → Open, or `xattr -cr NS-ToolKit.app`, bypasses it):
+launch; right-click → Open, or `xattr -cr Dockhand.app`, bypasses it):
 ```bash
 ./macosApp/package.sh
 ```
@@ -127,9 +127,9 @@ This project respects and builds upon the incredible work of **developersu**, th
 -   Original Desktop App: [ns-usbloader](https://github.com/developersu/ns-usbloader)
 -   Original Mobile App: [ns-usbloader-mobile](https://github.com/developersu/ns-usbloader-mobile)
 
-**NS-ToolKit** is a comprehensive refactor to Kotlin Multiplatform, aiming to maintain the spirit of the original tools while modernizing the tech stack for easier maintenance and cross-platform feature parity.
+**Dockhand** is a comprehensive refactor to Kotlin Multiplatform, aiming to maintain the spirit of the original tools while modernizing the tech stack for easier maintenance and cross-platform feature parity.
 
-The project namespace has been refactored to `com.mrnrod45.nstk` to reflect this fork.
+The project namespace has been refactored to `com.mrnrod45.dockhand` to reflect this fork.
 
 ## License
 

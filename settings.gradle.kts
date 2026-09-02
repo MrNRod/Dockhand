@@ -1,4 +1,4 @@
-rootProject.name = "nstk"
+rootProject.name = "dockhand"
 include(":core", ":composeApp", ":androidApp", ":linuxApp", ":windowsApp:backend")
 
 pluginManagement {

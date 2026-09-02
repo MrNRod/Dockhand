@@ -41,7 +41,7 @@ Debian/Ubuntu, or `dnf install gtk4` on Fedora) and a JDK 22+ on `PATH`.
 Output lands in `build/jpackage/`. `jpackage` also generates the `.desktop` file and
 installs the icon — GTK4 removed per-window icon APIs entirely, so this is the *only* way
 the app gets a taskbar/launcher icon on Linux at all, not just a packaging nicety. A
-custom `.desktop` template lives at `packaging/linux/NS-ToolKit.desktop`, overriding
+custom `.desktop` template lives at `packaging/linux/Dockhand.desktop`, overriding
 jpackage's auto-generated one to add `StartupWMClass` — without it, GNOME Shell's dock
 can't match the running window back to its icon (it falls back to matching by `Exec` name,
 which doesn't line up with the app's actual GApplication ID), even though the static

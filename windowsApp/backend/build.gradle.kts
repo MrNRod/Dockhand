@@ -16,21 +16,21 @@ kotlin {
 dependencies {
     // Reuses :core's existing desktop JVM actuals directly — same story as linuxApp.
     // This process is a thin JSON-RPC shell around DesktopUsbController/DesktopFileSplitter/
-    // NetworkServer, launched as a subprocess by the WinUI frontend (see ../NstkWindowsApp).
+    // NetworkServer, launched as a subprocess by the WinUI frontend (see ../DockhandWindowsApp).
     implementation(project(":core"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
 
 application {
-    mainClass.set("com.mrnrod45.nstk.windows.MainKt")
+    mainClass.set("com.mrnrod45.dockhand.windows.MainKt")
 }
 
 tasks.register<Jar>("fatJar") {
     group = "distribution"
     description = "Builds a single self-contained jar for the WinUI frontend to launch as a subprocess."
-    archiveFileName.set("nstk-windows-backend.jar")
-    manifest { attributes["Main-Class"] = "com.mrnrod45.nstk.windows.MainKt" }
+    archiveFileName.set("dockhand-windows-backend.jar")
+    manifest { attributes["Main-Class"] = "com.mrnrod45.dockhand.windows.MainKt" }
     from(sourceSets.main.get().output)
     dependsOn(configurations.runtimeClasspath)
     from({

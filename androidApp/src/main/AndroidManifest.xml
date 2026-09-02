@@ -5,9 +5,9 @@
     <!-- required="false": NET transport still works on devices without USB host support. -->
     <uses-feature android:name="android.hardware.usb.host" android:required="false" />
     <application
-        android:name=".NSTKApplication"
+        android:name=".DockhandApplication"
         android:usesCleartextTraffic="true"
-        android:label="NS-ToolKit"
+        android:label="Dockhand"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
