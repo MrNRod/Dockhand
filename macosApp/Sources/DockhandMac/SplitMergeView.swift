@@ -10,15 +10,15 @@ struct SplitMergeView: View {
             VStack(alignment: .leading, spacing: MacMetrics.stackSpacing) {
                 MacCard(title: "Operation", systemImage: "square.split.2x1") {
                     VStack(alignment: .leading, spacing: MacMetrics.sectionSpacing) {
-                        Picker("Operation", selection: $appState.isSplitMode) {
-                            Text("Split").tag(true)
-                            Text("Merge").tag(false)
-                        }
-                        .pickerStyle(.segmented)
-                        .labelsHidden()
-                        .frame(maxWidth: 220)
+                        HStack(spacing: 12) {
+                            Picker("", selection: $appState.isSplitMode) {
+                                Text("Split").tag(true)
+                                Text("Merge").tag(false)
+                            }
+                            .pickerStyle(.segmented)
+                            .labelsHidden()
+                            .fixedSize()
 
-                        HStack(spacing: 10) {
                             Button {
                                 pickFiles()
                             } label: {
@@ -32,6 +32,8 @@ struct SplitMergeView: View {
                                 }
                                 .macGlassButton()
                             }
+
+                            Spacer(minLength: 0)
                         }
 
                         HStack(spacing: 8) {
