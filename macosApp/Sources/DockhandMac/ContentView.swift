@@ -17,53 +17,53 @@ enum AppScreen: String, CaseIterable, Identifiable {
 }
 
 struct ContentView: View {
-    @State private var selection: AppScreen? = .upload
-    // A plain HStack instead of NavigationSplitView: SwiftUI's automatic
-    // sidebar toggle only supports fully hiding the column, and
-    // `.toolbar(removing: .sidebarToggle)` is unreliable on macOS for
-    // suppressing it — this sidesteps that entirely with one custom button.
+    @State private var selection: AppScreen = .upload
+    // Icon-rail vs titled sidebar. The system split-view toggle only fully
+    // hides the column, so this button stays in `.navigation` and the default
+    // sidebar toggle is removed.
     @State private var isSidebarCompact = false
 
     var body: some View {
-        HStack(spacing: 0) {
+        NavigationSplitView {
             List(AppScreen.allCases, selection: $selection) { screen in
-                if isSidebarCompact {
-                    HStack {
-                        Spacer(minLength: 0)
-                        Image(systemName: screen.systemImage)
-                            .font(.system(size: 17))
-                            .frame(height: 22)
-                        Spacer(minLength: 0)
+                Group {
+                    if isSidebarCompact {
+                        Label(screen.rawValue, systemImage: screen.systemImage)
+                            .labelStyle(.iconOnly)
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        Label(screen.rawValue, systemImage: screen.systemImage)
+                            .labelStyle(.titleAndIcon)
                     }
-                    .tag(screen)
-                } else {
-                    Label(screen.rawValue, systemImage: screen.systemImage)
-                        .labelStyle(.titleAndIcon)
-                        .tag(screen)
                 }
+                .help(screen.rawValue)
+                .tag(screen)
             }
             .listStyle(.sidebar)
-            .frame(width: isSidebarCompact ? 56 : 200)
-
-            Divider()
-
-            Group {
-                switch selection {
-                case .upload: UploadView()
-                case .payload: RcmView()
-                case .splitMerge: SplitMergeView()
-                case .none: Text("Select a screen")
-                }
+            .navigationSplitViewColumnWidth(
+                min: isSidebarCompact ? MacMetrics.compactSidebarWidth : 160,
+                ideal: isSidebarCompact ? MacMetrics.compactSidebarWidth : MacMetrics.sidebarWidth,
+                max: isSidebarCompact ? 72 : 240
+            )
+        } detail: {
+            switch selection {
+            case .upload: UploadView()
+            case .payload: RcmView()
+            case .splitMerge: SplitMergeView()
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .navigationSplitViewStyle(.balanced)
+        .toolbar(removing: .sidebarToggle)
         .toolbar {
             ToolbarItem(placement: .navigation) {
                 Button {
-                    withAnimation { isSidebarCompact.toggle() }
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isSidebarCompact.toggle()
+                    }
                 } label: {
                     Image(systemName: "sidebar.left")
                 }
+                .help(isSidebarCompact ? "Show Sidebar" : "Compact Sidebar")
             }
         }
     }

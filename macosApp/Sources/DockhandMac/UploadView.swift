@@ -7,104 +7,123 @@ struct UploadView: View {
     @AppStorage("allowXci") private var allowXci = true
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            GroupBox("Connection") {
-                HStack(spacing: 16) {
-                    VStack(alignment: .leading) {
-                        Text("Protocol").font(.caption).foregroundStyle(.secondary)
-                        Picker("", selection: Binding(
-                            get: { appState.selectedProtocol },
-                            set: { appState.setProtocol($0) }
-                        )) {
-                            Text("Goldleaf").tag("Goldleaf")
-                            Text("Tinfoil (Awoo)").tag("Awoo")
-                            Text("Tinfoil (Sphaira)").tag("Sphaira")
+        MacScreenScaffold {
+            VStack(alignment: .leading, spacing: MacMetrics.stackSpacing) {
+                MacCard(title: "Connection", systemImage: "link") {
+                    HStack(alignment: .top, spacing: 24) {
+                        LabeledContent("Protocol") {
+                            Picker("Protocol", selection: Binding(
+                                get: { appState.selectedProtocol },
+                                set: { appState.setProtocol($0) }
+                            )) {
+                                Text("Goldleaf").tag("Goldleaf")
+                                Text("Tinfoil (Awoo)").tag("Awoo")
+                                Text("Tinfoil (Sphaira)").tag("Sphaira")
+                            }
+                            .labelsHidden()
+                            .fixedSize()
                         }
-                        .labelsHidden()
+                        LabeledContent("Transport") {
+                            Picker("Transport", selection: $appState.transport) {
+                                Text("USB").tag("USB")
+                                Text("NET").tag("NET")
+                            }
+                            .labelsHidden()
+                            .fixedSize()
+                            .disabled(!appState.isTransportEnabled)
+                        }
+                        Spacer(minLength: 0)
                     }
-                    VStack(alignment: .leading) {
-                        Text("Transport").font(.caption).foregroundStyle(.secondary)
-                        Picker("", selection: $appState.transport) {
-                            Text("USB").tag("USB")
-                            Text("NET").tag("NET")
-                        }
-                        .labelsHidden()
-                        .disabled(!appState.isTransportEnabled)
+                    if appState.transport == "NET" {
+                        TextField("Switch IP Address", text: $appState.ipAddress)
+                            .textFieldStyle(.roundedBorder)
                     }
                 }
-                if appState.transport == "NET" {
-                    TextField("Switch IP Address", text: $appState.ipAddress)
-                        .textFieldStyle(.roundedBorder)
-                        .padding(.top, 8)
-                }
-            }
-            .padding(.horizontal)
 
-            GroupBox("Selected Files") {
-                if appState.files.isEmpty {
-                    ContentUnavailableView("No files added", systemImage: "doc",
-                                            description: Text("Click \"Add Files\" to get started"))
+                MacCard(title: "Selected Files", systemImage: "doc.on.doc", fillHeight: true) {
+                    if appState.files.isEmpty {
+                        ContentUnavailableView(
+                            "No files added",
+                            systemImage: "doc",
+                            description: Text("Click Add Files to get started")
+                        )
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    List {
-                        ForEach(appState.files) { entry in
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(entry.name)
-                                    Text(entry.path).font(.caption).foregroundStyle(.secondary)
+                    } else {
+                        List {
+                            ForEach(appState.files) { entry in
+                                HStack {
+                                    Label {
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(entry.name)
+                                            Text(entry.path)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                                .lineLimit(1)
+                                                .truncationMode(.middle)
+                                                .textSelection(.enabled)
+                                        }
+                                    } icon: {
+                                        Image(systemName: "doc")
+                                    }
+                                    Spacer()
+                                    Button(role: .destructive) { appState.removeFile(entry) } label: {
+                                        Image(systemName: "trash")
+                                    }
+                                    .buttonStyle(.borderless)
+                                    .help("Remove")
                                 }
-                                Spacer()
-                                Button(role: .destructive) { appState.removeFile(entry) } label: {
-                                    Image(systemName: "trash")
+                                .contextMenu {
+                                    Button("Remove", role: .destructive) { appState.removeFile(entry) }
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .macConcentricClip()
+                    }
+                }
+
+                if !appState.uploadLog.text.isEmpty {
+                    MacCard(title: "Logs", systemImage: "text.alignleft") {
+                        MacInsetWell {
+                            ScrollView {
+                                Text(appState.uploadLog.text)
+                                    .font(.caption.monospaced())
+                                    .textSelection(.enabled)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            .frame(height: 120)
+                        }
                     }
                 }
             }
-            .padding(.horizontal)
-            .frame(maxHeight: .infinity)
-
-            if !appState.uploadLog.text.isEmpty {
-                GroupBox("Logs") {
-                    ScrollView {
-                        Text(appState.uploadLog.text)
-                            .font(.system(.caption, design: .monospaced))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .frame(height: 120)
-                }
-                .padding(.horizontal)
+        } actions: {
+            Button {
+                pickFiles()
+            } label: {
+                Label("Add Files…", systemImage: "plus")
             }
+            .macGlassButton()
 
-            HStack {
-                Button {
-                    pickFiles()
-                } label: {
-                    Label("Add Files…", systemImage: "plus")
+            Spacer()
+
+            Button {
+                appState.startUpload()
+            } label: {
+                if appState.servingOverNet {
+                    Text("Stop Server")
+                } else if appState.isUploading {
+                    ProgressView().controlSize(.small)
+                } else {
+                    Text(appState.transport == "USB" ? "Upload to Switch" : "Upload over Network")
                 }
-
-                Spacer()
-
-                Button {
-                    appState.startUpload()
-                } label: {
-                    if appState.servingOverNet {
-                        Text("Stop Server")
-                    } else if appState.isUploading {
-                        ProgressView().controlSize(.small)
-                    } else {
-                        Text(appState.transport == "USB" ? "Upload to Switch" : "Upload over Network")
-                    }
-                }
-                .keyboardShortcut(.defaultAction)
-                .disabled(!appState.servingOverNet && (appState.files.isEmpty || appState.isUploading))
             }
-            .padding([.horizontal, .bottom])
+            .keyboardShortcut(.defaultAction)
+            .macProminentButton()
+            .disabled(!appState.servingOverNet && (appState.files.isEmpty || appState.isUploading))
         }
-        .padding(.top)
         .navigationTitle("Upload")
+        .navigationSubtitle(appState.selectedProtocol)
     }
 
     private func pickFiles() {

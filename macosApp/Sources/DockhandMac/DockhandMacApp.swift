@@ -30,17 +30,19 @@ struct DockhandMacApp: App {
                 .environmentObject(appState)
                 .frame(minWidth: 820, minHeight: 560)
         }
-        .windowResizability(.contentSize)
+        .windowToolbarStyle(.unified)
+        .defaultSize(width: 920, height: 640)
         .commands {
             CommandGroup(replacing: .newItem) { }
+            SidebarCommands()
         }
 
         // SwiftUI's dedicated Preferences scene — automatically wired to
-        // Cmd+, and the app menu's "Preferences…" item, no custom plumbing needed.
+        // Cmd+, and the app menu's "Settings…" item, no custom plumbing needed.
         Settings {
             SettingsView()
                 .environmentObject(appState)
-                .frame(width: 480, height: 420)
+                .frame(width: 480, height: 380)
         }
     }
 }

@@ -5,16 +5,35 @@ struct RcmView: View {
     @EnvironmentObject private var appState: AppState
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            GroupBox("Payload Selection") {
-                HStack {
-                    Button("Select Payload (.bin)") { pickPayload() }
-                    Text(appState.selectedPayload?.name ?? "No file selected")
-                        .foregroundStyle(appState.selectedPayload == nil ? .secondary : .primary)
+        MacScreenScaffold {
+            VStack(alignment: .leading, spacing: MacMetrics.stackSpacing) {
+                MacCard(title: "Payload", systemImage: "bolt") {
+                    HStack(spacing: 12) {
+                        Button("Select Payload (.bin)") { pickPayload() }
+                            .macGlassButton()
+                        Text(appState.selectedPayload?.name ?? "No file selected")
+                            .foregroundStyle(appState.selectedPayload == nil ? .secondary : .primary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .textSelection(.enabled)
+                        Spacer(minLength: 0)
+                    }
+                }
+
+                MacCard(title: "Logs", systemImage: "text.alignleft", fillHeight: true) {
+                    MacInsetWell {
+                        ScrollView {
+                            Text(appState.rcmLog.text.isEmpty ? "Ready for RCM injection." : appState.rcmLog.text)
+                                .font(.caption.monospaced())
+                                .foregroundStyle(appState.rcmLog.text.isEmpty ? .secondary : .primary)
+                                .textSelection(.enabled)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
                 }
             }
-            .padding(.horizontal)
-
+        } actions: {
+            Spacer()
             Button {
                 appState.injectPayload()
             } label: {
@@ -24,26 +43,15 @@ struct RcmView: View {
                         Text("Injecting…")
                     }
                 } else {
-                    Text("Inject Payload")
+                    Label("Inject Payload", systemImage: "bolt.fill")
                 }
             }
             .keyboardShortcut(.defaultAction)
+            .macProminentButton()
             .disabled(appState.selectedPayload == nil || appState.isInjecting)
-            .padding(.horizontal)
-
-            GroupBox("Logs") {
-                ScrollView {
-                    Text(appState.rcmLog.text.isEmpty ? "Ready for RCM injection." : appState.rcmLog.text)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundStyle(appState.rcmLog.text.isEmpty ? .secondary : .primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
-            .padding([.horizontal, .bottom])
-            .frame(maxHeight: .infinity)
         }
-        .padding(.top)
         .navigationTitle("Payload")
+        .navigationSubtitle(appState.selectedPayload?.name ?? "No payload selected")
         .toolbar {
             ToolbarItem {
                 Button {
@@ -51,6 +59,7 @@ struct RcmView: View {
                 } label: {
                     Image(systemName: "trash")
                 }
+                .help("Clear Log")
             }
         }
     }

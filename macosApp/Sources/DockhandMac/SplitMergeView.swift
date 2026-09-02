@@ -6,69 +6,80 @@ struct SplitMergeView: View {
     @AppStorage("allowXci") private var allowXci = true
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            GroupBox("Operation") {
-                VStack(alignment: .leading, spacing: 12) {
-                    Picker("", selection: $appState.isSplitMode) {
-                        Text("Split").tag(true)
-                        Text("Merge").tag(false)
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    .frame(width: 200)
+        MacScreenScaffold {
+            VStack(alignment: .leading, spacing: MacMetrics.stackSpacing) {
+                MacCard(title: "Operation", systemImage: "square.split.2x1") {
+                    VStack(alignment: .leading, spacing: MacMetrics.sectionSpacing) {
+                        Picker("Operation", selection: $appState.isSplitMode) {
+                            Text("Split").tag(true)
+                            Text("Merge").tag(false)
+                        }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                        .frame(maxWidth: 240)
 
-                    HStack {
-                        Button(appState.isSplitMode ? "Select File…" : "Add Files…") { pickFiles() }
-                        Button("Clear") { appState.selectedPaths.removeAll() }
-                            .disabled(appState.selectedPaths.isEmpty)
-                    }
+                        HStack(spacing: 8) {
+                            Button(appState.isSplitMode ? "Select File…" : "Add Files…") { pickFiles() }
+                                .macGlassButton()
+                            Button("Clear") { appState.selectedPaths.removeAll() }
+                                .macGlassButton()
+                                .disabled(appState.selectedPaths.isEmpty)
+                        }
 
-                    HStack {
-                        Text("Save to:").foregroundStyle(.secondary)
-                        Text(appState.outputDir).lineLimit(1).truncationMode(.middle)
-                        Spacer()
-                        Button("Change…") { pickOutputDir() }
-                    }
-                }
-            }
-            .padding(.horizontal)
-
-            GroupBox("Files to Process") {
-                if appState.selectedPaths.isEmpty {
-                    ContentUnavailableView("No files selected", systemImage: "doc.on.doc")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    List(appState.selectedPaths) { entry in
-                        Text(entry.path).font(.system(.body, design: .monospaced))
+                        LabeledContent("Save to") {
+                            HStack(spacing: 8) {
+                                Text(appState.outputDir)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .foregroundStyle(.secondary)
+                                    .textSelection(.enabled)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Button("Change…") { pickOutputDir() }
+                                    .macGlassButton()
+                            }
+                        }
                     }
                 }
-            }
-            .padding(.horizontal)
-            .frame(maxHeight: .infinity)
 
-            if !appState.statusMessage.isEmpty {
-                Text(appState.statusMessage)
-                    .padding(.horizontal)
-            }
-
-            HStack {
-                Spacer()
-                Button {
-                    appState.startConversion()
-                } label: {
-                    if appState.isProcessing {
-                        ProgressView().controlSize(.small)
+                MacCard(title: "Files to Process", systemImage: "doc.on.doc", fillHeight: true) {
+                    if appState.selectedPaths.isEmpty {
+                        ContentUnavailableView("No files selected", systemImage: "doc.on.doc")
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else {
-                        Text(appState.isSplitMode ? "Split" : "Merge")
+                        List(appState.selectedPaths) { entry in
+                            Text(entry.path)
+                                .font(.body.monospaced())
+                                .textSelection(.enabled)
+                        }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .macConcentricClip()
                     }
                 }
-                .keyboardShortcut(.defaultAction)
-                .disabled(appState.selectedPaths.isEmpty || appState.isProcessing)
+
+                if !appState.statusMessage.isEmpty {
+                    Text(appState.statusMessage)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
             }
-            .padding([.horizontal, .bottom])
+        } actions: {
+            Spacer()
+            Button {
+                appState.startConversion()
+            } label: {
+                if appState.isProcessing {
+                    ProgressView().controlSize(.small)
+                } else {
+                    Text(appState.isSplitMode ? "Split" : "Merge")
+                }
+            }
+            .keyboardShortcut(.defaultAction)
+            .macProminentButton()
+            .disabled(appState.selectedPaths.isEmpty || appState.isProcessing)
         }
-        .padding(.top)
         .navigationTitle("Split & Merge")
+        .navigationSubtitle(appState.isSplitMode ? "Split" : "Merge")
     }
 
     /// Mirrors UploadView's allowedExtensions(): .nsp always, XCI/NSZ/XCZ only when allowXci
