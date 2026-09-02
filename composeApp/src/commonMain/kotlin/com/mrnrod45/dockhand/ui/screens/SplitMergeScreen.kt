@@ -18,6 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import com.mrnrod45.dockhand.ui.components.AdaptiveTopBar
+import com.mrnrod45.dockhand.ui.components.rememberAdaptiveTopBarScrollBehavior
 import com.mrnrod45.dockhand.ui.viewmodels.SplitMergeViewModel
 import com.mrnrod45.dockhand.ui.viewmodels.SettingsViewModel
 import com.mrnrod45.dockhand.platform.file.FilePicker
@@ -37,16 +40,11 @@ fun SplitMergeScreen(
     val statusMessage by viewModel.statusMessage.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
 
+    val scrollBehavior = rememberAdaptiveTopBarScrollBehavior()
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
-        topBar = {
-            TopAppBar(
-                title = { Text("Split & merge files tool") },
-                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
-                    containerColor = androidx.compose.ui.graphics.Color.Transparent
-                )
-            )
-        }
+        topBar = { AdaptiveTopBar("Split & merge files tool", scrollBehavior) }
     ) { innerPadding ->
         Column(
             modifier = Modifier

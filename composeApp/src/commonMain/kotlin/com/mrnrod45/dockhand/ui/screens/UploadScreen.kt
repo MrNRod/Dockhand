@@ -30,8 +30,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mrnrod45.dockhand.ui.components.AdaptiveTopBar
+import com.mrnrod45.dockhand.ui.components.rememberAdaptiveTopBarScrollBehavior
 import com.mrnrod45.dockhand.ui.viewmodels.UploadViewModel
 
 import com.mrnrod45.dockhand.domain.usb.UsbController
@@ -74,16 +77,12 @@ fun UploadScreen(
     var isProtocolDropdownExpanded by remember { mutableStateOf(false) }
     var isTransportDropdownExpanded by remember { mutableStateOf(false) }
 
+    val scrollBehavior = rememberAdaptiveTopBarScrollBehavior()
+
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
-        topBar = {
-            TopAppBar(
-                title = { Text("Dockhand") },
-                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
-                    containerColor = androidx.compose.ui.graphics.Color.Transparent
-                )
-            )
-        },
+        topBar = { AdaptiveTopBar("Dockhand", scrollBehavior) },
         bottomBar = {
             BottomAppBar {
                 Button(

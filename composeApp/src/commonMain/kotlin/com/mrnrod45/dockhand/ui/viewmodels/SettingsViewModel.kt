@@ -16,7 +16,7 @@ class SettingsViewModel : ViewModel() {
     // Main Settings
     private val _selectedLanguage = MutableStateFlow("English (en_US)")
     val selectedLanguage: StateFlow<String> = _selectedLanguage.asStateFlow()
-    
+
     private val _useRomFolder = MutableStateFlow(false)
     val useRomFolder: StateFlow<Boolean> = _useRomFolder.asStateFlow()
 
@@ -43,10 +43,6 @@ class SettingsViewModel : ViewModel() {
     private val _expertNoRequestsServe = MutableStateFlow(false) // passive mode: switch connects to us
     val expertNoRequestsServe: StateFlow<Boolean> = _expertNoRequestsServe.asStateFlow()
 
-    // Theme Settings
-    private val _themeConfig = MutableStateFlow(com.mrnrod45.dockhand.ui.theme.AppThemeConfig())
-    val themeConfig: StateFlow<com.mrnrod45.dockhand.ui.theme.AppThemeConfig> = _themeConfig.asStateFlow()
-
     fun toggleSplitFiles(enabled: Boolean) {
         _useSplitFiles.value = enabled
     }
@@ -54,7 +50,7 @@ class SettingsViewModel : ViewModel() {
     fun toggleAutoCheckUpdates(enabled: Boolean) {
         _autoCheckUpdates.value = enabled
     }
-    
+
     fun setLanguage(language: String) {
         _selectedLanguage.value = language
     }
@@ -70,25 +66,25 @@ class SettingsViewModel : ViewModel() {
     fun toggleValidateIp(enabled: Boolean) {
         _validateIp.value = enabled
     }
-    
+
     fun toggleExpertMode(enabled: Boolean) {
         _expertMode.value = enabled
     }
 
-    fun setExpertHostIp(ip: String) { _expertHostIp.value = ip }
-    fun setExpertHostPort(port: String) { _expertHostPort.value = port }
-    fun setExpertHostExtra(extra: String) { _expertHostExtra.value = extra }
-    fun toggleExpertNoRequestsServe(enabled: Boolean) { _expertNoRequestsServe.value = enabled }
-
-    fun setThemeMode(mode: com.mrnrod45.dockhand.ui.theme.ThemeMode) {
-        _themeConfig.value = _themeConfig.value.copy(mode = mode)
+    fun setExpertHostIp(ip: String) {
+        _expertHostIp.value = ip
     }
 
-    fun setDarkThemeConfig(config: com.mrnrod45.dockhand.ui.theme.DarkThemeConfig) {
-        _themeConfig.value = _themeConfig.value.copy(darkThemeConfig = config)
+    fun setExpertHostPort(port: String) {
+        _expertHostPort.value = port
     }
 
-    fun toggleDynamicColor(enabled: Boolean) {
-        _themeConfig.value = _themeConfig.value.copy(useDynamicColor = enabled)
+    fun setExpertHostExtra(extra: String) {
+        _expertHostExtra.value = extra
     }
+
+    fun toggleExpertNoRequestsServe(enabled: Boolean) {
+        _expertNoRequestsServe.value = enabled
+    }
+
 }

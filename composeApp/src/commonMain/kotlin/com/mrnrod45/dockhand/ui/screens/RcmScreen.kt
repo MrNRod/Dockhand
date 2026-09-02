@@ -11,7 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import com.mrnrod45.dockhand.ui.components.AdaptiveTopBar
+import com.mrnrod45.dockhand.ui.components.rememberAdaptiveTopBarScrollBehavior
 import com.mrnrod45.dockhand.ui.viewmodels.RcmViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,16 +22,11 @@ import com.mrnrod45.dockhand.ui.viewmodels.RcmViewModel
 fun RcmScreen(
     viewModel: RcmViewModel
 ) {
+    val scrollBehavior = rememberAdaptiveTopBarScrollBehavior()
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
-        topBar = {
-            TopAppBar(
-                title = { Text("RCM Payload Injection") },
-                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
-                    containerColor = androidx.compose.ui.graphics.Color.Transparent
-                )
-            )
-        }
+        topBar = { AdaptiveTopBar("RCM Payload Injection", scrollBehavior) }
     ) { innerPadding ->
         Column(
             modifier = Modifier

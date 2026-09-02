@@ -16,12 +16,9 @@ fun App(
     settingsViewModel: com.mrnrod45.dockhand.ui.viewmodels.SettingsViewModel,
     darkTheme: Boolean? = null
 ) {
-    val themeConfig by settingsViewModel.themeConfig.collectAsState()
-
-    // If darkTheme is explicitly passed (e.g. from Desktop polling), use it as fallback for SYSTEM mode.
-    // Otherwise let AppTheme decide based on config.
+    // darkTheme is only passed explicitly by Desktop, which polls the OS itself; on Android the
+    // default tracks the system setting.
     AppTheme(
-        themeConfig = themeConfig,
         darkTheme = darkTheme ?: androidx.compose.foundation.isSystemInDarkTheme()
     ) {
         AppNavigation(usbController, filePicker, settingsViewModel)
