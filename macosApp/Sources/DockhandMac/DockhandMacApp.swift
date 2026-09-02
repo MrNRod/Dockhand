@@ -10,13 +10,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
 
-        // Only explicitly set applicationIconImage if running outside a .app bundle
-        if Bundle.main.bundleURL.pathExtension != "app" {
-            if let url = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
-               let image = NSImage(contentsOf: url) {
-                NSApp.applicationIconImage = image
-            }
+        if let image = Self.loadAppIcon() {
+            NSApp.applicationIconImage = image
         }
+    }
+
+    static func loadAppIcon() -> NSImage? {
+        if let url = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
+           let image = NSImage(contentsOf: url) {
+            return image
+        }
+        if let url = Bundle.main.url(forResource: "AppIcon", withExtension: "icns"),
+           let image = NSImage(contentsOf: url) {
+            return image
+        }
+        if let image = NSImage(named: NSImage.applicationIconName), image.isValid {
+            return image
+        }
+        return nil
+    }
+
+    static func showAboutPanel() {
+        var options: [NSApplication.AboutPanelOptionKey: Any] = [:]
+
+        if let icon = loadAppIcon() {
+            options[.applicationIcon] = icon
+        }
+        options[.applicationName] = "Dockhand"
+
+        NSApp.orderFrontStandardAboutPanel(options: options)
     }
 }
 
@@ -34,6 +56,11 @@ struct DockhandMacApp: App {
         .windowToolbarStyle(.unified)
         .defaultSize(width: 920, height: 640)
         .commands {
+            CommandGroup(replacing: .appInfo) {
+                Button("About Dockhand") {
+                    AppDelegate.showAboutPanel()
+                }
+            }
             CommandGroup(replacing: .newItem) { }
             CommandGroup(replacing: .sidebar) {
                 Button(appState.isSidebarCompact ? "Expand Sidebar" : "Compact Sidebar") {

@@ -75,7 +75,6 @@ struct RcmView: View {
             .disabled(appState.selectedPayload == nil || appState.isInjecting)
         }
         .navigationTitle("Payload")
-        .navigationSubtitle(appState.selectedPayload?.name ?? "No payload selected")
     }
 
     private func pickPayload() {

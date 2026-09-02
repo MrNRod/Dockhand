@@ -159,7 +159,6 @@ struct UploadView: View {
             .disabled(!appState.servingOverNet && (appState.files.isEmpty || appState.isUploading))
         }
         .navigationTitle("Upload")
-        .navigationSubtitle(appState.selectedProtocol)
     }
 
     private func pickFiles() {

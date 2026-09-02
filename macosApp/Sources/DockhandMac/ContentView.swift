@@ -36,18 +36,22 @@ struct SidebarConfigurator: NSViewRepresentable {
 
     func updateNSView(_ nsView: NSView, context: Context) {
         context.coordinator.isCompact = $isCompact
-        DispatchQueue.main.async {
-            context.coordinator.updateToolbar()
+        if context.coordinator.lastCompactState != isCompact {
+            context.coordinator.lastCompactState = isCompact
+            context.coordinator.updateTooltipOnly()
         }
     }
 
     final class Coordinator: NSObject {
         var isCompact: Binding<Bool>
+        var lastCompactState: Bool
         private weak var window: NSWindow?
         private var observers: [NSObjectProtocol] = []
+        private var isConfigured = false
 
         init(isCompact: Binding<Bool>) {
             self.isCompact = isCompact
+            self.lastCompactState = isCompact.wrappedValue
             super.init()
         }
 
@@ -67,24 +71,27 @@ struct SidebarConfigurator: NSViewRepresentable {
             }
             self.window = window
 
+            if !isConfigured {
+                configureWindowAndToolbar()
+                isConfigured = true
+            }
+
             observers.append(
                 NotificationCenter.default.addObserver(
                     forName: NSWindow.didBecomeKeyNotification,
                     object: window,
                     queue: .main
                 ) { [weak self] _ in
-                    self?.updateToolbar()
+                    self?.configureWindowAndToolbar()
                 }
             )
-
-            updateToolbar()
         }
 
-        func updateToolbar() {
+        func configureWindowAndToolbar() {
             guard let window = window else { return }
 
             if let splitVC = findSplitViewController(in: window.contentViewController) {
-                if let sidebarItem = splitVC.splitViewItems.first {
+                if let sidebarItem = splitVC.splitViewItems.first, sidebarItem.canCollapse {
                     sidebarItem.canCollapse = false
                 }
             }
@@ -92,10 +99,21 @@ struct SidebarConfigurator: NSViewRepresentable {
             if let toolbar = window.toolbar {
                 for item in toolbar.items {
                     if item.itemIdentifier.rawValue.contains("ToggleSidebar") || item.itemIdentifier == .toggleSidebar {
-                        item.target = self
-                        item.action = #selector(handleSidebarToggle)
+                        if item.target !== self {
+                            item.target = self
+                            item.action = #selector(handleSidebarToggle)
+                        }
                         item.toolTip = isCompact.wrappedValue ? "Expand Sidebar" : "Compact Sidebar"
                     }
+                }
+            }
+        }
+
+        func updateTooltipOnly() {
+            guard let window = window, let toolbar = window.toolbar else { return }
+            for item in toolbar.items {
+                if item.itemIdentifier.rawValue.contains("ToggleSidebar") || item.itemIdentifier == .toggleSidebar {
+                    item.toolTip = isCompact.wrappedValue ? "Expand Sidebar" : "Compact Sidebar"
                 }
             }
         }

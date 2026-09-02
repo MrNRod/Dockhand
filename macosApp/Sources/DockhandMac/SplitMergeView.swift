@@ -138,7 +138,6 @@ struct SplitMergeView: View {
             .disabled(appState.selectedPaths.isEmpty || appState.isProcessing)
         }
         .navigationTitle("Split & Merge")
-        .navigationSubtitle(appState.isSplitMode ? "Split" : "Merge")
     }
 
     private func allowedExtensions() -> [String] {
