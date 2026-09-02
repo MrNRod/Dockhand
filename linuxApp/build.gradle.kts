@@ -25,9 +25,14 @@ dependencies {
     implementation("io.github.jwharm.javagi:gtk:0.12.2")
 }
 
+val macIcon = project.file("packaging/icon.png")
+
 application {
     mainClass.set("com.mrnrod45.dockhand.linux.MainKt")
-    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
+    applicationDefaultJvmArgs = listOf(
+        "--enable-native-access=ALL-UNNAMED",
+        "-Xdock:name=Dockhand"
+    )
 }
 
 tasks.withType<JavaExec>().configureEach {
@@ -40,6 +45,10 @@ tasks.withType<JavaExec>().configureEach {
     if (System.getProperty("os.name").lowercase().contains("mac")) {
         environment("DYLD_LIBRARY_PATH", "/opt/homebrew/lib")
         environment("DYLD_FALLBACK_LIBRARY_PATH", "/opt/homebrew/lib")
+        jvmArgs(
+            "-Xdock:name=Dockhand",
+            "-Xdock:icon=${macIcon.absolutePath}"
+        )
     }
 }
 

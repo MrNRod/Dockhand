@@ -4,27 +4,31 @@ import AppKit
 // When launched as a bare Mach-O (e.g. `swift run`), LaunchServices won't
 // register a Dock tile or load CFBundleIconFile from a bundle on disk.
 // In a real .app bundle, macOS handles the Dock tile and native AppIcon.icns
-// automatically.
+// automatically — we must NOT override applicationIconImage at runtime in a .app
+// as that replaces the system-rendered, themed Dock tile.
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
 
-        if let image = Self.loadAppIcon() {
-            NSApp.applicationIconImage = image
+        // Only set applicationIconImage if running unbundled (e.g. `swift run`)
+        if Bundle.main.bundleURL.pathExtension != "app" {
+            if let image = Self.loadAppIcon() {
+                NSApp.applicationIconImage = image
+            }
         }
     }
 
     static func loadAppIcon() -> NSImage? {
-        if let url = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
-           let image = NSImage(contentsOf: url) {
+        if let image = NSImage(named: NSImage.applicationIconName), image.isValid {
             return image
         }
         if let url = Bundle.main.url(forResource: "AppIcon", withExtension: "icns"),
            let image = NSImage(contentsOf: url) {
             return image
         }
-        if let image = NSImage(named: NSImage.applicationIconName), image.isValid {
+        if let url = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
+           let image = NSImage(contentsOf: url) {
             return image
         }
         return nil
