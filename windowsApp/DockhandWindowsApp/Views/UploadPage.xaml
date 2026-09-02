@@ -19,8 +19,8 @@
                     <TextBlock Text="Protocol" Style="{ThemeResource CaptionTextBlockStyle}" />
                     <ComboBox x:Name="ProtocolCombo" Width="180" SelectionChanged="ProtocolCombo_SelectionChanged">
                         <ComboBoxItem Content="Goldleaf" Tag="Goldleaf" IsSelected="True" />
-                        <ComboBoxItem Content="Tinfoil (Awoo)" Tag="Awoo" />
-                        <ComboBoxItem Content="Tinfoil (Sphaira)" Tag="Sphaira" />
+                        <ComboBoxItem Content="Awoo" Tag="Awoo" />
+                        <ComboBoxItem Content="Sphaira" Tag="Sphaira" />
                     </ComboBox>
                 </StackPanel>
                 <StackPanel Spacing="4">

@@ -21,8 +21,8 @@ struct UploadView: View {
                                     set: { appState.setProtocol($0) }
                                 )) {
                                     Text("Goldleaf").tag("Goldleaf")
-                                    Text("Tinfoil (Awoo)").tag("Awoo")
-                                    Text("Tinfoil (Sphaira)").tag("Sphaira")
+                                    Text("Awoo").tag("Awoo")
+                                    Text("Sphaira").tag("Sphaira")
                                 }
                                 .labelsHidden()
                                 .fixedSize()
