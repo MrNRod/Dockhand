@@ -10,68 +10,90 @@ struct UploadView: View {
         MacScreenScaffold {
             VStack(alignment: .leading, spacing: MacMetrics.stackSpacing) {
                 MacCard(title: "Connection", systemImage: "link") {
-                    HStack(alignment: .top, spacing: 24) {
-                        LabeledContent("Protocol") {
-                            Picker("Protocol", selection: Binding(
-                                get: { appState.selectedProtocol },
-                                set: { appState.setProtocol($0) }
-                            )) {
-                                Text("Goldleaf").tag("Goldleaf")
-                                Text("Tinfoil (Awoo)").tag("Awoo")
-                                Text("Tinfoil (Sphaira)").tag("Sphaira")
+                    VStack(alignment: .leading, spacing: MacMetrics.sectionSpacing) {
+                        HStack(spacing: 20) {
+                            HStack(spacing: 8) {
+                                Text("Protocol:")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Picker("Protocol", selection: Binding(
+                                    get: { appState.selectedProtocol },
+                                    set: { appState.setProtocol($0) }
+                                )) {
+                                    Text("Goldleaf").tag("Goldleaf")
+                                    Text("Tinfoil (Awoo)").tag("Awoo")
+                                    Text("Tinfoil (Sphaira)").tag("Sphaira")
+                                }
+                                .labelsHidden()
+                                .fixedSize()
                             }
-                            .labelsHidden()
-                            .fixedSize()
-                        }
-                        LabeledContent("Transport") {
-                            Picker("Transport", selection: $appState.transport) {
-                                Text("USB").tag("USB")
-                                Text("NET").tag("NET")
+
+                            HStack(spacing: 8) {
+                                Text("Transport:")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Picker("Transport", selection: $appState.transport) {
+                                    Text("USB").tag("USB")
+                                    Text("NET").tag("NET")
+                                }
+                                .labelsHidden()
+                                .fixedSize()
+                                .disabled(!appState.isTransportEnabled)
                             }
-                            .labelsHidden()
-                            .fixedSize()
-                            .disabled(!appState.isTransportEnabled)
+
+                            Spacer(minLength: 0)
                         }
-                        Spacer(minLength: 0)
-                    }
-                    if appState.transport == "NET" {
-                        TextField("Switch IP Address", text: $appState.ipAddress)
-                            .textFieldStyle(.roundedBorder)
+
+                        if appState.transport == "NET" {
+                            HStack(spacing: 8) {
+                                Text("Switch IP:")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                TextField("192.168.1.50", text: $appState.ipAddress)
+                                    .textFieldStyle(.roundedBorder)
+                                    .frame(maxWidth: 220)
+                            }
+                        }
                     }
                 }
 
                 MacCard(title: "Selected Files", systemImage: "doc.on.doc", fillHeight: true) {
                     if appState.files.isEmpty {
                         ContentUnavailableView(
-                            "No files added",
-                            systemImage: "doc",
-                            description: Text("Click Add Files to get started")
+                            "No Files Added",
+                            systemImage: "doc.badge.plus",
+                            description: Text("Click Add Files below to select NSP or XCI files")
                         )
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else {
                         List {
                             ForEach(appState.files) { entry in
-                                HStack {
-                                    Label {
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(entry.name)
-                                            Text(entry.path)
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                                .lineLimit(1)
-                                                .truncationMode(.middle)
-                                                .textSelection(.enabled)
-                                        }
-                                    } icon: {
-                                        Image(systemName: "doc")
+                                HStack(spacing: 10) {
+                                    Image(systemName: "doc.fill")
+                                        .font(.system(size: 16))
+                                        .foregroundStyle(.tint)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(entry.name)
+                                            .font(.body)
+                                            .lineLimit(1)
+                                        Text(entry.path)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .lineLimit(1)
+                                            .truncationMode(.middle)
+                                            .textSelection(.enabled)
                                     }
-                                    Spacer()
-                                    Button(role: .destructive) { appState.removeFile(entry) } label: {
+                                    Spacer(minLength: 8)
+                                    Button(role: .destructive) {
+                                        appState.removeFile(entry)
+                                    } label: {
                                         Image(systemName: "trash")
+                                            .font(.system(size: 12))
                                     }
                                     .buttonStyle(.borderless)
-                                    .help("Remove")
+                                    .help("Remove file")
                                 }
+                                .padding(.vertical, 2)
                                 .contextMenu {
                                     Button("Remove", role: .destructive) { appState.removeFile(entry) }
                                 }
@@ -91,8 +113,9 @@ struct UploadView: View {
                                     .font(.caption.monospaced())
                                     .textSelection(.enabled)
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(4)
                             }
-                            .frame(height: 120)
+                            .frame(height: 110)
                         }
                     }
                 }
@@ -105,17 +128,30 @@ struct UploadView: View {
             }
             .macGlassButton()
 
+            if !appState.files.isEmpty {
+                Button("Clear All") {
+                    appState.files.removeAll()
+                }
+                .macGlassButton()
+            }
+
             Spacer()
 
             Button {
                 appState.startUpload()
             } label: {
                 if appState.servingOverNet {
-                    Text("Stop Server")
+                    Label("Stop Server", systemImage: "stop.fill")
                 } else if appState.isUploading {
-                    ProgressView().controlSize(.small)
+                    HStack(spacing: 6) {
+                        ProgressView().controlSize(.small)
+                        Text("Uploading…")
+                    }
                 } else {
-                    Text(appState.transport == "USB" ? "Upload to Switch" : "Upload over Network")
+                    Label(
+                        appState.transport == "USB" ? "Upload to Switch" : "Upload over Network",
+                        systemImage: "arrow.up.circle.fill"
+                    )
                 }
             }
             .keyboardShortcut(.defaultAction)
@@ -141,11 +177,6 @@ struct UploadView: View {
             panel.allowsMultipleSelection = true
             panel.canChooseDirectories = false
             panel.canChooseFiles = true
-            // Not using allowedContentTypes here: combining several dynamically-synthesized
-            // UTTypes for non-registered extensions (nsp/xci/nsz/xcz) can make NSOpenPanel
-            // refuse to let the user select *any* file at all on some macOS versions, rather
-            // than just narrowing the list. Filter the result instead, like every other
-            // picker in this codebase already does.
             if panel.runModal() == .OK {
                 let matched = panel.urls.filter { extensions.contains($0.pathExtension.lowercased()) }
                 appState.addFiles(matched)
@@ -153,8 +184,6 @@ struct UploadView: View {
         }
     }
 
-    /// Mirrors composeApp's UploadViewModel.openFilePicker() extension logic:
-    /// .nsp is always allowed; XCI/NSZ/XCZ only when allowXci is on.
     private func allowedExtensions() -> [String] {
         var extensions = ["nsp"]
         if allowXci {

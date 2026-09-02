@@ -125,12 +125,14 @@ struct ContentView: View {
             List(AppScreen.allCases, selection: $selection) { screen in
                 Group {
                     if appState.isSidebarCompact {
-                        Label(screen.rawValue, systemImage: screen.systemImage)
-                            .labelStyle(.iconOnly)
+                        Image(systemName: screen.systemImage)
+                            .font(.system(size: 16, weight: .medium))
                             .frame(maxWidth: .infinity)
+                            .padding(.vertical, 4)
                     } else {
                         Label(screen.rawValue, systemImage: screen.systemImage)
-                            .labelStyle(.titleAndIcon)
+                            .font(.system(size: 13, weight: .medium))
+                            .padding(.vertical, 2)
                     }
                 }
                 .help(screen.rawValue)
@@ -140,7 +142,7 @@ struct ContentView: View {
             .navigationSplitViewColumnWidth(
                 min: appState.isSidebarCompact ? MacMetrics.compactSidebarWidth : 160,
                 ideal: appState.isSidebarCompact ? MacMetrics.compactSidebarWidth : MacMetrics.sidebarWidth,
-                max: appState.isSidebarCompact ? 72 : 240
+                max: appState.isSidebarCompact ? 64 : 240
             )
         } detail: {
             switch selection {

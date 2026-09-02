@@ -7,15 +7,30 @@ struct RcmView: View {
     var body: some View {
         MacScreenScaffold {
             VStack(alignment: .leading, spacing: MacMetrics.stackSpacing) {
-                MacCard(title: "Payload", systemImage: "bolt") {
+                MacCard(title: "Payload Selection", systemImage: "bolt") {
                     HStack(spacing: 12) {
-                        Button("Select Payload (.bin)") { pickPayload() }
-                            .macGlassButton()
-                        Text(appState.selectedPayload?.name ?? "No file selected")
-                            .foregroundStyle(appState.selectedPayload == nil ? .secondary : .primary)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .textSelection(.enabled)
+                        Button {
+                            pickPayload()
+                        } label: {
+                            Label("Select Payload (.bin)…", systemImage: "folder")
+                        }
+                        .macGlassButton()
+
+                        if let payload = appState.selectedPayload {
+                            HStack(spacing: 6) {
+                                Image(systemName: "doc.fill")
+                                    .foregroundStyle(.tint)
+                                Text(payload.name)
+                                    .font(.body)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .textSelection(.enabled)
+                            }
+                        } else {
+                            Text("No payload selected")
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                        }
                         Spacer(minLength: 0)
                     }
                 }
@@ -28,17 +43,26 @@ struct RcmView: View {
                                 .foregroundStyle(appState.rcmLog.text.isEmpty ? .secondary : .primary)
                                 .textSelection(.enabled)
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(4)
                         }
                     }
                 }
             }
         } actions: {
+            if !appState.rcmLog.text.isEmpty {
+                Button("Clear Log") {
+                    appState.rcmLog.clear()
+                }
+                .macGlassButton()
+            }
+
             Spacer()
+
             Button {
                 appState.injectPayload()
             } label: {
                 if appState.isInjecting {
-                    HStack {
+                    HStack(spacing: 6) {
                         ProgressView().controlSize(.small)
                         Text("Injecting…")
                     }
@@ -52,25 +76,12 @@ struct RcmView: View {
         }
         .navigationTitle("Payload")
         .navigationSubtitle(appState.selectedPayload?.name ?? "No payload selected")
-        .toolbar {
-            ToolbarItem {
-                Button {
-                    appState.rcmLog.clear()
-                } label: {
-                    Image(systemName: "trash")
-                }
-                .help("Clear Log")
-            }
-        }
     }
 
     private func pickPayload() {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = false
         panel.allowsMultipleSelection = false
-        // Not using allowedContentTypes: a dynamically-synthesized UTType for a
-        // non-registered extension like "bin" can make NSOpenPanel refuse to let the user
-        // select anything at all on some macOS versions. Filter the result instead.
         guard panel.runModal() == .OK, let url = panel.urls.first else { return }
         if url.pathExtension.lowercased() == "bin" {
             appState.selectedPayload = FileEntry(file: .init(filePath: url.path))

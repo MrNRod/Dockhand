@@ -16,40 +16,90 @@ struct SplitMergeView: View {
                         }
                         .pickerStyle(.segmented)
                         .labelsHidden()
-                        .frame(maxWidth: 240)
+                        .frame(maxWidth: 220)
 
-                        HStack(spacing: 8) {
-                            Button(appState.isSplitMode ? "Select File…" : "Add Files…") { pickFiles() }
+                        HStack(spacing: 10) {
+                            Button {
+                                pickFiles()
+                            } label: {
+                                Label(appState.isSplitMode ? "Select File…" : "Add Chunks…", systemImage: "plus")
+                            }
+                            .macGlassButton()
+
+                            if !appState.selectedPaths.isEmpty {
+                                Button("Clear All") {
+                                    appState.selectedPaths.removeAll()
+                                }
                                 .macGlassButton()
-                            Button("Clear") { appState.selectedPaths.removeAll() }
-                                .macGlassButton()
-                                .disabled(appState.selectedPaths.isEmpty)
+                            }
                         }
 
-                        LabeledContent("Save to") {
-                            HStack(spacing: 8) {
-                                Text(appState.outputDir)
-                                    .lineLimit(1)
-                                    .truncationMode(.middle)
-                                    .foregroundStyle(.secondary)
-                                    .textSelection(.enabled)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Button("Change…") { pickOutputDir() }
-                                    .macGlassButton()
+                        HStack(spacing: 8) {
+                            Text("Save to:")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Text(appState.outputDir)
+                                .font(.callout)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                                .foregroundStyle(.primary)
+                                .textSelection(.enabled)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Button("Change…") {
+                                pickOutputDir()
                             }
+                            .macGlassButton()
                         }
                     }
                 }
 
                 MacCard(title: "Files to Process", systemImage: "doc.on.doc", fillHeight: true) {
                     if appState.selectedPaths.isEmpty {
-                        ContentUnavailableView("No files selected", systemImage: "doc.on.doc")
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        ContentUnavailableView(
+                            appState.isSplitMode ? "No File Selected" : "No Files Added",
+                            systemImage: "doc.badge.plus",
+                            description: Text(
+                                appState.isSplitMode
+                                    ? "Select an NSP or XCI file to split into chunks for FAT32"
+                                    : "Add split chunk files (e.g. .00, .01) to merge back into a single file"
+                            )
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else {
-                        List(appState.selectedPaths) { entry in
-                            Text(entry.path)
-                                .font(.body.monospaced())
-                                .textSelection(.enabled)
+                        List {
+                            ForEach(appState.selectedPaths) { entry in
+                                HStack(spacing: 10) {
+                                    Image(systemName: "doc.fill")
+                                        .font(.system(size: 16))
+                                        .foregroundStyle(.tint)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(entry.name)
+                                            .font(.body)
+                                            .lineLimit(1)
+                                        Text(entry.path)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .lineLimit(1)
+                                            .truncationMode(.middle)
+                                            .textSelection(.enabled)
+                                    }
+                                    Spacer(minLength: 8)
+                                    Button(role: .destructive) {
+                                        appState.selectedPaths.removeAll { $0.id == entry.id }
+                                    } label: {
+                                        Image(systemName: "trash")
+                                            .font(.system(size: 12))
+                                    }
+                                    .buttonStyle(.borderless)
+                                    .help("Remove file")
+                                }
+                                .padding(.vertical, 2)
+                                .contextMenu {
+                                    Button("Remove", role: .destructive) {
+                                        appState.selectedPaths.removeAll { $0.id == entry.id }
+                                    }
+                                }
+                            }
                         }
                         .listStyle(.plain)
                         .scrollContentBackground(.hidden)
@@ -61,6 +111,7 @@ struct SplitMergeView: View {
                     Text(appState.statusMessage)
                         .font(.callout)
                         .foregroundStyle(.secondary)
+                        .padding(.horizontal, 4)
                 }
             }
         } actions: {
@@ -69,9 +120,15 @@ struct SplitMergeView: View {
                 appState.startConversion()
             } label: {
                 if appState.isProcessing {
-                    ProgressView().controlSize(.small)
+                    HStack(spacing: 6) {
+                        ProgressView().controlSize(.small)
+                        Text("Processing…")
+                    }
                 } else {
-                    Text(appState.isSplitMode ? "Split" : "Merge")
+                    Label(
+                        appState.isSplitMode ? "Split File" : "Merge Files",
+                        systemImage: appState.isSplitMode ? "square.split.2x1.fill" : "square.split.1x2.fill"
+                    )
                 }
             }
             .keyboardShortcut(.defaultAction)
@@ -82,9 +139,6 @@ struct SplitMergeView: View {
         .navigationSubtitle(appState.isSplitMode ? "Split" : "Merge")
     }
 
-    /// Mirrors UploadView's allowedExtensions(): .nsp always, XCI/NSZ/XCZ only when allowXci
-    /// is on. Only meaningful in split mode — merge mode selects split chunks (e.g.
-    /// "game.nsp.00"), which don't carry these extensions, so it's left unfiltered.
     private func allowedExtensions() -> [String] {
         var extensions = ["nsp"]
         if allowXci {
@@ -98,9 +152,6 @@ struct SplitMergeView: View {
         panel.allowsMultipleSelection = !appState.isSplitMode
         panel.canChooseDirectories = true
         panel.canChooseFiles = true
-        // Not using allowedContentTypes: combining several dynamically-synthesized UTTypes
-        // for non-registered extensions (nsp/xci/nsz/xcz) can make NSOpenPanel refuse to let
-        // the user select anything at all on some macOS versions. Filter the result instead.
         if panel.runModal() == .OK {
             var urls = panel.urls
             if appState.isSplitMode {
