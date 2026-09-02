@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 enum AppScreen: String, CaseIterable, Identifiable {
     case upload = "Upload"
@@ -16,18 +17,114 @@ enum AppScreen: String, CaseIterable, Identifiable {
     }
 }
 
+/// Hooks into the macOS window toolbar to intercept the native leading sidebar toggle
+/// button and repurpose it to toggle compact icon-only mode instead of collapsing to 0 width.
+struct SidebarConfigurator: NSViewRepresentable {
+    @Binding var isCompact: Bool
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(isCompact: $isCompact)
+    }
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async {
+            context.coordinator.attach(to: view)
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        context.coordinator.isCompact = $isCompact
+        DispatchQueue.main.async {
+            context.coordinator.updateToolbar()
+        }
+    }
+
+    final class Coordinator: NSObject {
+        var isCompact: Binding<Bool>
+        private weak var window: NSWindow?
+        private var observers: [NSObjectProtocol] = []
+
+        init(isCompact: Binding<Bool>) {
+            self.isCompact = isCompact
+            super.init()
+        }
+
+        deinit {
+            for obs in observers {
+                NotificationCenter.default.removeObserver(obs)
+            }
+        }
+
+        func attach(to view: NSView) {
+            guard let window = view.window else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self, weak view] in
+                    guard let view = view else { return }
+                    self?.attach(to: view)
+                }
+                return
+            }
+            self.window = window
+
+            observers.append(
+                NotificationCenter.default.addObserver(
+                    forName: NSWindow.didBecomeKeyNotification,
+                    object: window,
+                    queue: .main
+                ) { [weak self] _ in
+                    self?.updateToolbar()
+                }
+            )
+
+            updateToolbar()
+        }
+
+        func updateToolbar() {
+            guard let window = window else { return }
+
+            if let splitVC = findSplitViewController(in: window.contentViewController) {
+                if let sidebarItem = splitVC.splitViewItems.first {
+                    sidebarItem.canCollapse = false
+                }
+            }
+
+            if let toolbar = window.toolbar {
+                for item in toolbar.items {
+                    if item.itemIdentifier.rawValue.contains("ToggleSidebar") || item.itemIdentifier == .toggleSidebar {
+                        item.target = self
+                        item.action = #selector(handleSidebarToggle)
+                        item.toolTip = isCompact.wrappedValue ? "Expand Sidebar" : "Compact Sidebar"
+                    }
+                }
+            }
+        }
+
+        @objc func handleSidebarToggle() {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isCompact.wrappedValue.toggle()
+            }
+        }
+
+        private func findSplitViewController(in vc: NSViewController?) -> NSSplitViewController? {
+            if let split = vc as? NSSplitViewController { return split }
+            for child in vc?.children ?? [] {
+                if let found = findSplitViewController(in: child) { return found }
+            }
+            return nil
+        }
+    }
+}
+
 struct ContentView: View {
+    @EnvironmentObject private var appState: AppState
     @State private var selection: AppScreen = .upload
-    // Icon-rail vs titled sidebar. The system split-view toggle only fully
-    // hides the column, so this button stays in `.navigation` and the default
-    // sidebar toggle is removed.
-    @State private var isSidebarCompact = false
 
     var body: some View {
         NavigationSplitView {
             List(AppScreen.allCases, selection: $selection) { screen in
                 Group {
-                    if isSidebarCompact {
+                    if appState.isSidebarCompact {
                         Label(screen.rawValue, systemImage: screen.systemImage)
                             .labelStyle(.iconOnly)
                             .frame(maxWidth: .infinity)
@@ -41,9 +138,9 @@ struct ContentView: View {
             }
             .listStyle(.sidebar)
             .navigationSplitViewColumnWidth(
-                min: isSidebarCompact ? MacMetrics.compactSidebarWidth : 160,
-                ideal: isSidebarCompact ? MacMetrics.compactSidebarWidth : MacMetrics.sidebarWidth,
-                max: isSidebarCompact ? 72 : 240
+                min: appState.isSidebarCompact ? MacMetrics.compactSidebarWidth : 160,
+                ideal: appState.isSidebarCompact ? MacMetrics.compactSidebarWidth : MacMetrics.sidebarWidth,
+                max: appState.isSidebarCompact ? 72 : 240
             )
         } detail: {
             switch selection {
@@ -53,18 +150,6 @@ struct ContentView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
-        .toolbar(removing: .sidebarToggle)
-        .toolbar {
-            ToolbarItem(placement: .navigation) {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isSidebarCompact.toggle()
-                    }
-                } label: {
-                    Image(systemName: "sidebar.left")
-                }
-                .help(isSidebarCompact ? "Show Sidebar" : "Compact Sidebar")
-            }
-        }
+        .background(SidebarConfigurator(isCompact: $appState.isSidebarCompact))
     }
 }

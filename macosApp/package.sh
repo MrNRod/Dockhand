@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Packages DockhandMac into a real, ad-hoc-signed .app bundle + DMG.
+# Packages DockhandMac into a real, ad-hoc-signed .app bundle and optional DMG.
 # Must run on macOS (arm64) with Xcode installed (needs full Xcode, not just Command
 # Line Tools, for the same cinterop reason core/README.md documents).
 #
@@ -17,6 +17,18 @@ DIST_DIR="$BUILD_DIR/dist"
 SCRATCH_DIR="$BUILD_DIR/scratch"
 APP_NAME="Dockhand"
 LIBUSB_SRC="/opt/homebrew/opt/libusb/lib/libusb-1.0.0.dylib"
+
+BUILD_DMG=true
+for arg in "$@"; do
+    case "$arg" in
+        --app-only)
+            BUILD_DMG=false
+            ;;
+        --dmg)
+            BUILD_DMG=true
+            ;;
+    esac
+done
 
 rm -rf "$SCRATCH_DIR"
 mkdir -p "$DIST_DIR" "$SCRATCH_DIR"
@@ -87,13 +99,21 @@ codesign --force --sign - "$APP/Contents/MacOS/DockhandMac"
 codesign --force --sign - "$APP"
 codesign --verify --deep --strict "$APP"
 
-echo "==> Building DMG"
-DMG_STAGING="$SCRATCH_DIR/dmg"
-mkdir -p "$DMG_STAGING"
-cp -R "$APP" "$DMG_STAGING/"
-ln -s /Applications "$DMG_STAGING/Applications"
-DMG_PATH="$DIST_DIR/Dockhand-$APP_VERSION-macos-arm64.dmg"
-rm -f "$DMG_PATH"
-hdiutil create -volname "$APP_NAME" -srcfolder "$DMG_STAGING" -ov -format UDZO "$DMG_PATH"
+echo "==> Exporting .app bundle to dist"
+rm -rf "$DIST_DIR/$APP_NAME.app"
+cp -R "$APP" "$DIST_DIR/"
+echo "    App bundle created: $DIST_DIR/$APP_NAME.app"
 
-echo "==> Done: $DMG_PATH"
+if [ "$BUILD_DMG" = true ]; then
+    echo "==> Building DMG"
+    DMG_STAGING="$SCRATCH_DIR/dmg"
+    mkdir -p "$DMG_STAGING"
+    cp -R "$DIST_DIR/$APP_NAME.app" "$DMG_STAGING/"
+    ln -s /Applications "$DMG_STAGING/Applications"
+    DMG_PATH="$DIST_DIR/Dockhand-$APP_VERSION-macos-arm64.dmg"
+    rm -f "$DMG_PATH"
+    hdiutil create -volname "$APP_NAME" -srcfolder "$DMG_STAGING" -ov -format UDZO "$DMG_PATH"
+    echo "    DMG created: $DMG_PATH"
+fi
+
+echo "==> Done!"

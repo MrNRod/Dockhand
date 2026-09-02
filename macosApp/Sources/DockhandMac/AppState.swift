@@ -11,6 +11,9 @@ struct FileEntry: Identifiable {
 
 @MainActor
 final class AppState: ObservableObject {
+    // Navigation / Sidebar state
+    @Published var isSidebarCompact: Bool = false
+
     // Upload screen
     @Published var selectedProtocol: String = "Goldleaf"
     @Published var transport: String = "USB"

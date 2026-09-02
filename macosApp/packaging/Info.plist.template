@@ -12,6 +12,8 @@
     <string>DockhandMac</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>CFBundleVersion</key>
     <string>__APP_VERSION__</string>
     <key>CFBundleShortVersionString</key>

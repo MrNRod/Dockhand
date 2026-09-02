@@ -10,6 +10,10 @@
     <string>com.mrnrod45.dockhand.mac</string>
     <key>CFBundleExecutable</key>
     <string>DockhandMac</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>CFBundleVersion</key>
     <string>1.0</string>
     <key>CFBundleShortVersionString</key>
