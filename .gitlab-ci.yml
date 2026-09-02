@@ -21,7 +21,10 @@ cache:
 # packaging jobs below ever ran, so broken Kotlin could land on main/MRs indefinitely.
 check:
   stage: test
-  image: gradle:jdk25
+  # core has an androidTarget(), so :core:check needs an Android SDK on ANDROID_HOME —
+  # plain gradle:jdk25 doesn't have one. Reuse package-android's pinned SDK image; the
+  # foojay toolchain resolver (settings.gradle.kts) still fetches JDK 25 for compilation.
+  image: mobiledevops/android-sdk-image:36.1.0
   tags:
     - saas-linux-small-amd64
   script:
