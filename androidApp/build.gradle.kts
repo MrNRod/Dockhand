@@ -1,19 +1,7 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.composeCompiler)
-}
-
-kotlin {
-    jvmToolchain(25)
-    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
-    compilerOptions {
-        // D8/R8 lag behind the JVM's own class-file versions; target a D8-safe LTS release.
-        jvmTarget.set(JvmTarget.JVM_17)
-    }
 }
 
 android {
@@ -38,13 +26,17 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    applicationVariants.all(object : org.gradle.api.Action<com.android.build.gradle.api.ApplicationVariant> {
-        override fun execute(variant: com.android.build.gradle.api.ApplicationVariant) {
-            variant.outputs.forEach { output ->
-                (output as? com.android.build.gradle.internal.api.BaseVariantOutputImpl)?.outputFileName = "dockhand-android-${variant.versionName}.apk"
-            }
+}
+
+// Names the APK after the app version. The legacy `applicationVariants` API this used to go
+// through was removed from AGP 9's DSL; VariantOutput.outputFileName is the supported equivalent.
+androidComponents {
+    val appVersion = providers.gradleProperty("app.version")
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set(appVersion.map { "dockhand-android-$it.apk" })
         }
-    })
+    }
 }
 
 dependencies {

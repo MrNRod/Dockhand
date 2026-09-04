@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.2"
+agp = "9.3.2"
 android-compileSdk = "36"
 android-minSdk = "26"
 android-targetSdk = "34"
@@ -35,6 +35,8 @@ androidx-documentfile = { group = "androidx.documentfile", name = "documentfile"
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+# AGP 9 dropped support for com.android.library in Kotlin Multiplatform modules.
+androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

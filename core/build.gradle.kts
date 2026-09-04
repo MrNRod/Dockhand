@@ -2,17 +2,26 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    // AGP 9 dropped com.android.library support for Kotlin Multiplatform modules; this is its
+    // replacement, and it configures the Android target from inside the kotlin {} block.
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
 }
 
 kotlin {
-    androidTarget {
-        @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+    android {
+        namespace = "com.mrnrod45.dockhand.core"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        // D8/R8 lag behind the JVM's own class-file versions; target a D8-safe LTS
+        // release here even though the rest of this module (desktop) targets 25.
         compilerOptions {
-            // D8/R8 lag behind the JVM's own class-file versions; target a D8-safe LTS
-            // release here even though the rest of this module (desktop) targets 25.
             jvmTarget.set(JvmTarget.JVM_17)
         }
+
+        // commonTest has real tests; without this the new plugin creates no Android host-test
+        // compilation and they would silently stop running on the Android target.
+        withHostTest {}
     }
 
     jvmToolchain(25)
@@ -39,51 +48,27 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.6.0")
-            }
+        commonMain.dependencies {
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.6.0")
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(libs.kotlin.test)
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
-            }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
         }
-        val androidMain by getting {
-            dependencies {
-                implementation("androidx.activity:activity-ktx:1.9.0")
-                implementation(libs.androidx.core.ktx)
-                implementation(libs.androidx.documentfile)
-            }
+        androidMain.dependencies {
+            implementation("androidx.activity:activity-ktx:1.9.0")
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.androidx.documentfile)
         }
-        val desktopMain by getting {
-            dependencies {
-                implementation("io.github.dsheirer:usb4java:1.3.5")
-                implementation("io.github.dsheirer:usb4java-native-libraries:1.3.1")
-            }
+        // Custom-named jvm target, so there is no generated accessor for it.
+        getByName("desktopMain").dependencies {
+            implementation("io.github.dsheirer:usb4java:1.3.5")
+            implementation("io.github.dsheirer:usb4java-native-libraries:1.3.1")
         }
-        val macosArm64Main by getting {
-            dependencies {
-                implementation("io.ktor:ktor-network:3.0.3")
-            }
+        macosArm64Main.dependencies {
+            implementation("io.ktor:ktor-network:3.0.3")
         }
-    }
-}
-
-android {
-    namespace = "com.mrnrod45.dockhand.core"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

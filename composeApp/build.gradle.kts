@@ -1,83 +1,66 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    // AGP 9 dropped com.android.library support for Kotlin Multiplatform modules; this is its
+    // replacement, and it configures the Android target from inside the kotlin {} block.
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.composeCompiler)
 }
 
-
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 kotlin {
-    androidTarget {
-        @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            // D8/R8 lag behind the JVM's own class-file versions; target a D8-safe LTS release.
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
-    
     jvmToolchain(25)
 
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(project(":core"))
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended) // CMP 1.8+: icons no longer bundled
-                implementation(libs.jetbrains.compose.navigation)
-                implementation(libs.androidx.lifecycle.viewmodel)
-                implementation(libs.androidx.lifecycle.runtime.compose)
-                implementation(compose.ui)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.components.resources)
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(libs.kotlin.test)
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
-            }
-        }
-        val androidMain by getting {
-            dependencies {
-                implementation(libs.androidx.activity.compose)
-                implementation(libs.androidx.appcompat)
-                implementation(libs.androidx.core.ktx)
-            }
-        }
-    }
-}
-
-android {
-    namespace = "com.mrnrod45.dockhand.composeApp"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-
-    defaultConfig {
+    android {
+        namespace = "com.mrnrod45.dockhand.composeApp"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+
+        // D8/R8 lag behind the JVM's own class-file versions; target a D8-safe LTS release.
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
         }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
+
+        // Off by default for KMP Android libraries. This module ships src/androidMain/res
+        // (launcher icon layers, the USB device_filter), and androidApp's manifest references
+        // them, so resource processing has to be turned on explicitly.
+        androidResources {
+            enable = true
         }
+
+        packaging {
+            resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+        }
+
+        // Gives commonTest a compilation to attach to; without it Kotlin warns that the source
+        // set is configured but unused.
+        withHostTest {}
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    dependencies {
-        debugImplementation(compose.uiTooling)
+
+    sourceSets {
+        commonMain.dependencies {
+            api(project(":core"))
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.materialIconsExtended) // CMP 1.8+: icons no longer bundled
+            implementation(libs.jetbrains.compose.navigation)
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(compose.ui)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.components.resources)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+        }
+        androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.appcompat)
+            implementation(libs.androidx.core.ktx)
+        }
     }
 }
 
