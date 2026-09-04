@@ -6,6 +6,7 @@ import org.gnome.gtk.Application
 import org.gnome.gtk.ApplicationWindow
 import org.gnome.gtk.Box
 import org.gnome.gtk.CssProvider
+import org.gnome.gtk.Gtk
 import org.gnome.gtk.Image
 import org.gnome.gtk.Label
 import org.gnome.gtk.ListBox
@@ -44,9 +45,12 @@ class MainWindow(app: Application, private val state: AppState) : Listener {
             """.trimIndent()
         )
         Display.getDefault()?.let {
-            // GTK_STYLE_PROVIDER_PRIORITY_APPLICATION — a fixed #define (600) in GTK's
-            // own headers, not exposed as a named constant in these bindings.
-            org.gnome.gtk.StyleContext.addProviderForDisplay(it, cssProvider, 600)
+            // The equivalent on StyleContext is deprecated along with the whole class in GTK 4.10.
+            Gtk.styleContextAddProviderForDisplay(
+                it,
+                cssProvider,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            )
         }
 
         stack.addTitled(UploadPage(state).root, "upload", "Upload")

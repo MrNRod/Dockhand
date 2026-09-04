@@ -4,6 +4,7 @@ package com.mrnrod45.dockhand
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 
 import android.hardware.usb.UsbManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,6 +16,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Window.statusBarColor and navigationBarColor are deprecated in favour of drawing behind
+        // the system bars; AppTheme sets only the bar icon tint from here on.
+        enableEdgeToEdge()
 
         usbManager = getSystemService(UsbManager::class.java)
         val usbController = AndroidUsbController(usbManager)
@@ -50,7 +54,13 @@ class MainActivity : ComponentActivity() {
      * screen — means the system dialog is already resolved by the time they tap Upload.
      */
     private fun handleUsbDeviceIntent(intent: android.content.Intent?) {
-        val usbDevice = intent?.getParcelableExtra<android.hardware.usb.UsbDevice>(UsbManager.EXTRA_DEVICE)
+        // The untyped getParcelableExtra overload is deprecated from API 33.
+        val usbDevice = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            intent?.getParcelableExtra(UsbManager.EXTRA_DEVICE, android.hardware.usb.UsbDevice::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent?.getParcelableExtra<android.hardware.usb.UsbDevice>(UsbManager.EXTRA_DEVICE)
+        }
         if (usbDevice != null) {
             AndroidUsbController.requestPermissionIfNeeded(usbManager, usbDevice)
         }
