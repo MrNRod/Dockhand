@@ -43,17 +43,12 @@ compose-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", v
 compose-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "compose-plugin" }
 compose-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "compose-material3" }
 compose-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "compose-plugin" }
-compose-components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "compose-plugin" }
 compose-material-icons-extended = { group = "org.jetbrains.compose.material", name = "material-icons-extended", version.ref = "compose-material-icons" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
-# AGP 9 dropped support for com.android.library in Kotlin Multiplatform modules.
 androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
-jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

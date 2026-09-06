@@ -16,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.mrnrod45.dockhand.ui.navigation.Screen
 import com.mrnrod45.dockhand.ui.theme.LocalAppStyle
-import org.jetbrains.compose.resources.painterResource
+import androidx.compose.ui.res.painterResource
 
 @Composable
-actual fun PlatformAppLayout(
+fun AppLayout(
     screens: List<Screen>,
     currentDestination: String?,
     onNavigate: (String) -> Unit,

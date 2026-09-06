@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
@@ -21,9 +22,13 @@ import com.mrnrod45.dockhand.ui.theme.oneui.oneUiLightColorScheme
 import com.mrnrod45.dockhand.ui.theme.oneui.oneUiTypography
 import com.mrnrod45.dockhand.ui.theme.oneui.withOneUiSurfaceLayering
 
+/**
+ * The app has no appearance settings: colours, light/dark and the design language are all taken
+ * from the device.
+ */
 @Composable
-actual fun AppTheme(
-    darkTheme: Boolean,
+fun AppTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current

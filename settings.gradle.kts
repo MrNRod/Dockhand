@@ -1,5 +1,5 @@
 rootProject.name = "dockhand"
-include(":core", ":composeApp", ":androidApp", ":linuxApp", ":macosApp", ":windowsApp:backend")
+include(":core", ":androidApp", ":linuxApp", ":macosApp", ":windowsApp:backend")
 
 pluginManagement {
     repositories {

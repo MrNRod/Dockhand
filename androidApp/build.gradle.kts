@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.composeCompiler)
 }
 
@@ -40,7 +39,20 @@ androidComponents {
 }
 
 dependencies {
-    implementation(project(":composeApp"))
+    // :core carries the multiplatform domain layer shared with the desktop apps. The Compose UI
+    // used to live in a separate :composeApp module, but only this app ever consumed it.
+    implementation(project(":core"))
+
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons.extended) // CMP 1.8+: icons no longer bundled
+    implementation(libs.compose.ui)
+    implementation(libs.jetbrains.compose.navigation)
+
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 }

@@ -118,7 +118,7 @@ class UploadPage(private val state: AppState) : Listener {
         logBuffer.setText(state.uploadLog.toString(), -1)
     }
 
-    /** Mirrors composeApp's UploadViewModel.openFilePicker() extension logic. */
+    /** Mirrors the Android app's UploadViewModel.openFilePicker() extension logic. */
     private fun allowedExtensions(): List<String> {
         val extensions = mutableListOf("nsp")
         if (state.allowXci) {
