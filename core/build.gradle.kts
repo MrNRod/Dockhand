@@ -8,6 +8,13 @@ plugins {
 }
 
 kotlin {
+    // NetworkServer and friends are expect/actual *classes*, which Kotlin still reports as Beta.
+    // This is the flag its own warning points at; the alternative is reshaping working networking
+    // code into interfaces plus factory functions purely to satisfy the notice.
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     android {
         namespace = "com.mrnrod45.dockhand.core"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -40,7 +47,9 @@ kotlin {
                     packageName("libusb.cinterop")
                 }
             }
-            compilerOptions.options.freeCompilerArgs.add("-opt-in=kotlinx.cinterop.ExperimentalForeignApi")
+            compileTaskProvider.configure {
+                compilerOptions.freeCompilerArgs.add("-opt-in=kotlinx.cinterop.ExperimentalForeignApi")
+            }
         }
         binaries.framework {
             baseName = "core"
