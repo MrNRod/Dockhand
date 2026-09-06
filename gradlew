@@ -28,7 +28,10 @@ APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
 
 # Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
-DEFAULT_JVM_OPTS=""
+# Gradle's own native-platform library calls System.load from an unnamed module, which JDK 24+
+# warns about under JEP 472. org.gradle.jvmargs covers the daemon; this covers the launcher JVM,
+# which does not read that property. Re-apply if the wrapper is ever regenerated.
+DEFAULT_JVM_OPTS='"--enable-native-access=ALL-UNNAMED"'
 
 # Use the maximum available, or set MAX_FD != -1 to use that value.
 MAX_FD="maximum"
