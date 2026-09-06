@@ -87,7 +87,7 @@ actual class NetworkServer {
             // Send content: "myIp:myPort/fileName\n..."
             
             // Note: hostIp is NS IP.
-            // I need "myIp". Android: WifiManager. Desktop: InetAddress.getLocalHost().
+            // I need "myIp". Android: ConnectivityManager. Desktop: InetAddress.getLocalHost().
             // For now, I'll use socket.localAddress if possible or just the IP interface.
             
             // Since this is handleClient (Server Loop), the Handshake must happen BEFORE this loop in start().
@@ -266,30 +266,30 @@ actual class NetworkServer {
     
     private fun getLocalIpAddress(): String? {
         try {
-            // Priority: Try WiFi Manager first (Legacy behavior)
+            // Ask the platform for the active network's own address. This replaces
+            // WifiManager.connectionInfo.ipAddress, deprecated in API 31, and is not limited to
+            // Wi-Fi — Ethernet and USB tethering resolve here too, where the old call returned 0.
             val context = com.mrnrod45.dockhand.DockhandApplication.context
-            val wm = context.getSystemService(android.content.Context.WIFI_SERVICE) as? android.net.wifi.WifiManager
-            
-            if (wm != null) {
-                val ipInt = wm.connectionInfo.ipAddress
-                // If connected to Wifi
-                if (ipInt != 0) {
-                    return String.format(java.util.Locale.US, "%d.%d.%d.%d",
-                        (ipInt and 0xff),
-                        (ipInt shr 8 and 0xff),
-                        (ipInt shr 16 and 0xff),
-                        (ipInt shr 24 and 0xff))
-                }
-            }
-        
+            val cm = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
+                as? android.net.ConnectivityManager
+
+            val activeNetwork = cm?.activeNetwork
+            val linkProperties = activeNetwork?.let { cm.getLinkProperties(it) }
+            linkProperties?.linkAddresses
+                ?.map { it.address }
+                ?.firstOrNull { it is java.net.Inet4Address && !it.isLoopbackAddress }
+                ?.hostAddress
+                ?.let { return it }
+
+
             // Fallback to NetworkInterfaces
             val interfaces = java.net.NetworkInterface.getNetworkInterfaces()
             while (interfaces.hasMoreElements()) {
                 val iface = interfaces.nextElement()
                 if (iface.isLoopback || !iface.isUp) continue
                 
-                // Prefer wlan0 if WifiManager failed but interface exists
-                // But generally stick to first valid IPv4
+                // Reached when there is no active network (e.g. the Switch is connected over a
+                // link Android does not report as active); take the first valid IPv4.
                 val addresses = iface.inetAddresses
                 while (addresses.hasMoreElements()) {
                     val addr = addresses.nextElement()

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- Reading the device's own IP for NET transfers now goes through ConnectivityManager,
+         which needs ACCESS_NETWORK_STATE rather than the WifiManager-era ACCESS_WIFI_STATE. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- required="false": NET transport still works on devices without USB host support. -->
     <uses-feature android:name="android.hardware.usb.host" android:required="false" />
     <application
