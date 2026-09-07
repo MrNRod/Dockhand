@@ -77,4 +77,4 @@ See the root `.gitlab-ci.yml`'s `package-macos` job for how this runs in CI.
 
 - Only `macosArm64` — no Intel Mac (`macosX64`) support yet, and no universal/XCFramework build for distribution.
 - Ad-hoc code-signed only (`codesign --sign -`, via `package.sh`) — not notarized, so Gatekeeper shows an "unidentified developer" warning on first launch (right-click → Open, or `xattr -cr Dockhand.app`, bypasses it). Proper Developer ID signing + notarization would need an Apple Developer Program membership.
-- Feature scope is intentionally streamlined relative to `:composeApp`'s screens (e.g. Settings here is a handful of `@AppStorage`-backed toggles, not a full 1:1 port) — the goal was proving the architecture end-to-end, not exhaustive parity.
+- Feature scope is intentionally streamlined relative to `:androidApp`'s screens (e.g. Settings here is a handful of `@AppStorage`-backed toggles, not a full 1:1 port) — the goal was proving the architecture end-to-end, not exhaustive parity.

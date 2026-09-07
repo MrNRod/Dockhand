@@ -13,10 +13,8 @@ dockhand/
 ├── core/                Shared KMP library (pure business logic, zero UI dependencies
 │                        at all. Targets: Android, JVM (desktop), macosArm64 (Kotlin/Native).
 │                        → core/README.md
-├── composeApp/          Shared Compose Multiplatform UI components (currently used by
-│                        androidApp).
-│                        → composeApp/README.md
-├── androidApp/          Android application module (Kotlin + Jetpack/Compose Multiplatform).
+├── androidApp/          Android application: UI, navigation, view models and theming, all
+│                        in one module, built on Compose. Links :core directly.
 │                        → androidApp/README.md
 ├── macosApp/            Native SwiftUI app (Swift Package + Gradle wrapper) linking directly
 │                        against core.framework (Kotlin/Native). Real NavigationSplitView
@@ -47,7 +45,7 @@ There is no Compose Desktop fallback anymore — each of macOS/Linux/Windows now
 
 ### Prerequisites
 -   **JDK 25** (recommended: Eclipse Temurin 25 or OpenJDK 25 via SDKMAN/Homebrew). Gradle toolchains will attempt to auto-provision JDK 25 if `org.gradle.java.installations.auto-download=true` is set.
--   **Android SDK** (for `:androidApp` and `:composeApp`).
+-   **Android SDK** (for `:androidApp`; requires API 37 as of the AGP 9.4 upgrade — set `sdk.dir` in `local.properties` or `ANDROID_HOME`).
 -   **Xcode** (for `macosApp` — cinterop against custom C libraries like libusb needs the macOS SDK headers Xcode provides, not just Command Line Tools).
 -   **GTK4 runtime** (for `linuxApp` — `apt install libgtk-4-1` on Debian/Ubuntu, `pacman -S gtk4` on Arch, `brew install gtk4` on macOS for local smoke tests).
 -   **.NET 8 SDK + Windows App SDK** (for `windowsApp` — building the WinUI 3 frontend requires Windows).
